@@ -1,0 +1,7 @@
+RewriteEngine On
+
+RewriteRule (.*\.js) /tools/template_includer/index.php?$1 [QSA,L]
+
+RewriteCond %{SCRIPT_FILENAME} !-f
+RewriteCond %{SCRIPT_FILENAME} !-d
+RewriteRule (.*) / [QSA,L]
