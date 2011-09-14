@@ -57,7 +57,7 @@ class TemplateIncluder
 	private function _getTemplate($file)
 	{
 		if (preg_match(
-				'/views$/',
+				'/(views)|(widgets)$/',
 				realpath(dirname(APP_PATH . $this->_file))
 			))
 		{

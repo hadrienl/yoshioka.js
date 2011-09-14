@@ -1,31 +1,51 @@
+	/**
+	 * App path relative to this file
+	 */
 var PATH = __dirname + '/../',
 
+	/**
+	 * Filesystem module
+	 */
 	fs = require('fs'),
 	
-	fetchdir,writeConfigFile,
-	CONFIG = {};
+	/**
+	 * Configuration of this builder
+	 */
+	makeconfig = JSON.parse(
+		fs.readFileSync(PATH+'config/make_config.js').toString()
+	),
+	
+	/**
+	 * modules configuration object
+	 */
+	CONFIG = {},
+	
+	/**
+	 * DirFecther class
+	 * @constructor
+	 * @author Hadrien Lanneau
+	 */
+	DirFetcher = function(path)
+	{
+		this.init(path);
+	};
 
 /**
- * DirFecther class
- * @constructor
- * @author Hadrien Lanneau
+ * DirFetcher prototype
  */
-var DirFetcher = function(path)
-{
-	this.init(path);
-};
 DirFetcher.prototype =
 {
 	path: null,
 	file: null,
 	
 	/**
-	 * init
+	 * init : set the path
 	 */
 	init: function(path)
 	{
 		this.path = path + '/';
 	},
+	
 	/**
 	 * Fetch the content of directory
 	 */
@@ -42,6 +62,7 @@ DirFetcher.prototype =
 			}.bind(this)
 		);
 	},
+	
 	/**
 	 * Parse each files and apply a process for each type :
 	 * - Directories are read,
@@ -77,10 +98,10 @@ DirFetcher.prototype =
 							{
 								fs.readFile(
 									PATH + this.path+f,
-									function(err, data)
+									function(f, err, data)
 									{
-										this.parseJSFile(data.toString());
-									}.bind(this)
+										this.parseJSFile(data.toString(), f);
+									}.bind(this, f)
 								);
 								return;
 							}
@@ -95,10 +116,11 @@ DirFetcher.prototype =
 			}.bind(this)
 		);
 	},
+	
 	/**
 	 * Parse JS File. Get its module name, filepath and requires modules
 	 */
-	parseJSFile: function(script)
+	parseJSFile: function(script, f)
 	{
 			/**
 			 * get module name from
@@ -132,12 +154,13 @@ DirFetcher.prototype =
 		 * this module
 		 */
 		CONFIG[module] = {};
-		CONFIG[module].path = this.path + this.file;
+		CONFIG[module].path = this.path + f;
 		if (requires)
 		{
 			CONFIG[module].requires = JSON.parse(requires)
 		}
 	},
+	
 	/**
 	 * Parse CSS file. Get its module name and file path
 	 */
@@ -163,11 +186,6 @@ DirFetcher.prototype =
 };
 
 /**
- * Start reading the root folder
- */
-(new DirFetcher('modules/')).fetch();
-
-/**
  * On process end, all the file system has been read, write the config file !
  * Write CONFIG file with default values and modules object
  */
@@ -189,7 +207,7 @@ process.on(
 			YUI_config = JSON.parse(defaultConfig);
 		
 		YUI_config.groups.core = CoreConfig;
-		YUI_config.groups.ob.modules = CONFIG;
+		YUI_config.groups[makeconfig.groupname].modules = CONFIG;
 		
 		fs.writeFileSync(
 			PATH + 'config/config.js',
@@ -197,3 +215,9 @@ process.on(
 		);
 	}
 );
+
+/**
+ * Start reading the root folder
+ */
+(new DirFetcher('modules/')).fetch();
+
