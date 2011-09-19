@@ -57,7 +57,7 @@ class TemplateIncluder
 	private function _getTemplate($file)
 	{
 		if (preg_match(
-				'/(views)|(widgets)$/',
+				'/(subviews)|(widgets)$/',
 				realpath(dirname(APP_PATH . $this->_file))
 			))
 		{
@@ -69,16 +69,43 @@ class TemplateIncluder
 		}
 		$file = $tpl_path . '/' . $file . '.html';
 
-		$tpl = file_get_contents(
+		$compiled = file_get_contents(
 			$file
 		);
 
-		return "['" . implode(
+		/**
+		 * Compilation
+		 */
+
+		/**
+		 * Return as a javascript array joined
+		 */
+		$compiled = "['" . implode(
 			"',\n'",
 			explode(
 				"\n",
-				trim(addslashes($tpl))
+				trim(addslashes($compiled))
 			)
 		) . "'].join('')";
+
+
+		/**
+		 * Replace {@key@} by localize function
+		 */
+		preg_match_all(
+			'/\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/',
+			$compiled,
+			$m
+		);
+		foreach ($m[0] as $k => $gra)
+		{
+			$compiled = str_replace(
+				$m[0][$k],
+				"',__('" . $m[1][$k] . "', " . ($m[2][$k] ? stripslashes($m[2][$k]) : 'null') . ", true),'",
+				$compiled
+			);
+		}
+
+		return $compiled;
 	}
 }
