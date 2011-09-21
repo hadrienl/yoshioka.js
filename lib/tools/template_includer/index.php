@@ -2,18 +2,17 @@
 
 header('Content-type: text/javascript');
 
-include('TemplateIncluder.class.php');
+$nodescript = realpath(dirname(__FILE__)) . '/init.js';
+$cmd = '/home/nodejs/nodejs/bin/node '.$nodescript.' '.$_SERVER['QUERY_STRING'];
+exec($cmd,$output,$status);
 
-try
-{
-	$tpli = new TemplateIncluder(
-		$_SERVER['QUERY_STRING']
-	);
+$response = implode("\n",$output);
 
-	echo $tpli->parse();
-}
-catch (Exception $e)
+if ($status !== 0)
 {
-	header ('HTTP/1.0 500 ' . $e->getMessage());
-	echo $e->getMessage();
+	header ('HTTP/1.0 500 ' . $response);
 }
+
+echo $response;
+
+exit();

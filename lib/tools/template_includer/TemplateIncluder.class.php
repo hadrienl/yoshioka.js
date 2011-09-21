@@ -1,6 +1,6 @@
 <?php
 
-define ('APP_PATH', realpath(dirname(__FILE__) . '/../../../') . '/');
+define ('APP_PATH', realpath(dirname(__FILE__) . '/../../../../') . '/');
 
 /**
 * TemplateIncluder
