@@ -324,7 +324,14 @@ YUI().add('ys_l10n', function(Y) {
 			 * Global language configuration
 			 */
 			locale: {
-				value: 'fr',
+				valueFn: function()
+				{
+					if (navigator.language)
+					{
+						return navigator.language;
+					}
+					else return 'en';
+				},
 				broadcast: 1
 			},
 			/**
