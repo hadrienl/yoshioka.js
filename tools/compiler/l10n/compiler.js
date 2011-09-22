@@ -22,7 +22,7 @@ L10nCompiler.prototype =
 
 	init: function(config)
 	{
-		this._apppath = fs.realpathSync(replace('/yoshioka.js/tools/compiler/l10n', ''))+'/';
+		this._apppath = fs.realpathSync(__dirname.replace('/yoshioka.js/tools/compiler/l10n', ''))+'/';
 		this._file = config.file;
 		if (!this._file)
 		{
