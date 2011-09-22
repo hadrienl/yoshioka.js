@@ -1,14 +1,14 @@
 	/**
 	 * App path relative to this file
 	 */
-var PATH = __dirname + '/../../../../',
+var PATH = __dirname.replace('/yoshioka.js/tools/make/fetcher', '')+'/',
 
 	fs = require('fs'),
 
 	Fetcher = function(path)
 	{
 		this.init(path);
-	}
+	};
 
 /**
  * Fetcher prototype

@@ -2,7 +2,7 @@
 
 $index = file_get_contents(dirname(__FILE__).'/../index.html');
 preg_match(
-	'/(.*?)\/lib\/index\.php$/',
+	'/(.*?)\/yoshioka.js\/index\.php$/',
 	$_SERVER['SCRIPT_NAME'],
 	$m
 );

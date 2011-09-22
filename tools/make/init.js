@@ -1,7 +1,7 @@
 	/**
 	 * App path relative to this file
 	 */
-var PATH = __dirname.replace('/yoshioka.js/tools/make', ''),
+var PATH = __dirname.replace('/yoshioka.js/tools/make', '')+'/',
 
 	/**
 	 * Filesystem module
@@ -22,8 +22,6 @@ var PATH = __dirname.replace('/yoshioka.js/tools/make', ''),
 
 	fetcher = require('./fetcher/fetcher'),
 	Fetcher = fetcher.Fetcher;
-
-
 
 Fetcher.prototype.parseJSFile = function()
 {
@@ -125,7 +123,7 @@ process.on(
 		 * Get the default config file
 		 */
 		var coreConfig = fs.readFileSync(
-				PATH + 'lib/core/core_config.js'
+				PATH + 'yoshioka.js/core/core_config.js'
 			).toString(),
 			defaultConfig = fs.readFileSync(
 				PATH + 'config/default_config.js'
