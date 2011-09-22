@@ -3,7 +3,7 @@
 header('Content-type: text/javascript');
 
 $nodescript = realpath(dirname(__FILE__)) . '/init.js';
-$cmd = '/home/nodejs/nodejs/bin/node '.$nodescript.' '.$_SERVER['QUERY_STRING'];
+$cmd = 'node '.$nodescript.' '.$_SERVER['QUERY_STRING'];
 exec($cmd,$output,$status);
 
 $response = implode("\n",$output);
