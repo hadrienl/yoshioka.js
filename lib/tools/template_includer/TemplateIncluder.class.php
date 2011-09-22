@@ -80,13 +80,13 @@ class TemplateIncluder
 		/**
 		 * Return as a javascript array joined
 		 */
-		$compiled = "['" . implode(
-			"',\n'",
+		$compiled = "'" . implode(
+			"'+\n'",
 			explode(
 				"\n",
 				trim(addslashes($compiled))
 			)
-		) . "'].join('')";
+		) . "'";
 
 
 		/**
