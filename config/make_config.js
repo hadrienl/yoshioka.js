@@ -1,3 +1,0 @@
-{
-	"groupname": "ob"
-}

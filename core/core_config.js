@@ -1,5 +1,5 @@
 {
-	"base": "/~hadrien/obv4pre/admin/",
+	"base": "/",
 	"modules": {
 		"ys_routes": {
 			"path": "config/routes.js"

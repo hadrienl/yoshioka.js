@@ -1,7 +1,7 @@
 	/**
 	 * App path relative to this file
 	 */
-var PATH = __dirname + '/../../../',
+var PATH = __dirname.replace('/yoshioka.js/tools/make', ''),
 
 	/**
 	 * Filesystem module

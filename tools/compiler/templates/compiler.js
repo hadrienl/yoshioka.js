@@ -19,7 +19,7 @@ TemplateCompiler.prototype =
 	
 	init: function(config)
 	{
-		this._apppath = fs.realpathSync(__dirname.replace('/lib/tools/compiler/templates', '')+'/');
+		this._apppath = fs.realpathSync(__dirname.replace('/yoshioka.js/tools/compiler/templates', '')+'/');
 		this._file = config.file;
 		if (!this._file)
 		{

@@ -1,8 +1,0 @@
-RewriteEngine On
-
-RewriteRule (.*\.l10n\.js) /lib/tools/locale_compiler/index.php?$1 [QSA,L]
-RewriteRule (.*\.js) /lib/tools/template_includer/index.php?$1 [QSA,L]
-
-RewriteCond %{SCRIPT_FILENAME} !-f
-RewriteCond %{SCRIPT_FILENAME} !-d
-RewriteRule (.*) / [QSA,L]

@@ -1,5 +1,5 @@
 (function() {
-	var APP_PATH = __dirname.replace('lib/tools/build', ''),
+	var APP_PATH = __dirname.replace('yoshioka.js/tools/build', ''),
 
 		fs = require('fs'),
 		sys = require('sys'),
