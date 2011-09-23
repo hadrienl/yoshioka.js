@@ -1,16 +1,19 @@
 (function() {
-	var APP_PATH = __dirname.replace('yoshioka.js/tools/build', ''),
+	var APP_PATH = __dirname.replace('/yoshioka.js/tools/build', '')+'/',
 
 		fs = require('fs'),
 		sys = require('sys'),
-		spawn = require('child_process').spawn,
+		exec = require('child_process').exec,
 		fetcher = require('../make/fetcher/fetcher'),
 
-		t_compiler = require('../compiler/templates/compiler'),
-		l_compiler = require('../compiler/l10n/compiler'),
+		TemplateCompiler = require('../compiler/templates/compiler').TemplateCompiler,
+		L10nCompiler = require('../compiler/l10n/compiler').L10nCompiler,
 		buildname = new Date().getTime(),
-		buildpath = APP_PATH+'build/'+buildname+'/',
-		Fetcher = fetcher.Fetcher;
+		buildpath = 'build/'+buildname+'/',
+		Fetcher = fetcher.Fetcher,
+		dontcompress = ['app_config.js','core_config.js', 'config.js'],
+		tofetch = ['yoshioka.js/core', 'locales', 'plugins', 'views', 'config'],
+		waiting = tofetch.length;
 
 	/**
 	 * mkdir new build directory
@@ -30,7 +33,7 @@
 	Fetcher.prototype.createDirs= function()
 	{
 		var path = this.path.split('/'),
-			fullpath = buildpath;
+			fullpath = APP_PATH+buildpath;
 
 		path.forEach(
 			function(p)
@@ -54,96 +57,193 @@
 	 */
 	Fetcher.prototype.compressJS = function(filename, callback)
 	{
-		var file = buildpath+this.path+filename,
-			cmd = spawn(
-				'java',
-				['-jar '+__dirname+'/yuicompressor-2.4.6.jar --type js --charset utf8 '+file+' -o '+file]
+		var file = APP_PATH+buildpath+this.path+filename,
+			cmd = exec(
+				'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --nomunge --type js --charset utf8 '+file+' -o '+file,
+				function(callback, filename, err, stdout, stderr)
+				{
+					if (err)
+					{
+						sys.print('YUICompressor detects errors in '+this.path+filename+" :\n");
+						sys.print(stderr);
+					}
+					this.setChildCount(-1);
+				}.bind(this, callback, filename)
 			);
-
-		/**
-		 * If ok, call callback method
-		 */
-		cmd.stdout.on('data', function (callback, filename, data) {
-			//callback(filename, data);
-			console.log('ok '+filename)
-		}.bind(this, callback, this.file));
-
-		/**
-		 * Error, log it, then do nothing
-		 */
-		cmd.stderr.on('data', function (file, data) {
-			//sys.print("\n\n"+'stderr: '+file+"\n"+data+"\n");
-		}.bind(this, file));
+	};
+	
+	/**
+	 * Compress CSS with YUICompressor
+	 */
+	Fetcher.prototype.compressCSS = function(filename, callback)
+	{
+		var file = APP_PATH+buildpath+this.path+filename,
+			cmd = exec(
+				'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type css --charset utf8 '+file+' -o '+file,
+				function(callback, filename, err, stdout, stderr)
+				{
+					if (err)
+					{
+						sys.print('YUICompressor detects errors in '+this.path+filename+" :\n");
+						sys.print(stderr);
+					}
+					this.setChildCount(-1);
+				}.bind(this, callback, filename)
+			);
 	};
 	/**
 	 * Parse every files
 	 */
-	Fetcher.prototype.parseJSFile = function()
+	Fetcher.prototype.parseJSFile = function(f)
 	{
-		var file = this.path+this.file,
-			compiler = new t_compiler.TemplateCompiler({
+		var file = this.path+f,
+			compiler = new TemplateCompiler({
 				file: file
 			});
-
+		
 		this.createDirs();
 
 		/**
 		 * Copy original file into build dir
 		 */
 		fs.writeFile(
-			buildpath+file,
+			APP_PATH+buildpath+file,
+			compiler.parse(),
+			function(f, err, data)
+			{
+				var tocompress = true;
+				dontcompress.forEach(
+					function(name)
+					{
+						if (name === f)
+						{
+							tocompress = false;
+						}
+					}
+				);
+				/**
+				 * Compress build file with YUICompressor
+				 */
+				if (tocompress)
+				{
+					this.compressJS(f);
+				}
+				else
+				{
+					this.setChildCount(-1);
+				}
+			}.bind(this,f)
+		);
+	};
+	Fetcher.prototype.parseCSSFile = function(f)
+	{
+		var file = this.path+f;
+
+		this.createDirs();
+		
+		fs.readFile(
+			APP_PATH+file,
+			function(file, err, data)
+			{
+				if (err)
+				{
+					sys.print(err);
+					this.setChildCount(-1);
+					return;
+				}
+				/**
+				 * Copy original file into build dir
+				 */
+				fs.writeFile(
+					APP_PATH+buildpath+this.path+file,
+					data.toString(),
+					function(f, err, data)
+					{
+						/**
+						 * Compress build file with YUICompressor
+						 */
+						this.compressCSS(f);
+					}.bind(this,file)
+				);
+			}.bind(this, f)
+		);
+	};
+	Fetcher.prototype.parseLocaleFile = function(f)
+	{
+		var file = this.path+f,
+			compiler = new L10nCompiler({
+				file: file
+			});
+		
+		this.createDirs();
+
+		/**
+		 * Copy original file into build dir
+		 */
+		fs.writeFile(
+			APP_PATH+buildpath+file+'.js',
 			compiler.parse(),
 			function(f, err, data)
 			{
 				/**
 				 * Compress build file with YUICompressor
 				 */
-				this.compressJS(f, function(filename, content)
-				{
-					/**
-					 * Write compressed file in build dir
-					 */
-					fs.writeFile(
-						buildpath+this.path+f,
-						content,
-						'bla'
-					);
-				}.bind(this));
-			}.bind(this,this.file)
+				this.compressJS(f);
+				this.setChildCount(-1);
+			}.bind(this,f+'.js')
 		);
 	};
-	Fetcher.prototype.parseCSSFile = function()
-	{
-		var file = APP_PATH+this.path+this.file;
-
-		this.createDirs();
-	};
-	Fetcher.prototype.parseLocaleFile = function()
-	{
-		var file = APP_PATH+this.path+this.file,
-			content;
-
-		this.createDirs();
-	};
-
-	/**
-	 * Finalize build
-	 */
-	process.on(
-		'exit',
-		function()
-		{
-			console.log('presque fini');
-		}
-	);
 
 	/**
 	 * Start reading app's folders
 	 */
-	['lib', 'locales', 'plugins', 'views'].forEach(
+	tofetch.forEach(
 		function(p)
 		{
-			(new Fetcher(p)).fetch();
+			var f = new Fetcher({
+				basepath: APP_PATH,
+				path: p
+			})
+			f._event.on(
+				'end',
+				function()
+				{
+					waiting--;
+					if (waiting === 0)
+					{
+						
+						/**
+						 * Finalize build
+						 */
+						(function()
+						{
+							var content,
+								Maker = require('../make/make').Maker,
+								make = new Maker({
+									dirs: ['locales', 'plugins', 'views'],
+									basepath: APP_PATH+buildpath
+								});
+
+							/**
+							 * Finalisation
+							 */
+							/**
+							 * Make index.html file
+							 */
+							content = fs.readFileSync(
+								APP_PATH+'index.html'
+							).toString()
+								.replace(/\{\$basepath\}/gi, '/'+buildname);
+
+							fs.writeFileSync(
+								APP_PATH+'build/index.html',
+								content
+							);
+						})();
+					}
+				}
+			);
+			f.fetch();
 		}
 	);
 })();

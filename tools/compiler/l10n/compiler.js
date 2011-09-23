@@ -29,11 +29,6 @@ L10nCompiler.prototype =
 			throw 'file is invalid';
 		}
 
-		/**
-		 * Remove ending '.js' of file path
-		 */
-		this._file = this._file.replace(/\.js$/, '');
-
 		this._filecontent = fs.readFileSync(
 			this._apppath+'/'+this._file
 		).toString();

@@ -1,9 +1,9 @@
 	/**
 	 * App path relative to this file
 	 */
-var PATH = __dirname.replace('/yoshioka.js/tools/make/fetcher', '')+'/',
-
-	fs = require('fs'),
+var fs = require('fs'),
+	sys = require('sys'),
+	EventEmitter = require('events').EventEmitter,
 
 	Fetcher = function(path)
 	{
@@ -15,15 +15,21 @@ var PATH = __dirname.replace('/yoshioka.js/tools/make/fetcher', '')+'/',
  */
 Fetcher.prototype =
 {
+	_event: null,
+	_childs: 0,
+	basepath: null,
 	path: null,
 	file: null,
 
 	/**
 	 * init : set the path
 	 */
-	init: function(path)
+	init: function(config)
 	{
-		this.path = path + '/';
+		this.basepath = config.basepath;
+		this.path = config.path + '/';
+		
+		this._event = new EventEmitter();
 	},
 
 	/**
@@ -32,13 +38,14 @@ Fetcher.prototype =
 	fetch: function()
 	{
 		fs.readdir(
-			PATH + this.path,
+			this.basepath + this.path,
 			function(err, files)
 			{
-				if (!err)
+				if (err)
 				{
-					this.parse(files);
+					sys.print(err);
 				}
+				this.parse(files);
 			}.bind(this)
 		);
 	},
@@ -51,6 +58,8 @@ Fetcher.prototype =
 	 */
 	parse: function(files)
 	{
+		this.setChildCount(files.length);
+		
 		files.forEach(
 			function(f)
 			{
@@ -58,66 +67,89 @@ Fetcher.prototype =
 				 * Check file type
 				 */
 				fs.stat(
-					PATH + this.path+f,
-					function(err, file)
+					this.basepath + this.path+f,
+					function(f, err, file)
 					{
+						var cf;
+						
 						/**
 						 * File is a directory ? Read its content !
 						 */
 						if (file.isDirectory())
 						{
-							return (new Fetcher(this.path+f)).fetch();
+							var cf = new Fetcher({
+								basepath: this.basepath,
+								path: this.path+f
+							})
+							cf._event.on(
+								'end',
+								function()
+								{
+									this.setChildCount(-1);
+								}.bind(this)
+							);
+							cf.fetch();
 						}
 						/**
 						 * File is a javascript, read its content !
 						 */
 						if (file.isFile())
 						{
-							this.file = f;
-							if (this.file.match(/\.js$/))
+							if (f.match(/\.l10n\.js?$/))
 							{
-								this.parseJSFile();
+								this.parseLocaleFile(f);
 								return;
 							}
-							else if (this.file.match(/\.css$/))
+							else if (f.match(/\.js$/))
 							{
-								this.parseCSSFile();
+								this.parseJSFile(f);
 								return;
 							}
-							else if (this.file.match(/\.l10n$/))
+							else if (f.match(/\.css$/))
 							{
-								this.parseLocaleFile();
+								this.parseCSSFile(f);
 								return;
+							}
+							else
+							{
+								this.setChildCount(-1);
 							}
 						}
-					}.bind(this)
+					}.bind(this, f)
 				);
 			}.bind(this)
 		);
 	},
-
+	setChildCount: function(number)
+	{
+		this._childs = this._childs+number;
+		if (this._childs === 0)
+		{
+			this._event.emit('end');
+		}
+	},
 	/**
 	 * Parse JS File
 	 */
-	parseJSFile: function(script, f)
+	parseJSFile: function(f)
 	{
-
+		this.setChildCount(-1);
 	},
 
 	/**
 	 * Parse CSS file
 	 */
-	parseCSSFile: function()
+	parseCSSFile: function(f)
 	{
-
+		this.setChildCount(-1);
 	},
 
 	/**
 	 * Parse locales files
 	 */
-	parseLocaleFile: function()
+	parseLocaleFile: function(f)
 	{
-
+		this.setChildCount(-1);
 	}
 };
 exports.Fetcher = Fetcher;
