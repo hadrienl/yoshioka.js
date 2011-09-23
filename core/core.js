@@ -60,9 +60,7 @@ YUI().add('ys_core', function(Y) {
 		NAME: 'Core'
 	});
 
-	Y.namespace(NS).Controller = new Core({
-		root: '/~hadrien/obv4pre/admin/' // remove that
-	});
+	Y.namespace(NS).Controller = new Core();
 
 	/**
 	 * Method to enhance a link to save its href to controller
