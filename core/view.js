@@ -194,8 +194,13 @@ YUI().add('ys_view', function(Y) {
 				 * Load new view
 				 */
 				Y.use(module, Y.bind(
-					function(classname, params, node, Y)
+					function(classname, params, node, Y2)
 					{
+						Y2.merge(
+							Y.namespace(Y.config.app),
+							Y2.namespace(Y.config.app)
+						);
+						
 						try
 						{
 							var viewclass =
