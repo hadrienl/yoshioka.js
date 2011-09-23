@@ -1,2 +1,41 @@
 yoshioka.js is javascript MVC framework for client-side webapp based on YUI 3.
 some text
+
+Quick documentation to use with Git :
+
+For development environnement, you need a web server with rewriting, php and node.js.
+For building, you need java.
+For production, you need only a static web server.
+
+Development environnement :
+- create a new folder for your project, then init a git repository :
+
+$ mkdir mywebapp
+$ cd mywebapp
+$ git init
+
+- add git submodule into your app
+
+$ git submodule add git://github.com/hadrienl/yoshioka.js.git
+
+- create your app
+
+$ cp yoshioka.js/dist/* .
+
+- if you use Apache, you can copy .htaccess file too
+
+$ cp yoshioka.js/dist/.htaccess
+
+- If you use another webserver, like Cherokee, read the htaccess and try to get the same thing ;)
+
+Your app is ready to use. Configure it now !
+Edit the config/app_config.js file
+
+$ vi config/app_config.js
+
+- replace 'yourapp' by the namespace of your app. Choose a short name, it's a namespace for all your classes.
+- You can make the config file and load your app :
+
+$ node yoshioka.js/tools/make/init.js
+
+Load your browser !
