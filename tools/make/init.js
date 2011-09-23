@@ -2,18 +2,13 @@
 	 * App path relative to this file
 	 */
 var PATH = __dirname.replace('/yoshioka.js/tools/make', '')+'/',
-
+	NS = 'ys',
+	
 	/**
 	 * Filesystem module
 	 */
 	fs = require('fs'),
-
-	/**
-	 * Configuration of this builder
-	 */
-	makeconfig = JSON.parse(
-		fs.readFileSync(PATH+'config/make_config.js').toString()
-	),
+	sys = require('sys'),
 
 	/**
 	 * modules configuration object
@@ -122,19 +117,46 @@ process.on(
 		/**
 		 * Get the default config file
 		 */
-		var coreConfig = fs.readFileSync(
+		var coreConfig, appConfig, YUI_config;
+		
+		try
+		{
+			coreConfig = fs.readFileSync(
 				PATH + 'yoshioka.js/core/core_config.js'
-			).toString(),
-			defaultConfig = fs.readFileSync(
-				PATH + 'config/default_config.js'
-			).toString(),
-
-			CoreConfig = JSON.parse(coreConfig),
-			YUI_config = JSON.parse(defaultConfig);
-
-		YUI_config.groups.core = CoreConfig;
-		YUI_config.groups[makeconfig.groupname] || (YUI_config.groups[makeconfig.groupname] = {});
-		YUI_config.groups[makeconfig.groupname].modules = CONFIG;
+			).toString();
+		}
+		catch (e)
+		{
+			sys.print("Core config is missing. Please restore the yoshioka.js/core/core_config.js file.\n");
+			throw e;
+		}
+		
+		try
+		{
+			appConfig = fs.readFileSync(
+				PATH + 'config/app_config.js'
+			).toString();
+		}
+		catch (e)
+		{
+			sys.print("App config is missing. Please put a app_config.js file into your config folder.\n");
+			throw e
+		}
+		
+		/**
+		 * Set YUI_config default values
+		 */
+		YUI_config = JSON.parse(appConfig);
+		YUI_config.app || (YUI_config.app = NS);
+		YUI_config.appmainview || (YUI_config.appmainview = 'main');
+		YUI_config.groups || (YUI_config.groups = {});
+		YUI_config.groups.core = JSON.parse(coreConfig);
+		
+		/**
+		 * APp group config
+		 */
+		YUI_config.groups[YUI_config.app] || (YUI_config.groups[YUI_config.app] = {});
+		YUI_config.groups[YUI_config.app].modules = CONFIG;
 
 		fs.writeFileSync(
 			PATH + 'config/config.js',
