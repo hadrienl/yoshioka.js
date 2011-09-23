@@ -1,7 +1,7 @@
 	/**
 	 * App path relative to this file
 	 */
-var BASE_PATH = '',
+var APP_PATH = __dirname.replace('/yoshioka.js/tools/make', '')+'/',
 
 	NS = 'ys',
 	
@@ -122,6 +122,7 @@ Fetcher.prototype.parseLocaleFile = function(f)
 Maker.prototype = {
 	_event: null,
 	dirs: null,
+	apppath: null,
 	basepath: null,
 	init: function(config)
 	{
@@ -129,7 +130,8 @@ Maker.prototype = {
 
 		this.dirs = config.dirs ? config.dirs : [];
 		
-		this.basepath = BASE_PATH = (config.basepath ? config.basepath : BASE_PATH);
+		this.apppath = (config.apppath ? config.apppath : APP_PATH);
+		this.basepath = (config.basepath ? config.basepath : APP_PATH);
 		
 		count = this.dirs.length;
 		
@@ -142,7 +144,7 @@ Maker.prototype = {
 			function(p)
 			{
 				var f =new Fetcher({
-					basepath: this.basepath,
+					basepath: this.apppath,
 					path: p
 				});
 				f._event.on(
@@ -176,7 +178,7 @@ Maker.prototype = {
 		try
 		{
 			coreConfig = fs.readFileSync(
-				BASE_PATH+'yoshioka.js/core/core_config.js'
+				this.apppath+'yoshioka.js/core/core_config.js'
 			).toString();
 		}
 		catch (e)
@@ -188,7 +190,7 @@ Maker.prototype = {
 		try
 		{
 			appConfig = fs.readFileSync(
-				BASE_PATH+'config/app_config.js'
+				this.apppath+'config/app_config.js'
 			).toString();
 		}
 		catch (e)
@@ -204,15 +206,17 @@ Maker.prototype = {
 		YUI_config.appmainview || (YUI_config.appmainview = 'main');
 		YUI_config.groups || (YUI_config.groups = {});
 		YUI_config.groups.core = JSON.parse(coreConfig);
+		YUI_config.groups.core.base = this.basepath;
 
 		/**
 		 * App group config
 		 */
 		YUI_config.groups[YUI_config.app] || (YUI_config.groups[YUI_config.app] = {});
 		YUI_config.groups[YUI_config.app].modules = CONFIG;
+		YUI_config.groups[YUI_config.app].base = this.basepath;
 
 		fs.writeFileSync(
-			BASE_PATH+'config/config.js',
+			this.apppath+'config/config.js',
 			'YUI_config=' + JSON.stringify(YUI_config) + ';'
 		);
 		

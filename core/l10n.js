@@ -326,11 +326,7 @@ YUI().add('ys_l10n', function(Y) {
 			locale: {
 				valueFn: function()
 				{
-					if (navigator.language)
-					{
-						return navigator.language;
-					}
-					else return 'en';
+					return navigator.language || navigator.userLanguage || 'en';
 				},
 				broadcast: 1
 			},

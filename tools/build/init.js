@@ -211,30 +211,22 @@
 					waiting--;
 					if (waiting === 0)
 					{
-						
 						/**
 						 * Finalize build
 						 */
 						(function()
 						{
-							var content,
+							var content = fs.readFileSync(
+									APP_PATH+'index.html'
+								).toString()
+									.replace(/\{\$basepath\}/gi, '/'+buildname),
 								Maker = require('../make/make').Maker,
 								make = new Maker({
 									dirs: ['locales', 'plugins', 'views'],
-									basepath: APP_PATH+buildpath
+									apppath: APP_PATH+buildpath,
+									basepath: buildname+'/'
 								});
-
-							/**
-							 * Finalisation
-							 */
-							/**
-							 * Make index.html file
-							 */
-							content = fs.readFileSync(
-								APP_PATH+'index.html'
-							).toString()
-								.replace(/\{\$basepath\}/gi, '/'+buildname);
-
+							
 							fs.writeFileSync(
 								APP_PATH+'build/index.html',
 								content

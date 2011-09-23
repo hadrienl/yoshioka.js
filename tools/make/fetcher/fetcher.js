@@ -43,7 +43,8 @@ Fetcher.prototype =
 			{
 				if (err)
 				{
-					sys.print(err);
+					this.setChildCount(0);
+					return;
 				}
 				this.parse(files);
 			}.bind(this)
@@ -58,6 +59,10 @@ Fetcher.prototype =
 	 */
 	parse: function(files)
 	{
+		if (!files)
+		{
+			return;
+		}
 		this.setChildCount(files.length);
 		
 		files.forEach(
