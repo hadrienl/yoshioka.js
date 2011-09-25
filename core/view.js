@@ -196,28 +196,23 @@ YUI().add('ys_view', function(Y) {
 				Y.use(module, Y.bind(
 					function(classname, params, node, Y2)
 					{
-						Y2.merge(
-							Y.namespace(Y.config.app),
-							Y2.namespace(Y.config.app)
+						Y[Y.config.app] = Y2.merge(
+							Y[Y.config.app],
+							Y2[Y.config.app]
 						);
-						
 						try
 						{
 							var viewclass =
-								Y.namespace(Y.config.app)[classname],
+								Y[Y.config.app][classname],
 								/**
 								 * Instanciate view
 								 */
 								view = new viewclass(params);
 
-
 							/**
 							 * Destroy previously instancied view
 							 */
-							if (this._currentview[place])
-							{
-								this._currentview[place].destroy();
-							}
+							this.removeCurrentView(place, view);
 
 							/**
 							 * Append view to the given node in main view
@@ -225,11 +220,6 @@ YUI().add('ys_view', function(Y) {
 							node.append(
 								view.render()
 							);
-
-							/**
-							 * Save object
-							 */
-							this._currentview[place] = view;
 						}
 						catch (e)
 						{
@@ -250,6 +240,14 @@ YUI().add('ys_view', function(Y) {
 				 */
 				Y.one('html').removeClass('_loading_view');
 			}
+		},
+		removeCurrentView: function(place, view)
+		{
+			if (this._currentview[place])
+			{
+				this._currentview[place].destroy();
+			}
+			this._currentview[place] = view;
 		}
 	},
 	{

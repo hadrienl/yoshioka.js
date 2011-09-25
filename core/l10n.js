@@ -97,11 +97,14 @@ YUI().add('ys_l10n', function(Y) {
 				
 				try
 				{
+					Y[NS] = Y2.merge(
+						Y[NS],
+						Y2[NS]
+					);
 					/**
 					 * Copy the module class in the main Y object
 					 */
-					var t = Y.namespace('ys.L10n.'+locale)[module] =
-						Y2.ys.L10n[locale][module][key];
+					var t = Y[NS].L10n[locale][module][key];
 					
 					/**
 					 * Update `translation` attr
@@ -113,16 +116,7 @@ YUI().add('ys_l10n', function(Y) {
 				}
 				catch (e)
 				{
-					/**
-					 * Display an error in console if present
-					 */
-					if (console)
-					{
-						var err = 'Locale '+key+' is not available in locale "'+locale+'"';
-						console.error (
-							err
-						);
-					}
+					Y.log('Locale '+key+' is not available in locale "'+locale+'"');
 				}
 			});
 		},
@@ -354,24 +348,5 @@ YUI().add('ys_l10n', function(Y) {
 	{
 		return Y.ys.L10nManager.localize(key, params, tostring);
 	};
-	
-	// TMP
-	Y.one(document.body).on(
-		'click',
-		function(e)
-		{
-			var m = Y.ys.L10nManager, l10n;
-			
-			Y.Object.some(
-				m.get('keys'),
-				function(k)
-				{
-					return ((l10n = k).get('key') === 'header~link.home');
-				}
-			);
-			
-			l10n.set('click', l10n.get('click')+1);
-		}
-	);
 	
 }, '1.0', {requires: ["base"]});

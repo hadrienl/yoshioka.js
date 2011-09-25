@@ -206,14 +206,14 @@ Maker.prototype = {
 		YUI_config.appmainview || (YUI_config.appmainview = 'main');
 		YUI_config.groups || (YUI_config.groups = {});
 		YUI_config.groups.core = JSON.parse(coreConfig);
-		YUI_config.groups.core.base = this.basepath;
+		YUI_config.groups.core.base = '/'+this.basepath.replace(this.apppath,'');
 
 		/**
 		 * App group config
 		 */
 		YUI_config.groups[YUI_config.app] || (YUI_config.groups[YUI_config.app] = {});
 		YUI_config.groups[YUI_config.app].modules = CONFIG;
-		YUI_config.groups[YUI_config.app].base = this.basepath;
+		YUI_config.groups[YUI_config.app].base = '/'+this.basepath.replace(this.apppath,'');
 
 		fs.writeFileSync(
 			this.apppath+'config/config.js',

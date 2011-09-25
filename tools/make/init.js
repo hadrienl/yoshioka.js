@@ -1,4 +1,4 @@
-var PATH = __dirname.replace('/yoshioka.js/tools/make', '')+'/',
+var APP_PATH = __dirname.replace('/yoshioka.js/tools/make', '')+'/',
 	Maker = require('./make').Maker;
 
 
@@ -10,12 +10,13 @@ process.argv.forEach(
 	{
 		if (k === '--path')
 		{
-			PATH = PATH+process.argv[i+1]+'/';
+			APP_PATH = APP_PATH+process.argv[i+1]+'/';
 		}
 	}
 );
 
 new Maker({
 	dirs: ['locales', 'plugins', 'views'],
-	basepath: PATH
+	apppath: APP_PATH,
+	basepath: ''
 });
