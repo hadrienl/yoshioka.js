@@ -110,7 +110,47 @@ YUI().add('ys_view', function(Y) {
 		{
 			this.loadCssModule(modulename, true);
 		},
+		
+		/**
+		 * Return a Node compiled template
+		 */
+		compileTpl: function(params)
+		{
+			var tpl = this.template,
+				node,
+				locales = tpl.match(
+					/\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
+				);
+			
+			params || (params = {});
+			
+			if (locales)
+			{
+				Y.Array.each(
+					locales,
+					function(l)
+					{
+						var l = l.match(/\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/),
+							toreplace = l[0],
+							key = l[1],
+							params = (params = l[2]) ? params.replace(/'/,"\\\'") : 'null';
 
+						tpl = tpl.replace(
+							toreplace,
+							__(key, params, true)
+						);
+					}
+				);
+			}
+			
+			return Y.Node.create(
+				Y.substitute(
+					tpl,
+					params
+				)
+			);
+		},
+		
 		/**
 		 * Append a view to a node in the container view with params
 		 * @param {string} name View name.
@@ -245,13 +285,17 @@ YUI().add('ys_view', function(Y) {
 		{
 			if (this._currentview[place])
 			{
-				this._currentview[place].destroy();
+				this._currentview[place].remove();
 			}
 			this._currentview[place] = view;
+		},
+		remove: function()
+		{
+			this.destroy();
 		}
 	},
 	{
 		NAME: 'Y.'+NS+'.View'
 	});
 
-}, '1.0', {requires: ["view", "get"]});
+}, '1.0', {requires: ["view", "node", "get", "substitute"]});

@@ -76,30 +76,6 @@ TemplateCompiler.prototype =
 				.replace(/'/gi,"\\\'")
 				.split(/\n/).join("'+\n'")+"'";
 		
-		/**
-		 * Replace locales by the correct
-		 */
-		locales = compiled.match(
-			/\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
-		);
-		
-		if (locales)
-		{
-			locales.forEach(
-				function(l)
-				{
-					var l = l.match(/\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/),
-						toreplace = l[0],
-						key = l[1],
-						params = (params = l[2]) ? params.replace(/'/,"\\\'") : 'null';
-					
-					compiled = compiled.replace(
-						toreplace,
-						"'+__('"+key+"', "+params+", true)+'"
-					);
-				}.bind(this)
-			);
-		}
 		return compiled;
 	}
 };

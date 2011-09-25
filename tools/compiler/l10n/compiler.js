@@ -40,7 +40,15 @@ L10nCompiler.prototype =
 			file = pathparts[2],
 			module = 'l10n_'+locale+'_'+file,
 			lines = {};
-
+		
+		/**
+		 * Remove \n in line ending with \
+		 */
+		this._filecontent = this._filecontent.replace(/\\\n/g, ' ');
+		
+		/**
+		 * Transform each line in a kv object
+		 */
 		this._filecontent.split(/\n/).forEach(
 			function(l)
 			{
