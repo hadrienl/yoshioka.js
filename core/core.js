@@ -119,4 +119,22 @@ YUI().add('ys_core', function(Y) {
 		}
 	);
 
+	Y.namespace(NS).use = function(module, callback)
+	{
+		if (Y.Env._used[module])
+		{
+			callback(Y);
+		}
+		else
+		{
+			Y.use(module, Y.bind(
+				function(callback) {
+					callback(Y);
+				},
+				Y,
+				callback
+			));
+		}
+	};
+
 }, '1.0', {requires: ["controller", "model", "ys_routes", "substitute", "ys_l10n"]})

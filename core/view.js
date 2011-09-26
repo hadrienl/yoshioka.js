@@ -163,7 +163,7 @@ YUI().add('ys_view', function(Y) {
 		 * @param {Object} params Parameters to give to the view's constructor
 		 * @example this.setView('articleslist', 'main', {type: 'published'})
 		 */
-		setView: function(name, place, params)
+		setView: function(name, place, params, callback)
 		{
 			if (this._loading[place])
 			{
@@ -174,16 +174,20 @@ YUI().add('ys_view', function(Y) {
 				Y.later(
 					100,
 					this,
-					function()
-					{
-						this.setView(name, place, params);
-					}
+					Y.bind(
+						function(name, place, params, callback)
+						{
+							this.setView(name, place, params, callback);
+						},
+						this,
+						name, place, params, callback
+					)
 				);
 				return;
 			}
-			this._setView(name, place, params);
+			this._setView(name, place, params, callback);
 		},
-		_setView: function(name, place, params)
+		_setView: function(name, place, params, callback)
 		{
 				/**
 				 * Get the node corresponding to the place given
@@ -233,53 +237,54 @@ YUI().add('ys_view', function(Y) {
 				/**
 				 * Load new view
 				 */
-				Y.use(module, Y.bind(
-					function(classname, params, node, Y2)
-					{
-						Y[Y.config.app] = Y2.merge(
-							Y[Y.config.app],
-							Y2[Y.config.app]
-						);
-						try
-						{
-							var viewclass =
-								Y[Y.config.app][classname],
-								/**
-								 * Instanciate view
-								 */
-								view = new viewclass(params);
-
-							/**
-							 * Destroy previously instancied view
-							 */
-							this.removeCurrentView(place, view);
-
-							/**
-							 * Append view to the given node in main view
-							 */
-							node.append(
-								view.render()
-							);
-						}
-						catch (e)
-						{
-							this._currentview[place] = null;
-							Y.log(e);
-						}
-
-						this._loading[place] = false;
-					},
-					this,
-					classname,
-					params,
-					node
-				));
+				Y.namespace(NS).use(
+					module,
+					Y.bind(
+						this._setViewCallback,
+						this,
+						classname,
+						params,
+						node,
+						place,
+						callback
+					)
+				);
 
 				/**
 				 * Remove wait class on body
 				 */
 				Y.one('html').removeClass('_loading_view');
 			}
+		},
+		_setViewCallback: function(classname, params, node, place, callback)
+		{
+			var viewclass =
+				Y[Y.config.app][classname],
+				/**
+				 * Instanciate view
+				 */
+				view = new viewclass(params);
+
+			/**
+			 * Destroy previously instancied view
+			 */
+			this.removeCurrentView(place, view);
+
+			/**
+			 * Append view to the given node in main view
+			 */
+			if (callback)
+			{
+				callback(view);
+			}
+			else
+			{
+				node.append(
+					view.render()
+				);
+			}
+
+			this._loading[place] = false;
 		},
 		removeCurrentView: function(place, view)
 		{
