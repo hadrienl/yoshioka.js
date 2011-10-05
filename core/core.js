@@ -12,13 +12,14 @@ YUI().add('ys_core', function(Y) {
 	Y.extend(Core, Y.Controller, {
 		_updateAttrs: function(attrs, params)
 		{
-			var attrsp = {};
+			var attrsp = {},
+				coord = Y[NS].Coord;
 
 			Y.Object.each(
 				attrs,
 				function(v, k)
 				{
-					Y[NS].Coord.addAttr(
+					coord.addAttr(
 						k, {}
 					);
 
@@ -30,10 +31,34 @@ YUI().add('ys_core', function(Y) {
 					{
 						attrsp[k] = this._substitute(v, params);
 					}
+					else
+					{
+						attrsp[k] = v;
+					}
 				},
 				this
 			);
-			Y[NS].Coord.setAttrs(attrsp);
+			
+			/**
+			 * Reset attributes unset
+			 */
+			Y.Object.each(
+				coord.getAttrs(),
+				function(v, k)
+				{
+					if (k !== 'initialized' &&
+						k !== 'destroyed' &&
+						k !== 'clientId' &&
+						k !== 'id')
+					{
+						if (!attrsp[k])
+						{
+							attrsp[k] = false;
+						}
+					}
+				}
+			);
+			coord.setAttrs(attrsp);
 		},
 		_substitute: function(v, params)
 		{

@@ -59,7 +59,7 @@
 	{
 		var file = APP_PATH+buildpath+this.path+filename,
 			cmd = exec(
-				'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --nomunge --type js --charset utf8 '+file+' -o '+file,
+				'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type js --charset utf8 '+file+' -o '+file,
 				function(callback, filename, err, stdout, stderr)
 				{
 					if (err)
