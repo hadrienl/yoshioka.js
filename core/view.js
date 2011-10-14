@@ -63,6 +63,8 @@ YUI().add('ys_view', function(Y) {
 		 */
 		destructor: function()
 		{
+			View.superclass.destructor.apply(this);
+			
 			Y.Array.each(
 				this._css_modules,
 				function(r)
@@ -89,7 +91,7 @@ YUI().add('ys_view', function(Y) {
 
 			if (unload)
 			{
-				style.remove();
+				style && style.remove();
 
 				Y.Env._used[modulename] = null;
 			}
