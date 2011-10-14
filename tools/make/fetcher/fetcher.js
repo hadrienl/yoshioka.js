@@ -117,7 +117,7 @@ Fetcher.prototype =
 							}
 							else
 							{
-								this.setChildCount(-1);
+								this.parseFile(f);
 							}
 						}
 					}.bind(this, f)
@@ -147,6 +147,14 @@ Fetcher.prototype =
 	parseCSSFile: function(f)
 	{
 		this.setChildCount(-1);
+	},
+	
+	/**
+	 * Parse other files
+	 */
+	parseFile: function(f)
+	{
+		this.setChildCount(-1);	
 	},
 
 	/**

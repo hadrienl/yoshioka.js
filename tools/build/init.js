@@ -193,6 +193,29 @@
 			}.bind(this,f+'.js')
 		);
 	};
+	Fetcher.prototype.parseFile = function(f)
+	{
+		var file = this.path+f;
+		if (this.path.match(/assets/))
+		{
+			try
+			{
+				fs.mkdirSync(APP_PATH+buildpath+this.path, 0755);
+			}
+			catch (e){}
+			
+			fs.writeFile(
+				APP_PATH+buildpath+file,
+				fs.readFileSync(APP_PATH+file),
+				function(f, err, data)
+				{
+					console.log(f);
+					
+					this.setChildCount(-1);
+				}.bind(this,f)
+			);
+		}
+	};
 
 	/**
 	 * Start reading app's folders
