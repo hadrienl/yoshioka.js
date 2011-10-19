@@ -17,6 +17,14 @@ YUI().add('ys_l10n', function(Y) {
 			L10nManager.superclass.constructor.apply(this, arguments);
 		};
 	
+	/**
+	 * Whitelisting the DOMNodeRemovedFromDocument event to use it on
+	 * l10n's node destruction
+	 */
+	Y.mix(Y.Node.DOM_EVENTS, {
+	    DOMNodeRemovedFromDocument: true
+	});
+	
 	Y.extend(L10n, Y.Base, {
 		
 		initializer: function(config)
@@ -172,6 +180,7 @@ YUI().add('ys_l10n', function(Y) {
 				 * string node
 				 */
 				node = Y.one('#'+this.get('id'));
+				this.set('node', node);
 			}
 			
 			return node;
@@ -238,7 +247,21 @@ YUI().add('ys_l10n', function(Y) {
 			 * Container node
 			 */
 			node: {
-				
+				setter: function(n)
+				{
+					if (n)
+					{
+						n.on(
+							'DOMNodeRemovedFromDocument',
+							function()
+							{
+								this.destroy();
+							},
+							this
+						)
+					}
+					return n;
+				}
 			},
 			/**
 			 * Translation text
