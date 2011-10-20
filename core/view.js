@@ -72,7 +72,7 @@ YUI().add('ys_view', function(Y) {
 			this.bindUI();
 			this.syncUI();
 			
-			return this.container();
+			return this.container;
 		},
 		/**
 		 * Render the template and append nodes in this.container node
