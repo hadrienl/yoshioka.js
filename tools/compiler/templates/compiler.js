@@ -25,9 +25,14 @@ TemplateCompiler.prototype =
 		{
 			throw 'file is invalid';
 		}
-		this._filecontent = fs.readFileSync(
-			this._apppath+'/'+this._file
-		).toString();
+		this._filecontent = config.filecontent;
+		
+		if (!this._filecontent)
+		{
+			fs.readFileSync(
+				this._apppath+'/'+this._file
+			).toString();
+		}
 	},
 	parse: function()
 	{
@@ -53,21 +58,19 @@ TemplateCompiler.prototype =
 	{
 		var view = this._file.match(
 				new RegExp(
-					'^('+VIEWS_PATH+'/[^/]+)/'
+					'^(/?'+VIEWS_PATH+'/[^/]+)/'
 				)
 			),
 			tplpath, tplcontent, locales;
-		
 		if (!view)
 		{
-			return this._filecontent;
+			return '';
 		}
 		
 		view = view[1];
 		tplpath = this._apppath+'/'+view+'/'+TEMPLATES_PATH+'/'+path+'.html';
 		
 		tplcontent = fs.readFileSync(tplpath).toString();
-		
 		/**
 		 * Compile the template content into an array of strings with a join()
 		 */
