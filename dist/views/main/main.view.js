@@ -32,4 +32,4 @@ YUI().add('yourapp_main_view', function(Y) {
 		NAME: 'MainView'
 	});
 	
-}, '1.0', {requires: ["ys_view", "substitute", "main_skin"]})
+}, '1.0', {requires: ["ys_view", "substitute", "css_main_skin"]})
