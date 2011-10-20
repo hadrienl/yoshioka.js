@@ -118,7 +118,7 @@ YUI().add('ys_view', function(Y) {
 		 */
 		compileTpl: function(params)
 		{
-			var tpl = this.template,
+			var tpl = (params && params.tpl) || this.template,
 				node,
 				locales = tpl.match(
 					/\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
