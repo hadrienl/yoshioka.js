@@ -10,9 +10,11 @@ YUI().use(
 			Y.config.mainview.charAt(0).toUpperCase()+
 			Y.config.mainview.slice(1)+
 			'View',
-		main = new Y[Y.config.app][viewclass]();
+		main = new Y[Y.config.app][viewclass](),
+		waitpanel = body.one('.ys_tmp_wait');
 
-	body.set('innerHTML', '');
+	waitpanel && waitpanel.remove();
+	
 	body.append(
 		main.render()
 	);
