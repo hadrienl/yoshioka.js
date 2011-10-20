@@ -58,6 +58,44 @@ YUI().add('ys_view', function(Y) {
 				this
 			);
 		},
+		
+		/**
+		 * Render method is the main method that you have to use.
+		 * It will render the template in the node container,
+		 * bind the event of the view,
+		 * then sync the content.
+		 * The container will be returned to be appened on a parent node.
+		 */
+		render: function()
+		{
+			this.renderUI();
+			this.bindUI();
+			this.syncUI();
+			
+			return this.container();
+		},
+		/**
+		 * Render the template and append nodes in this.container node
+		 */
+		renderUI: function()
+		{
+			this.container.append(this.compileTpl());
+		},
+		/**
+		 * Bind event listener to this.container DOM
+		 */
+		bindUI: function()
+		{
+			
+		},
+		/**
+		 * Update this.container DOM nodes
+		 */
+		syncUI: function()
+		{
+			
+		},
+		
 		/**
 		 * Remove all css links of this view
 		 */
