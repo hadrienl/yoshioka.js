@@ -5,6 +5,7 @@ YUI().use(
 	function(Y)
 {
 	var NS = 'ys',
+		html = Y.one(document).one('html'),
 		body = Y.one(document.body),
 		viewclass =
 			Y.config.mainview.charAt(0).toUpperCase()+
@@ -18,6 +19,8 @@ YUI().use(
 	body.append(
 		main.render()
 	);
-
+	
+	html.addClass('ys_loaded');
+	
 	Y[NS].Controller.dispatch();
 });
