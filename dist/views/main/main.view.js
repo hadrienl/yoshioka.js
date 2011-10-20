@@ -21,9 +21,9 @@ YUI().add('yourapp_main_view', function(Y) {
 		 */
 		render: function()
 		{
-			var node = this.template;
-			
-			this.container.append(node);
+			this.container.append(
+				this.compileTpl('<p>graaaa</p>')
+			);
 			
 			return this.container;
 		}
