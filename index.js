@@ -1,6 +1,13 @@
 var APP_PATH = __dirname.replace('yoshioka.js', ''),
+	DEFAULT_INDEX = '/index.html',
+
+	app_config = APP_PATH+'/config/app_config.js',
 	
 	http = require('http'),
+	httpProxy = require('http-proxy'),
+	
+	proxy = new httpProxy.RoutingProxy(),
+	
 	fs = require('fs'),
 	
 	TemplateCompiler = require('./tools/compiler/templates/compiler').TemplateCompiler,
@@ -242,25 +249,54 @@ Controller.prototype = {
 			this
 		);
 	},
+	/**
+	 * File not found, return index.html
+	 */
 	_callbackError: function(err)
 	{
-		this.contenttype = 'text/plain';
-		this.filecontent = err.message;
-		this.httpcode = 404;
-		this.callback(
-			this
-		);
+		this.filename = DEFAULT_INDEX;
+		
+		return this.compileHTML();
 	}
 };
+
+/**
+ * Get app config
+ */
+app_config = fs.readFileSync(app_config).toString();
+app_config || (app_config = '{}');
+app_config = JSON.parse(app_config);
 
 http.createServer(function (req, res)
 {
 	var url = req.url,
-		c;
+		c,
+		proxy_path = null;
 	
 	if (url === '/')
 	{
-		url = '/index.html';
+		url = DEFAULT_INDEX;
+	}
+	
+	/**
+	 * Proxy request to apache webserver (for API)
+	 */
+	if (app_config.proxy_path)
+	{
+		app_config.proxy_path.forEach(
+			function(p)
+			{
+				if (url.match(new RegExp(p.path)))
+				{
+					proxy_path = p;
+				}
+			}
+		);
+		if (proxy_path)
+		{
+			proxy.proxyRequest(req, res, proxy_path);
+			return;
+		}
 	}
 	
 	c = new Controller({
@@ -278,5 +314,5 @@ http.createServer(function (req, res)
 	delete c;
 	
 }).listen(1636,
-//"192.168.16.36");
-"127.0.0.1");
+"192.168.16.36");
+//"127.0.0.1");

@@ -39,3 +39,11 @@ $ vi config/app_config.js
 $ node yoshioka.js/tools/make/init.js
 
 Load your browser !
+
+
+TODO :
+ - new requirement :
+	node 0.5.9
+	npm
+	http-proxy (npm install http-proxy)
+ - app_config.js has a new config param

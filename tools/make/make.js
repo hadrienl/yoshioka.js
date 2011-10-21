@@ -9,7 +9,7 @@ var APP_PATH = __dirname.replace('/yoshioka.js/tools/make', '')+'/',
 	 * Filesystem module
 	 */
 	fs = require('fs'),
-	sys = require('sys'),
+	sys = require('util'),
 	EventEmitter = require('events').EventEmitter,
 
 	/**

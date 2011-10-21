@@ -2,7 +2,7 @@
 	 * App path relative to this file
 	 */
 var fs = require('fs'),
-	sys = require('sys'),
+	sys = require('util'),
 	EventEmitter = require('events').EventEmitter,
 
 	Fetcher = function(path)

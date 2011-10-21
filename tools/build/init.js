@@ -2,7 +2,7 @@
 	var APP_PATH = __dirname.replace('/yoshioka.js/tools/build', '')+'/',
 
 		fs = require('fs'),
-		sys = require('sys'),
+		sys = require('util'),
 		exec = require('child_process').exec,
 		fetcher = require('../make/fetcher/fetcher'),
 
