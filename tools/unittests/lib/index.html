@@ -3,6 +3,7 @@
 	<head>
 		<script src="/config/config.js"></script>
 		<script type="text/javascript" charset="utf-8" src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
+		<script src="/yoshioka.js/tools/unittests/lib/test.js"></script>
 		{$testssrc}
 	</head>
 	<body class="yui3-skin-sam">
@@ -10,9 +11,13 @@
 		<div id="logger"></div>
 		<script type="text/javascript" charset="utf-8">
 		//<![CDATA[
-			YUI().use('test', 'console', {$testsmodules}, function(Y) {
+			YUI().use('test', 'console', 'ys_test', {$testsmodules}, function(Y) {
 				var yconsole = new Y.Console({
-					newestOnTop: false
+					newestOnTop: false,
+					logSource: Y.Global,
+					height: '500px',
+					logLevel: 'warn',
+					style: 'block'
 				});
 
 				yconsole.render('#logger');

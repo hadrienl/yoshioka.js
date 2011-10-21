@@ -216,6 +216,16 @@ YUI().add('ys_l10n', function(Y) {
 			}
 			
 			return t;
+		},
+		
+		destructor: function()
+		{
+			var node = this.get('node');
+			if (node)
+			{
+				Y.Event.purgeElement(node, true);
+				node.remove();
+			}
 		}
 	},
 	{
@@ -255,6 +265,7 @@ YUI().add('ys_l10n', function(Y) {
 							'DOMNodeRemovedFromDocument',
 							function()
 							{
+								this.set('node', null);
 								this.destroy();
 							},
 							this
@@ -360,7 +371,7 @@ YUI().add('ys_l10n', function(Y) {
 	 * Instanciate new L10nManager in the ys namespace
 	 */
 	Y.namespace(NS).L10nManager = new L10nManager();
-	
+	Y.namespace(NS).L10nManager.L10n = L10n;
 	/**
 	 * Create a usefull global function : __()
 	 * @param {string} key Translation key
