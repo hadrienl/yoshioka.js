@@ -1,6 +1,6 @@
 var APP_PATH = __dirname.replace('yoshioka.js', ''),
 	DEFAULT_INDEX = '/index.html',
-
+	
 	app_config = APP_PATH+'/config/app_config.js',
 	
 	http = require('http'),
@@ -14,6 +14,10 @@ var APP_PATH = __dirname.replace('yoshioka.js', ''),
 	L10nCompiler = require('./tools/compiler/l10n/compiler').L10nCompiler,
 	Maker = require('./tools/make/make').Maker,
 	
+	/**
+	 * Controller which get a file path and transform
+	 * its content as its filetype
+	 */
 	Controller = function(config)
 	{
 		this.init(config);
@@ -286,7 +290,7 @@ http.createServer(function (req, res)
 		app_config.proxy_path.forEach(
 			function(p)
 			{
-				if (url.match(new RegExp(p.path)))
+				if (url.match(p.path))
 				{
 					proxy_path = p;
 				}
@@ -294,7 +298,16 @@ http.createServer(function (req, res)
 		);
 		if (proxy_path)
 		{
-			proxy.proxyRequest(req, res, proxy_path);
+			if (proxy_path.replace_url)
+			{
+				url = url.match(proxy_path.replace_url);
+				url = url ? url[1]: '/';
+				req.url = url;
+			}
+			proxy.proxyRequest(req, res, {
+				host: proxy_path.host || '127.0.0.1',
+				port: proxy_path.port || '80'
+			});
 			return;
 		}
 	}

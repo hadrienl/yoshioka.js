@@ -11,7 +11,8 @@
 		{
 			"path": "^\/api",
 			"host": "localhost",
-			"port": 80
+			"port": 80,
+			"replace_url": "^\/api(/.*?)$"
 		}
 	]
 }
