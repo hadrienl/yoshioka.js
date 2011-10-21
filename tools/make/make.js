@@ -26,6 +26,11 @@ var APP_PATH = __dirname.replace('/yoshioka.js/tools/make', '')+'/',
 
 Fetcher.prototype.parseJSFile = function(f)
 {
+	if (this.path.match(/\/tests\/$/))
+	{
+		this.setChildCount(-1);
+		return;
+	}
 	fs.readFile(
 		this.basepath+this.path+f,
 		function(f, err, data)

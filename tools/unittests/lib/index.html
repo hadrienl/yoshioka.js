@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/config/config.js"></script>
+		<script type="text/javascript" charset="utf-8" src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
+		{$testssrc}
+	</head>
+	<body class="yui3-skin-sam">
+		<h1>Unit tests</h1>
+		<div id="logger"></div>
+		<script type="text/javascript" charset="utf-8">
+		//<![CDATA[
+			YUI().use('test', 'console', {$testsmodules}, function(Y) {
+				var yconsole = new Y.Console({
+					newestOnTop: false
+				});
+
+				yconsole.render('#logger');
+
+				Y.Test.Runner.run();
+			});
+		//]]>
+		</script>
+		<script src="/views/main/tests/Truc.model.test.js"></script>
+	</body>
+</html>

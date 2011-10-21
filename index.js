@@ -13,17 +13,18 @@ var APP_PATH = __dirname.replace('yoshioka.js', ''),
 	TemplateCompiler = require('./tools/compiler/templates/compiler').TemplateCompiler,
 	L10nCompiler = require('./tools/compiler/l10n/compiler').L10nCompiler,
 	Maker = require('./tools/make/make').Maker,
+	UnitTests = require('./tools/unittests').UnitTests,
 	
 	/**
-	 * Controller which get a file path and transform
+	 * FileGetter which get a file path and transform
 	 * its content as its filetype
 	 */
-	Controller = function(config)
+	FileGetter = function(config)
 	{
 		this.init(config);
 	};
 
-Controller.prototype = {
+FileGetter.prototype = {
 	path: null,
 	filename: null,
 	ext: null,
@@ -274,12 +275,25 @@ app_config = JSON.parse(app_config);
 http.createServer(function (req, res)
 {
 	var url = req.url,
-		c,
+		f,
 		proxy_path = null;
 	
 	if (url === '/')
 	{
 		url = DEFAULT_INDEX;
+	}
+	
+	if (url === '/__unittests')
+	{
+		f = new UnitTests();
+		/**
+		 * Start unit tests
+		 */
+		res.writeHead(200, {'Content-Type': 'text/html'});
+		res.end(
+			f.getHTML()
+		);
+		return;
 	}
 	
 	/**
@@ -312,19 +326,22 @@ http.createServer(function (req, res)
 		}
 	}
 	
-	c = new Controller({
+	/**
+	 * Construct a new FileGetter object
+	 */
+	f = new FileGetter({
 		url: url
 	});
 	
-	c.getResponse(function(c)
+	f.getResponse(function(f)
 	{
-		this.writeHead(c.httpcode, {'Content-Type': c.contenttype});
+		this.writeHead(f.httpcode, {'Content-Type': f.contenttype});
 		this.end(
-			c.filecontent
+			f.filecontent
 		);
 	}.bind(res))
 	
-	delete c;
+	delete f;
 	
 }).listen(1636,
 "192.168.16.36");
