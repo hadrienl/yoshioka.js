@@ -44,7 +44,7 @@ UnitTests.prototype = {
 							this._srcs[this._srcs.length] = '<script src="/'+testpath+f+'"></script>';
 							this._modules[this._modules.length] = module[1];
 						}.bind(this)
-					)
+					);
 				}
 				catch (e)
 				{
