@@ -15,12 +15,13 @@
 				var yconsole = new Y.Console({
 					newestOnTop: false,
 					logSource: Y.Global,
-					height: '500px',
-					logLevel: 'warn',
+					height: '800px',
+					width: '100%',
 					style: 'block'
 				});
 
 				yconsole.render('#logger');
+console.debug(Y.Test.Runner);
 
 				Y.Test.Runner.run();
 			});

@@ -11,8 +11,8 @@ UnitTests = function(config)
 }
 UnitTests.prototype = {
 	
-	_srcs: [],
-	_modules: [],
+	_srcs: null,
+	_modules: null,
 	
 	init: function()
 	{
@@ -22,6 +22,10 @@ UnitTests.prototype = {
 		var views = fs.readdirSync(
 			APP_PATH+VIEWS_DIR
 		);
+		
+		this._srcs = [];
+		this._modules = [];
+		
 		views.forEach(
 			function(v)
 			{
