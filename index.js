@@ -5,6 +5,7 @@ var APP_PATH = __dirname.replace('yoshioka.js', ''),
 	
 	http = require('http'),
 	httpProxy = require('http-proxy'),
+	rl = require('readline'),
 	
 	proxy = new httpProxy.RoutingProxy(),
 	
@@ -16,6 +17,13 @@ var APP_PATH = __dirname.replace('yoshioka.js', ''),
 	UnitTests = require('./tools/unittests').UnitTests,
 	
 	/**
+	 * Command Line Interface
+	 */
+	Cli = function(config)
+	{
+		this.init(config);
+	},
+	/**
 	 * FileGetter which get a file path and transform
 	 * its content as its filetype
 	 */
@@ -24,6 +32,10 @@ var APP_PATH = __dirname.replace('yoshioka.js', ''),
 		this.init(config);
 	};
 
+
+/**
+ * FileGetter is a helper to parse a file by its type
+ */
 FileGetter.prototype = {
 	path: null,
 	filename: null,
@@ -266,6 +278,75 @@ FileGetter.prototype = {
 };
 
 /**
+ * Command Line Interface
+ */
+Cli.prototype = {
+	init: function(config)
+	{
+		this.cli = rl.createInterface(
+			process.stdin, process.stdout, null);
+		
+		this.cli.write(
+		"\n------------------------------------------\n"+
+		"Welcome to Yoshioka.js development server.\n"+
+		"NEVER run this server on production !\n\n"+
+		"Type `help` or `h` to know the availables commands :\n"+
+		"------------------------------------------\n\n"
+		);
+		
+		this.initPrompt();
+	},
+	initPrompt: function()
+	{
+		this.cli.question(
+			'> ',
+			this.answerInitPrompt.bind(this)
+		);
+	},
+	answerInitPrompt: function(answer)
+	{
+		switch (answer)
+		{
+			case 'help':
+			case 'h':
+				this.cli.write(
+"Available commands are :\n"+
+" - help (h) : display this help\n"+
+" - build (b) : build your project\n"
+				);
+				this.initPrompt();
+				break;
+			case 'build':
+			case 'b':
+				this.cli.question(
+					"Have you run the unit tests before ? (YES or no) ",
+					function(answer)
+					{
+						if (answer.toLowerCase() === 'yes')
+						{
+							return this.build();
+						}
+						
+						this.initPrompt();
+					}.bind(this)
+				)
+				break;
+			
+			case 'nyancat':
+				this.cli.write(
+"\n+      o     +              o   \n    +             o     +       +\no          +\n    o  +           +        +\n+        o     o       +        o\n-_-_-_-_-_-_-_,------,      o \n_-_-_-_-_-_-_-|   /\\_/\\  \n-_-_-_-_-_-_-~|__( ^ .^)  +     +  \n_-_-_-_-_-_-_-\"\"  \"\"      \n+      o         o   +       o\n    +         +\no        o         o      o     +\n    o           +\n+      +     o        o      +\n\n"
+				);
+			default:
+				this.initPrompt();
+		}
+	},
+	build: function()
+	{
+		this.cli.write("Building…");
+	}
+};
+
+/**
  * Get app config
  */
 app_config = fs.readFileSync(app_config).toString();
@@ -343,6 +424,6 @@ http.createServer(function (req, res)
 	
 	delete f;
 	
-}).listen(1636,
-"192.168.16.36");
-//"127.0.0.1");
+}).listen(1636);
+
+new Cli();
