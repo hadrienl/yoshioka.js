@@ -1,7 +1,13 @@
 yoshioka.js is javascript MVC framework for client-side webapp based on YUI 3.
 some text
 
-Quick documentation to use with Git :
+REQUIREMENT
+
+	- node 0.5.9
+	- npm
+	- http-proxy (npm install http-proxy)
+
+USE
 
 For development environnement, you need a web server with rewriting, php and node.js.
 For building, you need java.
@@ -34,16 +40,10 @@ Edit the config/app_config.js file
 $ vi config/app_config.js
 
 - replace 'yourapp' by the namespace of your app. Choose a short name, it's a namespace for all your classes.
-- You can make the config file and load your app :
 
-$ node yoshioka.js/tools/make/init.js
+- You can launch the development server :
+$ node yoshioka.js/
 
-Load your browser !
+Then, point your browser to http://yourserverip:1636
 
-
-TODO :
- - new requirement :
-	node 0.5.9
-	npm
-	http-proxy (npm install http-proxy)
- - app_config.js has a new config param
+In CLI, you can view the available commands by typing `help`.
