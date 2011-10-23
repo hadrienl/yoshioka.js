@@ -29,7 +29,7 @@ TemplateCompiler.prototype =
 		
 		if (!this._filecontent)
 		{
-			fs.readFileSync(
+			this._filecontent = fs.readFileSync(
 				this._apppath+'/'+this._file
 			).toString();
 		}

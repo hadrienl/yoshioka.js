@@ -14,12 +14,16 @@ Maker = function(config)
 
 Maker.prototype = new events.EventEmitter();
 Maker.prototype.dirs = null;
+Maker.prototype.basepath = null;
 Maker.prototype._filecounts = null;
 Maker.prototype._modules = null;
 Maker.prototype.init = function(config)
 {
 	events.EventEmitter.call(this);
 	
+	config || (config = {});
+	
+	this.basepath = config.basepath ? config.basepath : '/';
 	this._filecount = 0;
 	this._modules = {};
 	this.dirs = config.dirs ? config.dirs : [];
@@ -114,7 +118,7 @@ Maker.prototype._parseFile = function(path)
 			/**
 			 * Check file type
 			 */
-			if (path.match(/l10n\.js/))
+			if (path.match(/\.l10n\.js/))
 			{
 				/**
 				 * Locale file
@@ -138,8 +142,7 @@ Maker.prototype._parseFile = function(path)
 			}
 			else
 			{
-				this._filecount--;
-				this._checkFileCount();
+				this._parseStaticFile(path);
 			}
 		}.bind(this)
 	);
@@ -249,6 +252,11 @@ Maker.prototype._parseCSSFile = function(path)
 	this._filecount--;
 	this._checkFileCount();
 };
+Maker.prototype._parseStaticFile = function()
+{
+	this._filecount--;
+	this._checkFileCount();
+};
 /**
  * Check the file count. Fire a `end` event if equal to 0.
  */
@@ -260,13 +268,15 @@ Maker.prototype._checkFileCount = function()
 	}
 };
 // Write config file
-Maker.prototype.writeConfig = function()
+Maker.prototype.writeConfig = function(path)
 {
 	/**
 	 * Get the default config file
 	 */
 	var coreConfig, appConfig, YUI_config;
-
+	
+	path || (path = APP_PATH);
+	
 	try
 	{
 		coreConfig = fs.readFileSync(
@@ -297,7 +307,7 @@ Maker.prototype.writeConfig = function()
 	YUI_config.appmainview || (YUI_config.appmainview = 'main');
 	YUI_config.groups || (YUI_config.groups = {});
 	YUI_config.groups.core = JSON.parse(coreConfig);
-	YUI_config.groups.core.base = '/'+APP_PATH.replace(APP_PATH,'');
+	YUI_config.groups.core.base = this.basepath;
 
 	/**
 	 * App group config
@@ -305,10 +315,10 @@ Maker.prototype.writeConfig = function()
 	YUI_config.groups[YUI_config.app] ||
 		(YUI_config.groups[YUI_config.app] = {});
 	YUI_config.groups[YUI_config.app].modules = this._modules;
-	YUI_config.groups[YUI_config.app].base = '/'+APP_PATH.replace(APP_PATH,'');
+	YUI_config.groups[YUI_config.app].base = this.basepath;
 
 	fs.writeFile(
-		APP_PATH+'config/config.js',
+		path+'config/config.js',
 		'YUI_config=' + JSON.stringify(YUI_config) + ';',
 		function(err)
 		{

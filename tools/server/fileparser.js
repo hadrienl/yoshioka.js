@@ -7,8 +7,8 @@ DEFAULT_INDEX = '/index.html',
 
 fs = require('fs'),
 Maker = require('../../tools/make').Maker,
-TemplateCompiler = require('../../tools/compiler/templates/compiler').TemplateCompiler,
-L10nCompiler = require('../../tools/compiler/l10n/compiler').L10nCompiler,
+TemplateCompiler = require('../../tools/compiler/templates').TemplateCompiler,
+L10nCompiler = require('../../tools/compiler/l10n').L10nCompiler,
 
 /**
  * FileGetter which get a file path and transform
@@ -221,7 +221,7 @@ FileParser.prototype = {
 	{
 		var maker = new Maker({
 			dirs: ['locales', 'plugins', 'views'],
-			basepath: ''
+			basepath: '/'
 		});
 
 		maker.on(

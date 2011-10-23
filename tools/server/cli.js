@@ -101,7 +101,19 @@ Cli.prototype = {
 	 */
 	build: function()
 	{
+		var Builder = require('../build').Builder,
+			builder = new Builder();
+		
 		this.cli.write("Building…");
+		builder.on(
+			'parseEnd',
+			function()
+			{
+				this.cli.write("\nDone !\n");
+				this.initPrompt();
+			}.bind(this)
+		);
+		builder.build();
 	}
 };
 
