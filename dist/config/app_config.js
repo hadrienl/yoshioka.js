@@ -8,12 +8,14 @@
 		}
 	},
 	"dev": {
-		"proxy_path": [
+		"fixtures": [
 			{
 				"path": "^\/api",
-				"host": "localhost",
-				"port": 80,
-				"replace_url": "^\/api(/.*?)$"
+				"proxy": {
+					"host": "api.over-blog.dev",
+					"port": 80,
+					"replace_url": "^\/api(/.*?)$"
+				}
 			}
 		],
 		"port": 1636

@@ -12,10 +12,18 @@ Cli = function(config)
  * Command Line Interface
  */
 Cli.prototype = {
-	app_config: null,
+	
+	_port: null,
+	_fixtures: true,
+	
 	init: function(config)
 	{
-		this.app_config = config.app_config
+		config || (config = {});
+		
+		this._port = config.port || 80;
+		
+		this._fixtures = true;
+		
 		this.cli = rl.createInterface(
 			process.stdin, process.stdout, null);
 		
@@ -24,7 +32,7 @@ Cli.prototype = {
 		 */
 		this.cli.write(
 		"\n------------------------------------------\n"+
-		"Yoshioka.js development server is running on port "+this.app_config.dev.port+".\n"+
+		"Yoshioka.js development server is running on port "+this._port+".\n"+
 		"NEVER run this server on production !\n\n"+
 		"Type `help` or `h` to know the availables commands :\n"+
 		"------------------------------------------\n\n"
@@ -50,52 +58,89 @@ Cli.prototype = {
 	 */
 	answerInitPrompt: function(answer)
 	{
-		switch (answer)
+		if (answer === 'h' ||
+			answer === 'help')
 		{
-			/**
-			 * Display help
-			 */
-			case 'help':
-			case 'h':
-				this.cli.write(
+			this._showHelp();
+		}
+		else if (answer.match(/^set\s(.*?$)/))
+		{
+			this._showSet(answer);
+		}
+		else if (answer === 'b' ||
+				answer === 'build')
+		{
+			this._showBuild();
+		}
+		else if (answer === 'nyancat')
+		{
+			this._showNyanCat();
+		}
+		else
+		{
+			this.initPrompt();
+		}
+	},
+	/**
+	 * Display all the available commands
+	 */
+	_showHelp: function()
+	{
+		this.cli.write(
 "Available commands are :\n"+
 " - help (h) : display this help\n"+
 " - build (b) : build your project\n"
-				);
-				this.initPrompt();
-				break;
-			/**
-			 * Start a new build
-			 */
-			case 'build':
-			case 'b':
-				this.cli.question(
-					"Have you run the unit tests before ? (YES or no) ",
-					function(answer)
-					{
-						if (answer.toLowerCase() === 'yes')
-						{
-							return this.build();
-						}
-						
-						this.initPrompt();
-					}.bind(this)
-				)
-				break;
-			/**
-			 * nyan nyan nyan nyan nyan nyan nyan nyan nyan nyan nyan nyan nyan 
-			 */
-			case 'nyancat':
-				this.cli.write(
-"\n+      o     +              o   \n    +             o     +       +\no          +\n    o  +           +        +\n+        o     o       +        o\n-_-_-_-_-_-_-_,------,      o \n_-_-_-_-_-_-_-|   /\\_/\\  \n-_-_-_-_-_-_-~|__( ^ .^)  +     +  \n_-_-_-_-_-_-_-\"\"  \"\"      \n+      o         o   +       o\n    +         +\no        o         o      o     +\n    o           +\n+      +     o        o      +\n\n"
-				);
-			/**
-			 * Display a new prompt
-			 */
-			default:
-				this.initPrompt();
-		}
+		);
+		this.initPrompt();
 	},
+	/**
+	 * Display the different available config set
+	 */
+	_showSet: function(answer)
+	{
+		var args = answer.replace(/^set\s/i, '').split(' ');
+		
+		/**
+		 * Fixtures config :
+		 * - on : activate fixtures
+		 * - off : deactivate fixtures and set a proxy to the real API
+		 */
+		if (args[0] === 'fixtures')
+		{
+			this.useFixtures((args[1] === 'on'));
+		}
+		
+		this.initPrompt();
+	},
+	/**
+	 * Display and launch the build process
+	 */
+	_showBuild: function()
+	{
+		this.cli.question(
+			"Have you run the unit tests before ? (YES or no) ",
+			function(answer)
+			{
+				if (answer.toLowerCase() === 'yes')
+				{
+					return this.build();
+				}
+				
+				this.initPrompt();
+			}.bind(this)
+		);
+	},
+	/**
+	 * Display a cat
+	 */
+	_showNyanCat: function()
+	{
+		this.cli.write(
+"\n+      o     +              o   \n    +             o     +       +\no          +\n    o  +           +        +\n+        o     o       +        o\n-_-_-_-_-_-_-_,------,      o \n_-_-_-_-_-_-_-|   /\\_/\\  \n-_-_-_-_-_-_-~|__( ^ .^)  +     +  \n_-_-_-_-_-_-_-\"\"  \"\"      \n+      o         o   +       o\n    +         +\no        o         o      o     +\n    o           +\n+      +     o        o      +\n\n"
+		);
+	},
+	
+	
 	/**
 	 * Run the build script
 	 */
@@ -114,6 +159,15 @@ Cli.prototype = {
 			}.bind(this)
 		);
 		builder.build();
+	},
+	useFixtures: function(set)
+	{
+		if (set === true ||
+			set === false)
+		{
+			this._fixtures = set;
+		}
+		return this._fixtures;
 	}
 };
 

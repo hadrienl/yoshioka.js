@@ -1,6 +1,8 @@
 YUI().add('yourapp_main_view', function(Y) {
 
 	var NS = 'yourapp',
+	
+		CLASS_USER = 'user',
 		
 		MainView = function(config)
 		{
@@ -19,17 +21,59 @@ YUI().add('yourapp_main_view', function(Y) {
 		 * - append footer view
 		 * - listen to Y.ys.Coord 'mainviewChange' event to load it
 		 */
-		render: function()
+		renderUI: function()
 		{
 			this.container.append(
-				this.compileTpl('<p>graaaa</p>')
+				this.compileTpl({
+					class_user: CLASS_USER
+				})
 			);
 			
+			Y.io(
+				'/api',
+				{
+					method: 'post',
+					data: JSON.stringify({
+						method: 'getUser',
+						id: 1
+					}),
+					on: {
+						success: function(id, data)
+						{
+							var data = JSON.parse(data.responseText);
+							
+							this.get('user').setAttrs(
+								data
+							);
+							this.syncUI();
+						}
+					},
+					context: this
+				}
+			)
+			
 			return this.container;
+		},
+		syncUI: function()
+		{
+			var user = this.get('user');
+			
+			this.container.one('.'+CLASS_USER).set(
+				'innerHTML',
+				user.get('name')
+			);
 		}
 	},
 	{
-		NAME: 'MainView'
+		NAME: 'MainView',
+		ATTRS: {
+			user: {
+				valueFn: function()
+				{
+					return new Y.yourapp.User();
+				}
+			}
+		}
 	});
 	
-}, '1.0', {requires: ["ys_view", "substitute", "css_main_skin"]})
+}, '1.0', {requires: ["ys_view", "main_user_model", "io", "json", "css_main_skin"]})

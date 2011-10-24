@@ -95,7 +95,7 @@ YUI().add('ys_l10n', function(Y) {
 			
 			if (!module)
 			{
-				throw 'module~key invalid';
+				throw new Error('module~key invalid');
 			}
 			
 			/**
