@@ -142,9 +142,16 @@ Builder.prototype._parseJSFile = function(path)
 		return;
 	}
 	
-	c = new compiler.TemplateCompiler({
-		file: path
-	});
+	if (path.match(/routes.js$/))
+	{
+		c = new compiler.RoutesCompiler();
+	}
+	else
+	{
+		c = new compiler.TemplateCompiler({
+			file: path
+		});
+	}
 	
 	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	

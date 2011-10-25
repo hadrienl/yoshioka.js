@@ -18,7 +18,6 @@ L10nCompiler = function(config)
 };
 L10nCompiler.prototype =
 {
-	_apppath: null,
 	_file: null,
 	_filecontent: '',
 

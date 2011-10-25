@@ -104,6 +104,10 @@ FileParser.prototype = {
 		{
 			return this.makeConfig();
 		}
+		if (this._getFilePath() === '/config/routes.js')
+		{
+			return this.makeRoutes();
+		}
 		else if (this._getFilePath().match(/locales/))
 		{
 			fs.readFile(
@@ -253,6 +257,21 @@ FileParser.prototype = {
 		maker.fetch();
 	},
 	
+	makeRoutes: function()
+	{
+		var c = new compiler.RoutesCompiler();
+		
+		try
+		{
+			this.filecontent = c.parse();
+			this._callback();
+		}
+		catch (e)
+		{
+			this._callbackError(e);
+		}
+	},
+	
 	_callback: function()
 	{
 		this.httpcode = 200;
@@ -265,9 +284,11 @@ FileParser.prototype = {
 	 */
 	_callbackError: function(err)
 	{
-		this.filename = DEFAULT_INDEX;
-		
-		return this.compileHTML();
+		this.init({
+			url: DEFAULT_INDEX
+		});
+		this.parseFile();
+		// TODO : when we could read routes and know which routes must have a default_index, then we could return a 404 error
 	}
 };
 

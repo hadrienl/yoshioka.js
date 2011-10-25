@@ -183,12 +183,19 @@ YUI().add('ys_view', function(Y) {
 				);
 			}
 			
-			return Y.Node.create(
+			 node = Y.Node.create(
 				Y.substitute(
 					tpl,
 					params
 				)
 			);
+			
+			if (!params.enhance || params.enhance !== false)
+			{
+				Y.ys.Controller.enhance(node.all('a'));
+			}
+			
+			return node;
 		},
 		
 		/**
