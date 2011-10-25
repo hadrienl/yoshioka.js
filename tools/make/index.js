@@ -14,6 +14,7 @@ Maker = function(config)
 
 Maker.prototype = new events.EventEmitter();
 Maker.prototype.dirs = null;
+Maker.prototype.files = null;
 Maker.prototype.basepath = null;
 Maker.prototype._filecounts = null;
 Maker.prototype._modules = null;
@@ -27,6 +28,7 @@ Maker.prototype.init = function(config)
 	this._filecount = 0;
 	this._modules = {};
 	this.dirs = config.dirs ? config.dirs : [];
+	this.files = config.files ? config.files : [];
 };
 /**
  * Fetch application files
@@ -41,6 +43,14 @@ Maker.prototype.fetch = function()
 		{
 			this._filecount++;
 			this._parseDir(path)
+		}.bind(this)
+	);
+	
+	this.files.forEach(
+		function(path)
+		{
+			this._filecount++;
+			this._parseFile(path)
 		}.bind(this)
 	);
 };

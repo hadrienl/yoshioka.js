@@ -1,4 +1,5 @@
 YUI().use(
+	'errors',
 	'ys_core',
 	'node',
 	YUI_config.app+'_'+YUI_config.mainview+'_view',

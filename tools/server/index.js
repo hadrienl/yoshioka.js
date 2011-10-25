@@ -5,6 +5,7 @@ var
 http = require('http'),
 httpProxy = require('http-proxy'),
 
+util = require('util'),
 fs = require('fs'),
 
 UnitTests = require('../unittests').UnitTests,
@@ -85,6 +86,30 @@ Server.prototype = {
 			res.writeHead(200, {'Content-Type': 'text/html'});
 			res.end(
 				f.getHTML()
+			);
+			return;
+		}
+		
+		if (url.match(/^\/logerror\?/))
+		{
+			try
+			{
+				util.log("Uncaught exception received from client :")
+				console.log(
+					JSON.parse(
+						decodeURIComponent(
+							url.replace(/^\/logerror\?/, '')
+						)
+					)
+				);
+			}
+			catch (e)
+			{
+				util.log(e);
+			}
+			res.writeHead(200, {'Content-Type': 'image/png'});
+			res.end(
+				''
 			);
 			return;
 		}
