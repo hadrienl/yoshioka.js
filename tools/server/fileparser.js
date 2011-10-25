@@ -284,11 +284,75 @@ FileParser.prototype = {
 	 */
 	_callbackError: function(err)
 	{
-		this.init({
-			url: DEFAULT_INDEX
-		});
-		this.parseFile();
-		// TODO : when we could read routes and know which routes must have a default_index, then we could return a 404 error
+		/**
+		 * Load routes files to search if path must return the DEFAULT_INDEX
+		 */
+		fs.readFile(
+			APP_PATH+'config/routes.js',
+			function(err, data)
+			{
+				var isValid = false;
+				
+				if (err)
+				{
+					return this._callback404();
+				}
+				
+				try
+				{
+					data = JSON.parse(data.toString());
+				}
+				catch (e)
+				{
+					throw new Error("routes.js file is not a valid JSON.\n");
+				}
+				
+				data.forEach(
+					function(p)
+					{
+						var regexp = (function(path)
+						{
+							if (path instanceof RegExp) {
+								return path;
+							}
+
+							path = path.replace(
+								/([:*])([\w-]+)/g,
+								function (match, operator, key)
+								{
+									keys.push(key);
+									return operator === '*' ? '(.*?)' : '([^/]*)';
+								});
+
+							return new RegExp('^' + path + '$');
+						})(p.path);
+						
+						if (regexp.exec(this._getFilePath()))
+						{
+							isValid = true;
+						}
+					}.bind(this)
+				);
+				
+				if (!isValid)
+				{
+					return this._callback404();
+				}
+				
+				this.init({
+					url: DEFAULT_INDEX
+				});
+				this.parseFile();
+			}.bind(this)
+		);
+	},
+	_callback404: function()
+	{
+		this.httpcode = 404;
+		this.filecontent = 'Not Found';
+		this.callback(
+			this
+		);
 	}
 };
 
