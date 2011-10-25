@@ -3,17 +3,16 @@ some text
 
 REQUIREMENT
 
+	Development environment :
 	- node 0.5.9
 	- npm
 	- http-proxy (npm install http-proxy)
+	- Java
+	Production environment :
+	- Quick static web server
 
 USE
 
-For development environnement, you need a web server with rewriting, php and node.js.
-For building, you need java.
-For production, you need only a static web server.
-
-Development environnement :
 - create a new folder for your project, then init a git repository :
 
 $ mkdir mywebapp
