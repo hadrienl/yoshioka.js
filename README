@@ -23,26 +23,10 @@ $ git init
 
 $ git submodule add git://github.com/hadrienl/yoshioka.js.git
 
-- create your app
+- Launch the server
 
-$ cp yoshioka.js/dist/* .
+$ node yoshioka.js
 
-- if you use Apache, you can copy .htaccess file too
-
-$ cp yoshioka.js/dist/.htaccess
-
-- If you use another webserver, like Cherokee, read the htaccess and try to get the same thing ;)
-
-Your app is ready to use. Configure it now !
-Edit the config/app_config.js file
-
-$ vi config/app_config.js
-
-- replace 'yourapp' by the namespace of your app. Choose a short name, it's a namespace for all your classes.
-
-- You can launch the development server :
-$ node yoshioka.js/
+- You can see all the available commands by typing `help` but the first thing to do is to create a new app. Type `install` !
 
 Then, point your browser to http://yourserverip:1636
-
-In CLI, you can view the available commands by typing `help`.
