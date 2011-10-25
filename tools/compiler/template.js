@@ -70,7 +70,7 @@ TemplateCompiler.prototype =
 		}
 		
 		view = view[1];
-		tplpath = this._apppath+'/'+view+'/'+TEMPLATES_PATH+'/'+path+'.html';
+		tplpath = APP_PATH+'/'+view+'/'+TEMPLATES_PATH+'/'+path+'.html';
 		
 		tplcontent = fs.readFileSync(tplpath).toString();
 		/**

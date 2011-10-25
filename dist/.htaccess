@@ -1,8 +1,0 @@
-RewriteEngine On
-
-RewriteRule (.*\.js$) /yoshioka.js/tools/compiler/index.php?$1 [QSA,L]
-RewriteRule (index.html) /yoshioka.js/index.php [QSA,L]
-
-RewriteCond %{SCRIPT_FILENAME} !-f
-RewriteCond %{SCRIPT_FILENAME} !-d
-RewriteRule (.*) /yoshioka.js/index.php [QSA,L]

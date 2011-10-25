@@ -7,12 +7,15 @@ APP_PATH = __dirname.replace(/yoshioka\.js.*$/, ''),
 fs = require('fs'),
 events = require('events'),
 
+Fetcher = require('../fetcher').Fetcher,
+
 Maker = function(config)
 {
 	this.init.apply(this, arguments);
 };
 
-Maker.prototype = new events.EventEmitter();
+Maker.prototype = new Fetcher();
+Maker.superclass = Fetcher.prototype;
 Maker.prototype.dirs = null;
 Maker.prototype.files = null;
 Maker.prototype.basepath = null;
@@ -20,98 +23,12 @@ Maker.prototype._filecounts = null;
 Maker.prototype._modules = null;
 Maker.prototype.init = function(config)
 {
-	events.EventEmitter.call(this);
+	Maker.superclass.init.apply(this, arguments);
 	
 	config || (config = {});
 	
 	this.basepath = config.basepath ? config.basepath : '/';
-	this._filecount = 0;
 	this._modules = {};
-	this.dirs = config.dirs ? config.dirs : [];
-	this.files = config.files ? config.files : [];
-};
-/**
- * Fetch application files
- */
-Maker.prototype.fetch = function()
-{
-	/**
-	 * Parse the root directories
-	 */
-	this.dirs.forEach(
-		function(path)
-		{
-			this._filecount++;
-			this._parseDir(path)
-		}.bind(this)
-	);
-	
-	this.files.forEach(
-		function(path)
-		{
-			this._filecount++;
-			this._parseFile(path)
-		}.bind(this)
-	);
-};
-/**
- * Parse a directory
- */
-Maker.prototype._parseDir = function(path)
-{
-	/**
-	 * Read the directory
-	 */
-	fs.readdir(
-		APP_PATH+path,
-		function(err, dir)
-		{
-			if (dir)
-			{
-				/**
-				 * Stat each path to know if it's a dir or a file
-				 */
-				dir.forEach(
-					function(d)
-					{
-						this._filecount++;
-						/**
-						 * Stat on the path
-						 */
-						fs.stat(
-							APP_PATH+path+'/'+d,
-							function(err, stat)
-							{
-								var file = path+'/'+d;
-								/**
-								 * Path is a directory, parse it !
-								 */
-								if (stat.isDirectory())
-								{
-									this._parseDir(
-										file
-									);
-								}
-								/**
-								 * Path is a file, parse it !
-								 */
-								else if (stat.isFile())
-								{
-									this._parseFile(
-										file
-									);
-								}
-							}.bind(this)
-						);
-					}.bind(this)
-				);
-			}
-			
-			this._filecount--;
-			this._checkFileCount();
-			
-		}.bind(this)
-	);
 };
 /**
  * Parse a file

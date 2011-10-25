@@ -1,16 +1,25 @@
 (function() {
 
-var APP_PATH = __dirname.replace('yoshioka.js', ''),
-	
-	app_config = APP_PATH+'/config/app_config.js',
-	
-	fs = require('fs'),
-	Server = require('./tools/server').Server;
+var
+
+APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
+
+app_config = APP_PATH+'/config/app_config.js',
+
+fs = require('fs'),
+Server = require('./tools/server').Server;
 
 /**
  * Get app config
  */
-app_config = fs.readFileSync(app_config).toString();
+try
+{
+	app_config = fs.readFileSync(app_config).toString();
+}
+catch (e)
+{
+	app_config = null;
+}
 app_config || (app_config = '{}');
 app_config = JSON.parse(app_config);
 app_config.dev || (app_config.dev = {});

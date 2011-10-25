@@ -2,6 +2,8 @@
 
 var
 
+APP_PATH = __dirname.replace(/yoshioka\.js.*$/, ''),
+
 rl = require('readline'),
 Cli = function(config)
 {
@@ -63,6 +65,10 @@ Cli.prototype = {
 		{
 			this._showHelp();
 		}
+		else if (answer === 'install')
+		{
+			this._showInstall(answer);
+		}
 		else if (answer.match(/^set\s(.*?$)/))
 		{
 			this._showSet(answer);
@@ -89,9 +95,75 @@ Cli.prototype = {
 		this.cli.write(
 "Available commands are :\n"+
 " - help (h) : display this help\n"+
-" - build (b) : build your project\n"
+" - install : install a new Application\n"+
+" - build (b) : build your project\n"+
+" - set [OPTION] [PARAM]: Set a configuration :\n"+
+"    - fixtures (on|off) : Tell API to use fixtures files or real API proxyfied"
 		);
 		this.initPrompt();
+	},
+	/**
+	 *
+	 */
+	_showInstall: function(answer)
+	{
+		var fs = require('fs');
+		
+		/**
+		 * Check if install has not already be done
+		 */
+		try
+		{
+			fs.statSync(
+				APP_PATH+'index.html'
+			);
+			/**
+			 * Index.html file already exists, installation has been done
+			 */
+			this.cli.write("Your application has already been installed.\n");
+			this.initPrompt();
+		}
+		catch(e)
+		{
+			this._install = {};
+			
+			this.cli.question(
+				"Choose an application namespace (choose a short name, it will be the namespace of all your classes) : ",
+				this._installStep2.bind(this)
+			);
+		}
+	},
+	_installStep2: function(answer)
+	{
+		var Installer = require('./installer').Installer, i;
+		
+		if (!answer.match(/^[a-zA-Z0-9]+$/))
+		{
+			this.cli.write("This namespace is invalid. Only use alphanumerics characters.\n");
+			return this._showInstall();
+		}
+		
+		this.cli.write("Installing application\n");
+		i = new Installer({
+			namespace: answer
+		});
+		i.on(
+			'success',
+			function()
+			{
+				this.cli.write("Installation complete !\nYou can start your browser to http://yourserver:"+this._port+" !\n");
+				this.initPrompt();
+			}.bind(this)
+		);
+		i.on(
+			'failure',
+			function(e)
+			{
+				this.cli.write(e.message+"\n");
+				this.initPrompt();
+			}.bind(this)
+		)
+		i.run();
 	},
 	/**
 	 * Display the different available config set
@@ -149,7 +221,7 @@ Cli.prototype = {
 		var Builder = require('../build').Builder,
 			builder = new Builder();
 		
-		this.cli.write("Building…");
+		this.cli.write("Building…\n");
 		builder.on(
 			'parseEnd',
 			function()

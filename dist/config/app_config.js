@@ -1,9 +1,9 @@
 {
-	"app": "yourappname",
-	"mainview": "yourmainviewname",
+	"app": "yourapp",
+	"mainview": "main",
 	"api": "/api.php?",
 	"groups": {
-		"yourappname": {
+		"yourapp": {
 			"base": "/"
 		}
 	},

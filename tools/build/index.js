@@ -9,7 +9,7 @@ fs = require('fs'),
 events = require('events'),
 exec = require('child_process').exec,
 util = require('util'),
-compiler = require('compiler'),
+compiler = require('../compiler'),
 Maker = require('../make').Maker,
 
 Builder = function(config)
@@ -71,6 +71,10 @@ Builder.prototype.build = function()
 		APP_PATH+'index.html',
 		function(err, data)
 		{
+			if (err)
+			{
+				return;
+			}
 			fs.writeFile(
 				BUILD_DIR+'index.html',
 				data.toString().replace(/\{\$basepath\}/gi, '/'+this._buildname)
@@ -95,17 +99,31 @@ Builder.prototype._makeConfig = function()
 		'parseEnd',
 		function(maker)
 		{
-			maker.writeConfig(
-				this._buildpath
-			);
+			try
+			{
+				maker.writeConfig(
+					this._buildpath
+				);
+			}
+			catch (e)
+			{
+				util.log(e);
+			}
 		}.bind(this, maker)
-	)
-	maker.fetch();
+	);
+	try
+	{
+		maker.fetch();
+	}
+	catch (e)
+	{
+		util.log(e);
+	}
 };
 Builder.prototype._parseJSFile = function(path)
 {
 	var ignore = false,
-		compiler;
+		c;
 	
 	this._ignore.forEach(
 		function(file)
@@ -124,15 +142,15 @@ Builder.prototype._parseJSFile = function(path)
 		return;
 	}
 	
-	compiler = new compiler.TemplateCompiler({
+	c = new compiler.TemplateCompiler({
 		file: path
 	});
 	
-	this._mkdir(path);
+	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	
 	fs.writeFile(
 		this._buildpath+path,
-		compiler.parse(),
+		c.parse(),
 		'utf-8',
 		function(path, err, data)
 		{
@@ -152,15 +170,15 @@ Builder.prototype._parseJSFile = function(path)
 };
 Builder.prototype._parseLocaleFile = function(path)
 {
-	var compiler = new compiler.L10nCompiler({
+	var c = new compiler.L10nCompiler({
 		file: path
 	});
 	
-	this._mkdir(path);
+	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	
 	fs.writeFile(
 		this._buildpath+path,
-		compiler.parse(),
+		c.parse(),
 		'utf-8',
 		function(path, err, data)
 		{
@@ -180,7 +198,7 @@ Builder.prototype._parseLocaleFile = function(path)
 };
 Builder.prototype._parseCSSFile = function(path)
 {
-	this._mkdir(path);
+	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	
 	fs.readFile(
 		APP_PATH+path,
@@ -234,7 +252,7 @@ Builder.prototype._parseStaticFile = function(path)
 		return;
 	}
 	
-	this._mkdir(path);
+	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	
 	/**
 	 * Simple copy file in build folder
@@ -250,27 +268,6 @@ Builder.prototype._parseStaticFile = function(path)
 	
 	this._filecount--;
 	this._checkFileCount();
-};
-Builder.prototype._mkdir = function(path)
-{
-	var file = (file = path.split(/\//)) && file[file.length - 1],
-		dir = path.replace(file, ''),
-		parts = this._buildpath;
-	
-	dir.split(/\//).forEach(
-		function(part)
-		{
-			parts+=part+'/';
-			try
-			{
-				fs.statSync(parts);
-			}
-			catch (e)
-			{
-				fs.mkdirSync(parts, 0755)
-			}
-		}
-	);
 };
 Builder.prototype.compressJS = function(path, callback)
 {
