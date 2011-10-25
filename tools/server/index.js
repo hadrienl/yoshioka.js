@@ -34,7 +34,7 @@ Server.prototype = {
 		this._proxy = new httpProxy.RoutingProxy(),
 		
 		this._port = config.port || 80;
-		this._config = config.dev || {};
+		this._config = config || {};
 		
 		this._http = http.createServer(
 			function(req, res)
@@ -130,7 +130,7 @@ Server.prototype = {
 					}
 				}
 			);
-
+			
 			if (fixtures_path)
 			{
 				if (this._cli.useFixtures())
