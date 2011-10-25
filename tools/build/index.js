@@ -9,8 +9,7 @@ fs = require('fs'),
 events = require('events'),
 exec = require('child_process').exec,
 util = require('util'),
-TemplateCompiler = require('../compiler/templates').TemplateCompiler,
-L10nCompiler = require('../compiler/l10n').L10nCompiler,
+compiler = require('compiler'),
 Maker = require('../make').Maker,
 
 Builder = function(config)
@@ -125,7 +124,7 @@ Builder.prototype._parseJSFile = function(path)
 		return;
 	}
 	
-	compiler = new TemplateCompiler({
+	compiler = new compiler.TemplateCompiler({
 		file: path
 	});
 	
@@ -153,7 +152,7 @@ Builder.prototype._parseJSFile = function(path)
 };
 Builder.prototype._parseLocaleFile = function(path)
 {
-	var compiler = new L10nCompiler({
+	var compiler = new compiler.L10nCompiler({
 		file: path
 	});
 	

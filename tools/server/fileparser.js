@@ -6,9 +6,8 @@ APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
 DEFAULT_INDEX = '/index.html',
 
 fs = require('fs'),
-Maker = require('../../tools/make').Maker,
-TemplateCompiler = require('../../tools/compiler/templates').TemplateCompiler,
-L10nCompiler = require('../../tools/compiler/l10n').L10nCompiler,
+Maker = require('../make').Maker,
+compiler = require('../compiler'),
 
 /**
  * FileGetter which get a file path and transform
@@ -53,7 +52,7 @@ FileParser.prototype = {
 	
 	_getFilePath: function()
 	{
-		return this.path.join('/')+'/'+this.filename;
+		return (this.path.join('/')+'/'+this.filename).replace(/\/+/, '/');
 	},
 	
 	parseFile: function()
@@ -79,19 +78,19 @@ FileParser.prototype = {
 			APP_PATH+this._getFilePath(),
 			function(err, data)
 			{
+				var c;
+				
 				if (err)
 				{
 					return this._callbackError(err);
 				}
-				this.filecontent = data.toString();
 				
-				/**
-				 * Replace some tags
-				 */
-				this.filecontent = this.filecontent
-					.replace(
-						/\{\$basepath\}/gi,
-						this.path.join('/').replace(APP_PATH, ''));
+				c = new compiler.HTMLCompiler({
+					file: this._getFilePath(),
+					filecontent: data.toString()
+				});
+				
+				this.filecontent = c.parse();
 				
 				this._callback();
 			}.bind(this)
@@ -120,7 +119,7 @@ FileParser.prototype = {
 				
 					this.filecontent = data.toString();
 				
-					c = new L10nCompiler({
+					c = new compiler.L10nCompiler({
 						file: this._getFilePath(),
 						filecontent: this.filecontent
 					});
@@ -145,7 +144,7 @@ FileParser.prototype = {
 				
 					this.filecontent = data.toString();
 				
-					c = new TemplateCompiler({
+					c = new compiler.TemplateCompiler({
 						file: this._getFilePath(),
 						filecontent: this.filecontent
 					});

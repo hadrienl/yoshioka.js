@@ -1,7 +1,10 @@
+(function() {
+
 var fs = require('fs'),
-	
-	VIEWS_PATH = 'views',
-	TEMPLATES_PATH = 'templates',
+
+APP_PATH = __dirname.replace(/yoshioka\.js.*$/, '')+'/',	
+VIEWS_PATH = 'views',
+TEMPLATES_PATH = 'templates',
 	
 TemplateCompiler = function(config)
 {
@@ -19,7 +22,6 @@ TemplateCompiler.prototype =
 	
 	init: function(config)
 	{
-		this._apppath = fs.realpathSync(__dirname.replace('/yoshioka.js/tools/compiler/templates', '')+'/');
 		this._file = config.file;
 		if (!this._file)
 		{
@@ -30,7 +32,7 @@ TemplateCompiler.prototype =
 		if (!this._filecontent)
 		{
 			this._filecontent = fs.readFileSync(
-				this._apppath+'/'+this._file
+				APP_PATH+'/'+this._file
 			).toString();
 		}
 	},
@@ -83,3 +85,6 @@ TemplateCompiler.prototype =
 	}
 };
 exports.TemplateCompiler = TemplateCompiler;
+
+
+})();

@@ -1,8 +1,10 @@
+(function() {
+
 var fs = require('fs'),
 
-	L10N_PATH = 'locales',
-
-	JS_TEMPLATE = "YUI().add('{$module}', function(Y) {"+
+APP_PATH = __dirname.replace(/yoshioka\.js.*$/, '')+'/',
+L10N_PATH = 'locales',
+JS_TEMPLATE = "YUI().add('{$module}', function(Y) {"+
 "	Y.namespace('ys.L10n.{$locale}').{$file} = {$content};"+
 "});\n",
 
@@ -22,7 +24,6 @@ L10nCompiler.prototype =
 
 	init: function(config)
 	{
-		this._apppath = fs.realpathSync(__dirname.replace('/yoshioka.js/tools/compiler/l10n', ''))+'/';
 		this._file = config.file;
 		if (!this._file)
 		{
@@ -30,7 +31,7 @@ L10nCompiler.prototype =
 		}
 
 		this._filecontent = fs.readFileSync(
-			this._apppath+'/'+this._file
+			APP_PATH+'/'+this._file
 		).toString();
 	},
 	parse: function()
@@ -66,3 +67,5 @@ L10nCompiler.prototype =
 	}
 };
 exports.L10nCompiler = L10nCompiler;
+
+})();
