@@ -1,4 +1,4 @@
-YUI().add('main_user_model', function(Y) {
+YUI().add('index_user_model', function(Y) {
 	
 	var
 	NS = 'yourapp',

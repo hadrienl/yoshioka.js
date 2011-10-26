@@ -1,26 +1,20 @@
-YUI().add('yourapp_main_view', function(Y) {
+YUI().add('yourapp_index_view', function(Y) {
 
 	var NS = 'yourapp',
 	
 		CLASS_USER = 'user',
 		
-		MainView = function(config)
+		IndexView = function(config)
 		{
-			MainView.superclass.constructor.apply(this, arguments);
+			IndexView.superclass.constructor.apply(this, arguments);
 		};
 	
 	/**
-	 * Main view
+	 * Index view
 	 */
-	Y.namespace(NS).MainView = Y.extend(MainView, Y.ys.View, {
-		template: {$main.tpl},
+	Y.namespace(NS).IndexView = Y.extend(IndexView, Y.ys.View, {
+		template: {$index.tpl},
 		
-		/**
-		 * Render main view :
-		 * - append header view
-		 * - append footer view
-		 * - listen to Y.ys.Coord 'mainviewChange' event to load it
-		 */
 		renderUI: function()
 		{
 			this.container.append(
@@ -29,6 +23,9 @@ YUI().add('yourapp_main_view', function(Y) {
 				})
 			);
 			
+		},
+		bindUI: function()
+		{
 			Y.io(
 				'/api',
 				{
@@ -65,7 +62,7 @@ YUI().add('yourapp_main_view', function(Y) {
 		}
 	},
 	{
-		NAME: 'MainView',
+		NAME: 'IndexView',
 		ATTRS: {
 			user: {
 				valueFn: function()
@@ -76,4 +73,4 @@ YUI().add('yourapp_main_view', function(Y) {
 		}
 	});
 	
-}, '1.0', {requires: ["ys_view", "main_user_model", "io", "json", "css_main_skin"]})
+}, '1.0', {requires: ["ys_view", "index_user_model", "io", "json", "css_index_skin"]})

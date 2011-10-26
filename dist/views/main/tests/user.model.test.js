@@ -1,4 +1,4 @@
-YUI().add('main_user_model_test', function(Y) {
+YUI().add('index_user_model_test', function(Y) {
 	var suite = new Y.Test.Suite("User");
 	
 	suite.add(
@@ -29,4 +29,4 @@ YUI().add('main_user_model_test', function(Y) {
 	);
 	
 	Y.Test.Runner.add(suite);
-}, '1.0', {requires: ["main_user_model"]});
+}, '1.0', {requires: ["index_user_model"]});

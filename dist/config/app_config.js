@@ -1,6 +1,6 @@
 {
 	"app": "yourapp",
-	"mainview": "main",
+	"mainview": "index",
 	"api": "/api.php?",
 	"groups": {
 		"yourapp": {
