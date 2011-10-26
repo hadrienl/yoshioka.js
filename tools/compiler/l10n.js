@@ -29,11 +29,27 @@ L10nCompiler.prototype =
 			throw 'file is invalid';
 		}
 
-		this._filecontent = fs.readFileSync(
-			APP_PATH+'/'+this._file
-		).toString();
+		this._filecontent = config.filecontent;
 	},
-	parse: function()
+	parse: function(callback)
+	{
+		if (!this._filecontent)
+		{
+			this._filecontent = fs.readFile(
+				APP_PATH+'/'+this._file,
+				function(callback, err, data)
+				{
+					this._filecontent = data.toString();
+					this._parse(callback);
+				}.bind(this, callback)
+			);
+		}
+		else
+		{
+			this._parse(callback);
+		}
+	},
+	_parse: function(callback)
 	{
 		var pathparts = this._file.match(/([^\/]+)\/([^\/]+)\.l10n/),
 			locale = pathparts[1],
@@ -58,11 +74,17 @@ L10nCompiler.prototype =
 			}
 		);
 
-		return JS_TEMPLATE
+		this._filecontent = JS_TEMPLATE
 			.replace('{$module}', module)
 			.replace('{$locale}', locale)
 			.replace('{$file}', file)
 			.replace('{$content}', JSON.stringify(lines));
+		
+		if (callback)
+		{
+			return callback(this._filecontent);
+		}
+		return this._filecontent;
 	}
 };
 exports.L10nCompiler = L10nCompiler;

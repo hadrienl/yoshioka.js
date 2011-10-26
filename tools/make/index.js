@@ -45,27 +45,34 @@ Maker.prototype._parseFile = function(path)
 			/**
 			 * Check file type
 			 */
-			if (path.match(/\.l10n\.js/))
+			if (path.match(/\.l10n\.js$/))
 			{
 				/**
 				 * Locale file
 				 */
 				this._parseLocaleFile(path);
 			}
-			else if (path.match(/\.js/) &&
-					!path.match(/test\.js/))
+			else if (path.match(/\.js$/) &&
+					!path.match(/test\.js$/))
 			{
 				/**
 				 * Javascript file
 				 */
 				this._parseJSFile(path);
 			}
-			else if (path.match(/\.css/))
+			else if (path.match(/\.css$/))
 			{
 				/**
 				 * CSS file
 				 */
 				this._parseCSSFile(path);
+			}
+			else if (path.match(/\.html$/))
+			{
+				/**
+				 * CSS file
+				 */
+				this._parseHTMLFile(path);
 			}
 			else
 			{
@@ -180,6 +187,11 @@ Maker.prototype._parseCSSFile = function(path)
 	this._checkFileCount();
 };
 Maker.prototype._parseStaticFile = function()
+{
+	this._filecount--;
+	this._checkFileCount();
+};
+Maker.prototype._parseHTMLFile = function()
 {
 	this._filecount--;
 	this._checkFileCount();

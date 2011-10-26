@@ -66,21 +66,9 @@ Builder.prototype.build = function()
 	
 	/**
 	 * index.html
-	 */	
-	fs.readFile(
-		APP_PATH+'index.html',
-		function(err, data)
-		{
-			if (err)
-			{
-				return;
-			}
-			fs.writeFile(
-				BUILD_DIR+'index.html',
-				data.toString().replace(/\{\$basepath\}/gi, '/'+this._buildname)
-			);
-		}.bind(this)
-	);
+	 */
+	this._filecount++;
+	this._parseHTMLFile('index.html', '../index.html');
 	
 	/**
 	 * Make config
@@ -155,25 +143,28 @@ Builder.prototype._parseJSFile = function(path)
 	
 	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	
-	fs.writeFile(
-		this._buildpath+path,
-		c.parse(),
-		'utf-8',
-		function(path, err, data)
-		{
-			/**
-			 * Compress build file with YUICompressor
-			 */
-			this.compressJS(
-				path,
-				function(err, stdout, stderr)
-				{
-					this._filecount--;
-					this._checkFileCount();
-				}.bind(this)
-			);
-		}.bind(this, path)
-	);
+	c.parse(function(path, content)
+	{
+		fs.writeFile(
+			this._buildpath+path,
+			content,
+			'utf-8',
+			function(path, err, data)
+			{
+				/**
+				 * Compress build file with YUICompressor
+				 */
+				this.compressJS(
+					path,
+					function(err, stdout, stderr)
+					{
+						this._filecount--;
+						this._checkFileCount();
+					}.bind(this)
+				);
+			}.bind(this, path)
+		);
+	}.bind(this, path));
 };
 Builder.prototype._parseLocaleFile = function(path)
 {
@@ -183,65 +174,59 @@ Builder.prototype._parseLocaleFile = function(path)
 	
 	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	
-	fs.writeFile(
-		this._buildpath+path,
-		c.parse(),
-		'utf-8',
-		function(path, err, data)
-		{
-			/**
-			 * Compress build file with YUICompressor
-			 */
-			this.compressJS(
-				path,
-				function(err, stdout, stderr)
-				{
-					this._filecount--;
-					this._checkFileCount();
-				}.bind(this)
-			);
-		}.bind(this, path)
-	);
+	c.parse(function(path, content)
+	{
+		fs.writeFile(
+			this._buildpath+path,
+			content,
+			'utf-8',
+			function(path, err, data)
+			{
+				/**
+				 * Compress build file with YUICompressor
+				 */
+				this.compressJS(
+					path,
+					function(err, stdout, stderr)
+					{
+						this._filecount--;
+						this._checkFileCount();
+					}.bind(this)
+				);
+			}.bind(this, path)
+		);
+	}.bind(this, path))
 };
 Builder.prototype._parseCSSFile = function(path)
 {
+	var c = new compiler.CSSCompiler({
+		file: path
+	});
+	
 	this._mkdir(path, BUILD_DIR+this._buildname+'/');
 	
-	fs.readFile(
-		APP_PATH+path,
-		function(path, err, data)
-		{
-			if (err)
+	c.parse(function(path, content)
+	{
+		fs.writeFile(
+			this._buildpath+path,
+			content,
+			function(path, err, data)
 			{
-				util.print(err);
-				this._filecount--;
-				this._checkFileCount();
-				return;
-			}
-			/**
-			 * Copy original file into build dir
-			 */
-			fs.writeFile(
-				this._buildpath+path,
-				data.toString(),
-				function(path, err, data)
-				{
-					/**
-					 * Compress build file with YUICompressor
-					 */
-					this.compressCSS(
-						path,
-						function()
-						{
-							this._filecount--;
-							this._checkFileCount();
-						}.bind(this)
-					);
-					
-				}.bind(this, path)
-			);
-		}.bind(this, path)
-	);
+				/**
+				 * Compress build file with YUICompressor
+				 */
+				this.compressCSS(
+					path,
+					function()
+					{
+						this._filecount--;
+						this._checkFileCount();
+					}.bind(this)
+				);
+
+			}.bind(this, path)
+		);
+	}.bind(this, path));
 	
 	//console.log(path);
 	this._filecount--;
@@ -275,6 +260,22 @@ Builder.prototype._parseStaticFile = function(path)
 	
 	this._filecount--;
 	this._checkFileCount();
+};
+Builder.prototype._parseHTMLFile = function(path, writepath)
+{
+	var c = new compiler.HTMLCompiler({
+		file: path,
+		basepath: '/'+this._buildname
+	});
+	c.parse(function(path, content)
+	{
+		fs.writeFile(
+			this._buildpath+path,
+			content
+		);
+		this._filecount--;
+		this._checkFileCount();
+	}.bind(this, writepath || path));
 };
 Builder.prototype.compressJS = function(path, callback)
 {

@@ -90,9 +90,14 @@ FileParser.prototype = {
 					filecontent: data.toString()
 				});
 				
-				this.filecontent = c.parse();
-				
-				this._callback();
+				c.parse(
+					function(content)
+					{
+						this.filecontent = content;
+
+						this._callback();
+					}.bind(this)
+				);
 			}.bind(this)
 		);
 	},
@@ -127,9 +132,15 @@ FileParser.prototype = {
 						file: this._getFilePath(),
 						filecontent: this.filecontent
 					});
-					this.filecontent = c.parse();
-				
-					this._callback();
+					
+					c.parse(
+						function(content)
+						{
+							this.filecontent = content;
+
+							this._callback();
+						}.bind(this)
+					);
 				}.bind(this)
 			);
 		}
@@ -152,9 +163,15 @@ FileParser.prototype = {
 						file: this._getFilePath(),
 						filecontent: this.filecontent
 					});
-					this.filecontent = c.parse();
-				
-					this._callback();
+					
+					c.parse(
+						function(content)
+						{
+							this.filecontent = content;
+
+							this._callback();
+						}.bind(this)
+					);
 				}.bind(this)
 			);
 		}
@@ -179,15 +196,15 @@ FileParser.prototype = {
 	{
 		this.contenttype = 'text/css';
 		
-		fs.readFile(
-			APP_PATH+this._getFilePath(),
-			function(err, data)
+		c = new compiler.CSSCompiler({
+			file: this._getFilePath()
+		});
+		
+		c.parse(
+			function(content)
 			{
-				if (err)
-				{
-					return this._callbackError(err);
-				}
-				this.filecontent = data;
+				this.filecontent = content;
+
 				this._callback();
 			}.bind(this)
 		);
@@ -263,8 +280,14 @@ FileParser.prototype = {
 		
 		try
 		{
-			this.filecontent = c.parse();
-			this._callback();
+			c.parse(
+				function(content)
+				{
+					this.filecontent = content;
+
+					this._callback();
+				}.bind(this)
+			);
 		}
 		catch (e)
 		{

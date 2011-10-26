@@ -5,6 +5,7 @@ var
 APP_PATH = __dirname.replace(/yoshioka\.js.*$/, '')+'/',
 BR = '[[__BR__]]',
 BR_REG = /\[\[__BR__\]\]/g,
+CSS_BLOCK_REG = /\{css\}(.*?)\{\/css\}/gi,
 fs = require('fs'),
 
 CSSCompiler = require('./css').CSSCompiler,
@@ -24,19 +25,16 @@ HTMLCompiler.prototype =
 		
 		this._file = config.file;
 		
+		this._basepath = (config.basepath || this._getFilePath())
+			.replace(/\/+/gi, '/')
+			.replace(/\/$/, '');
+		
 		if (!this._file)
 		{
 			throw 'file is invalid';
 		}
 		
 		this._filecontent = config.filecontent;
-		
-		if (!this._filecontent)
-		{
-			this._filecontent = fs.readFileSync(
-				APP_PATH+'/'+this._file
-			).toString();
-		}
 	},
 	
 	/**
@@ -44,48 +42,85 @@ HTMLCompiler.prototype =
 	 * - replace {$basepath} variable by the environment basepath
 	 * - compile {css}{/css} blocks
 	 */
-	parse: function()
+	parse: function(callback)
 	{
-		var css;
-		
+		if (!this._filecontent)
+		{
+			this._filecontent = fs.readFile(
+				APP_PATH+'/'+this._file,
+				function(callback, err, data)
+				{
+					this._filecontent = data.toString();
+					this._parse(callback);
+				}.bind(this, callback)
+			);
+		}
+		else
+		{
+			this._parse(callback);
+		}
+	},
+	_parse: function(callback)
+	{
 		/**
 		 * Replace some tags
 		 */
 		this._filecontent = this._filecontent
 			.replace(
 				/\{\$basepath\}/gi,
-				this._getFilePath());
+				this._basepath);
 		
 		/**
 		 * specials tags
 		 */
-		this._filecontent = this._filecontent
-			.replace(/\n/g, BR)
-			.replace(
-				/\{css\}(.*?)\{\/css\}/gi,
-				function(a)
-				{
-					return this._compileCSSBlock(a);
-				}.bind(this)
-			)
-			.replace(
-				BR_REG,
-				"\n"
-			);
+		this._filecontent = this._filecontent.replace(/\n/g, BR);
 		
+		this._parseCSSBlock(callback);
+	},
+	_parseCSSBlock: function(callback)
+	{
+		var block = this._filecontent.match(CSS_BLOCK_REG)
+		if (block)
+		{
+			this._compileCSSBlock(
+				block[0].replace(
+					BR_REG,
+					"\n"
+				),
+				callback
+			);
+		}
+		
+		this._finishParsing(callback);
+	},
+	_finishParsing: function(callback)
+	{
+		this._filecontent = this._filecontent.replace(
+			BR_REG,
+			"\n"
+		);
+		
+		if (callback)
+		{
+			return callback(this._filecontent);
+		}
 		return this._filecontent;
 	},
 	
 	/**
 	 * Compile the text between two {css}{/css} block tags
 	 */
-	_compileCSSBlock: function(block)
+	_compileCSSBlock: function(block, callback)
 	{
 		var c = new CSSCompiler({
 			filecontent: block.replace(/\{css\}/, '')
 							  .replace(/\{\/css\}/, '')
 		});
-		return c.parse();
+		c.parse(function(block, callback, content)
+		{
+			this._filecontent = this._filecontent.replace(block.replace(/\n/g, BR), content);
+			this._parseCSSBlock(callback);
+		}.bind(this, block, callback));
 	},
 	
 	/**
