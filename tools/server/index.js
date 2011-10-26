@@ -163,7 +163,7 @@ Server.prototype = {
 						url = url ? url[1]: '/';
 						req.url = url;
 					}
-					proxy.proxyRequest(req, res, {
+					this._proxy.proxyRequest(req, res, {
 						host: fixtures_path.host || '127.0.0.1',
 						port: fixtures_path.port || '80'
 					});
