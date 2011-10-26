@@ -79,7 +79,18 @@ Server.prototype = {
 		 */
 		if (url === '/__unittests')
 		{
-			f = new UnitTests();
+			try
+			{
+				f = new UnitTests();
+			}
+			catch (e)
+			{
+				res.writeHead(500, {'Content-Type': 'text/plain'});
+				res.end(
+					e.message
+				);
+				return;
+			}
 			/**
 			 * Start unit tests
 			 */

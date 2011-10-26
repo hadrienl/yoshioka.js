@@ -19,9 +19,19 @@ UnitTests.prototype = {
 		/**
 		 * Look for each tests files in views folder
 		 */
-		var views = fs.readdirSync(
-			APP_PATH+VIEWS_DIR
-		);
+		try
+		{
+			var views = fs.readdirSync(
+				APP_PATH+VIEWS_DIR
+			);
+		}
+		catch (e)
+		{
+			/**
+			 * No views folder : application has not been installed
+			 */
+			throw new Error("Folder views not found. Please reinstall your application.");
+		}
 		
 		this._srcs = [];
 		this._modules = [];
