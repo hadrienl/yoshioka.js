@@ -371,8 +371,22 @@ FileParser.prototype = {
 	},
 	_callback404: function()
 	{
-		this.httpcode = 404;
-		this.filecontent = 'Not Found';
+		var filepath = this._getFilePath();
+
+		if (filepath === '/' ||
+			filepath === DEFAULT_INDEX)
+		{
+			/**
+			 * Application doesn't have been installed
+			 */
+			this.httpcode = 404;
+			this.filecontent = 'Application does not have been installed. Please go to your console and type the `install` command.';
+		}
+		else
+		{
+			this.httpcode = 404;
+			this.filecontent = 'Not Found';
+		}
 		this.callback(
 			this
 		);
