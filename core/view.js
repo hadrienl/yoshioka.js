@@ -316,8 +316,22 @@ YUI().add('ys_view', function(Y) {
 				/**
 				 * Instanciate view
 				 */
+				view;
+				
+			try
+			{
 				view = new viewclass(params);
-
+			}
+			catch (e)
+			{
+				throw new Error(
+					"This view does not exists. You must declare a "+
+					"`Y."+Y.config.app+"."+classname+"` class in a "+
+					"`"+Y.config.app+"_"+
+					classname.toLowerCase().replace('view', '_view')+"` module"
+				);
+			}
+			
 			/**
 			 * Destroy previously instancied view
 			 */
