@@ -297,7 +297,6 @@ YUI().add('ys_i18n', function(Y) {
 				'locale',
 				navigator.language || navigator.userLanguage || DEFAULT_LOCALE
 			);
-			console.error(this.get('locale'))
 			
 			/**
 			 * Bind locale change event to set all the instancied I18n locale
