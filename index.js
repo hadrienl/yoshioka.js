@@ -4,27 +4,12 @@ var
 
 APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
 
-app_config = APP_PATH+'/config/app_config.js',
-
-fs = require('fs'),
+getconfig = require('./tools/make/getconfig'),
 Server = require('./tools/server').Server;
-
-/**
- * Get app config
- */
-try
-{
-	app_config = fs.readFileSync(app_config).toString();
-}
-catch (e)
-{
-	app_config = null;
-}
-app_config || (app_config = '{}');
-app_config = JSON.parse(app_config);
-app_config.dev || (app_config.dev = {});
-app_config.dev.port || (app_config.dev.port = 1636);
-
-new Server(app_config.dev);
+new Server(
+	getconfig.getConfig({
+		dev: true
+	})
+);
 
 })();

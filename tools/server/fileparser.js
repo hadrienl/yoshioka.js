@@ -242,7 +242,8 @@ FileParser.prototype = {
 		var maker = new Maker({
 			dirs: ['locales', 'plugins', 'views'],
 			files: ['config/errors.js'],
-			basepath: '/'
+			basepath: '/',
+			dev: true
 		});
 
 		maker.on(

@@ -33,7 +33,7 @@ Server.prototype = {
 		
 		this._proxy = new httpProxy.RoutingProxy(),
 		
-		this._port = config.port || 80;
+		this._port = config.port || 1636;
 		this._config = config || {};
 		
 		this._http = http.createServer(

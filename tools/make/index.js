@@ -7,6 +7,8 @@ APP_PATH = __dirname.replace(/yoshioka\.js.*$/, ''),
 fs = require('fs'),
 events = require('events'),
 
+getconfig = require('./getconfig'),
+
 Fetcher = require('../fetcher').Fetcher,
 
 Maker = function(config)
@@ -21,6 +23,7 @@ Maker.prototype.files = null;
 Maker.prototype.basepath = null;
 Maker.prototype._filecounts = null;
 Maker.prototype._modules = null;
+Maker.prototype._dev = null;
 Maker.prototype.init = function(config)
 {
 	Maker.superclass.init.apply(this, arguments);
@@ -29,6 +32,7 @@ Maker.prototype.init = function(config)
 	
 	this.basepath = config.basepath ? config.basepath : '/';
 	this._modules = {};
+	this._dev = config.dev;
 };
 /**
  * Parse a file
@@ -212,7 +216,10 @@ Maker.prototype.writeConfig = function(path)
 	/**
 	 * Get the default config file
 	 */
-	var coreConfig, appConfig, YUI_config;
+	var appConfig = getconfig.getConfig({
+			dev: this._dev
+		}),
+		coreConfig, YUI_config;
 	
 	path || (path = APP_PATH);
 	
@@ -226,22 +233,11 @@ Maker.prototype.writeConfig = function(path)
 	{
 		throw new Error("Core config is missing. Please restore the yoshioka.js/core/core_config.js file.\n");
 	}
-
-	try
-	{
-		appConfig = fs.readFileSync(
-			APP_PATH+'config/app_config.js'
-		).toString();
-	}
-	catch (e)
-	{
-		throw new Error("App config is missing. Please put a app_config.js file into your config folder.\n");
-	}
 	
 	/**
 	 * Set YUI_config default values
 	 */
-	YUI_config = JSON.parse(appConfig);
+	YUI_config = appConfig;
 	YUI_config.app || (YUI_config.app = 'ys');
 	YUI_config.appmainview || (YUI_config.appmainview = 'main');
 	YUI_config.groups || (YUI_config.groups = {});
