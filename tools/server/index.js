@@ -31,7 +31,7 @@ Server.prototype = {
 		
 		this._cli = new Cli(config);
 		
-		this._proxy = new httpProxy.RoutingProxy(),
+		this._proxy = new httpProxy.RoutingProxy();
 		
 		this._port = config.port || 1636;
 		this._config = config || {};
@@ -175,8 +175,8 @@ Server.prototype = {
 						req.url = url;
 					}
 					this._proxy.proxyRequest(req, res, {
-						host: fixtures_path.host || '127.0.0.1',
-						port: fixtures_path.port || '80'
+						host: fixtures_path.proxy.host || '127.0.0.1',
+						port: fixtures_path.proxy.port || '80'
 					});
 					return;
 				}
