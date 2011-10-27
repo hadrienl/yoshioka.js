@@ -5,6 +5,7 @@ var fs = require('fs'),
 APP_PATH = __dirname.replace(/yoshioka\.js.*$/, '')+'/',	
 VIEWS_PATH = 'views',
 TEMPLATES_PATH = 'templates',
+HTMLCompiler = require('./html').HTMLCompiler;
 	
 TemplateCompiler = function(config)
 {
@@ -19,6 +20,7 @@ TemplateCompiler.prototype =
 	_apppath: null,
 	_file: null,
 	_filecontent: '',
+	_filecount: 0,
 	
 	init: function(config)
 	{
@@ -28,6 +30,7 @@ TemplateCompiler.prototype =
 			throw 'file is invalid';
 		}
 		this._filecontent = config.filecontent;
+		this._filecount = 0;
 	},
 	parse: function(callback)
 	{
@@ -56,48 +59,74 @@ TemplateCompiler.prototype =
 			tplinc.forEach(
 				function(t)
 				{
-					this._filecontent = this._filecontent.replace(
-						t,
-						this.getTpl(
-							t.match(/\{\$(.*?)\}/)[1]
-						)
+					this._filecount++;
+					this.getTpl(
+						t.match(/\{\$(.*?)\}/)[1],
+						function(t, callback, compiled)
+						{
+							this._filecontent = this._filecontent.replace(
+								t,
+								compiled
+							);
+							this._filecount--;
+							
+							if (0 === this._filecount)
+							{
+								callback(this._filecontent);
+							}
+						}.bind(this, t, callback)
 					);
 				}.bind(this)
 			);
 		}
-		
-		if (callback)
+		else
 		{
-			return callback(this._filecontent)
+			if (callback)
+			{
+				return callback(this._filecontent)
+			}
+			return this._filecontent;
 		}
-		return this._filecontent;
 	},
-	getTpl: function(path)
+	getTpl: function(path, callback)
 	{
 		var view = this._file.match(
 				new RegExp(
 					'^(/?'+VIEWS_PATH+'/[^/]+)/'
 				)
 			),
-			tplpath, tplcontent, locales;
+			tplpath, tplcontent, locales, c;
+		
 		if (!view)
 		{
 			return '';
 		}
 		
 		view = view[1];
-		tplpath = APP_PATH+'/'+view+'/'+TEMPLATES_PATH+'/'+path+'.html';
 		
-		tplcontent = fs.readFileSync(tplpath).toString();
-		/**
-		 * Compile the template content into an array of strings with a join()
-		 */
-		compiled = "'"+
-			tplcontent
-				.replace(/'/gi,"\\\'")
-				.split(/\n/).join("'+\n'")+"'";
+		tplpath = '/'+view+'/'+TEMPLATES_PATH+'/'+path+'.html';
 		
-		return compiled;
+		c = new HTMLCompiler({
+			file: tplpath,
+			basepath: '/'
+		});
+		c.parse(
+			function(callback, content)
+			{
+				/**
+				 * Compile the template content into an array of strings with a join()
+				 */
+				var compiled = "'"+
+					content
+						.replace(/'/gi,"\\\'")
+						.split(/\n/).join("'+\n'")+"'";
+
+				if (callback)
+				{
+					return callback(compiled)
+				}
+			}.bind(this, callback)
+		);
 	}
 };
 exports.TemplateCompiler = TemplateCompiler;

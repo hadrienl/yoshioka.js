@@ -25,14 +25,11 @@ HTMLCompiler.prototype =
 		
 		this._file = config.file;
 		
-		this._basepath = (config.basepath || this._getFilePath())
-			.replace(/\/+/gi, '/')
-			.replace(/\/$/, '');
-		
-		if (!this._file)
-		{
-			throw 'file is invalid';
-		}
+		this._basepath =
+			(config.basepath ||
+			this._getFilePath()
+				.replace(/\/+/gi, '/')
+				.replace(/\/$/, ''));
 		
 		this._filecontent = config.filecontent;
 	},
@@ -128,7 +125,12 @@ HTMLCompiler.prototype =
 	 */
 	_getFilePath: function()
 	{
-		var path = this._file.split(/\//);
+		var path;
+		if (!this._file)
+		{
+			return '/';
+		}
+		path = this._file.split(/\//);
 		path.pop();
 		return path.join('/').replace(APP_PATH, '');
 	}
