@@ -123,7 +123,13 @@ YUI().add('ys_view', function(Y) {
 		 */
 		loadCssModule: function(modulename, unload)
 		{
-			var path = Y.config.groups[YUI_config.app].base+
+			var path;
+			
+			if (!Y.config.groups[YUI_config.app].modules[modulename])
+			{
+				throw new Error("Module "+modulename+" does not exists.")
+			}
+			path = Y.config.groups[YUI_config.app].base+
 				Y.config.groups[YUI_config.app].modules[modulename].path,
 				style = Y.one('link[href="'+path+'"]');
 
