@@ -6,10 +6,10 @@
 		},
 		"ys_core": {
 			"path": "yoshioka.js/core/core.js",
-			"requires": ["controller", "model", "ys_routes", "substitute", "ys_l10n", "ys_view"]
+			"requires": ["controller", "model", "ys_routes", "substitute", "ys_i18n", "ys_view"]
 		},
-		"ys_l10n": {
-			"path": "yoshioka.js/core/l10n.js",
+		"ys_i18n": {
+			"path": "yoshioka.js/core/i18n.js",
 			"requires": ["base"]
 		},
 		"ys_view": {

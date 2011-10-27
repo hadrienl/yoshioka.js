@@ -162,4 +162,4 @@ YUI().add('ys_core', function(Y) {
 		}
 	};
 
-}, '1.0', {requires: ["controller", "model", "ys_routes", "substitute", "ys_l10n"]})
+}, '1.0', {requires: ["controller", "model", "ys_routes", "substitute", "ys_i18n"]})

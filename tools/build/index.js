@@ -168,7 +168,7 @@ Builder.prototype._parseJSFile = function(path)
 };
 Builder.prototype._parseLocaleFile = function(path)
 {
-	var c = new compiler.L10nCompiler({
+	var c = new compiler.I18nCompiler({
 		file: path
 	});
 	

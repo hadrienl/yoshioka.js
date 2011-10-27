@@ -1,31 +1,33 @@
-YUI().add('ys_l10n', function(Y) {
+YUI().add('ys_i18n', function(Y) {
 	
 	var NS = 'ys',
 		
+		DEFAULT_LOCALE = 'en_US',
+		
 		/**
-		 * L10n object for an unique translation
+		 * I18n object for an unique translation
 		 */
-		L10n = function(config)
+		I18n = function(config)
 		{
-			L10n.superclass.constructor.apply(this, arguments);
+			I18n.superclass.constructor.apply(this, arguments);
 		},
 		/**
 		 * Manager of all translation in the app
 		 */
-		L10nManager = function(config)
+		I18nManager = function(config)
 		{
-			L10nManager.superclass.constructor.apply(this, arguments);
+			I18nManager.superclass.constructor.apply(this, arguments);
 		};
 	
 	/**
 	 * Whitelisting the DOMNodeRemovedFromDocument event to use it on
-	 * l10n's node destruction
+	 * I18n's node destruction
 	 */
 	Y.mix(Y.Node.DOM_EVENTS, {
 	    DOMNodeRemovedFromDocument: true
 	});
 	
-	Y.extend(L10n, Y.Base, {
+	Y.extend(I18n, Y.Base, {
 		
 		initializer: function(config)
 		{
@@ -90,7 +92,7 @@ YUI().add('ys_l10n', function(Y) {
 				module = raw_key ? raw_key[0] : null,
 				key = raw_key ? raw_key[1] : null,
 				locale = this.get('locale'),
-				name = 'l10n_'+locale+'_'+module,
+				name = 'i18n_'+locale+'_'+module,
 				self = this;
 			
 			if (!module)
@@ -112,7 +114,7 @@ YUI().add('ys_l10n', function(Y) {
 					/**
 					 * Copy the module class in the main Y object
 					 */
-					var t = Y[NS].L10n[locale][module][key];
+					var t = Y[NS].I18n[locale][module][key];
 					
 					/**
 					 * Update `translation` attr
@@ -229,7 +231,7 @@ YUI().add('ys_l10n', function(Y) {
 		}
 	},
 	{
-		NAME: 'L10n',
+		NAME: 'I18n',
 		ATTRS: {
 			/**
 			 * A random GUID generated at the instanciation
@@ -284,12 +286,21 @@ YUI().add('ys_l10n', function(Y) {
 		}
 	});
 	
-	Y.extend(L10nManager, Y.Base, {
+	Y.extend(I18nManager, Y.Base, {
 		
 		initializer: function()
 		{
 			/**
-			 * Bind locale change event to set all the instancied L10n locale
+			 * Set initial locale from browser environement
+			 */
+			this.set(
+				'locale',
+				navigator.language || navigator.userLanguage || DEFAULT_LOCALE
+			);
+			console.error(this.get('locale'))
+			
+			/**
+			 * Bind locale change event to set all the instancied I18n locale
 			 */
 			this.after(
 				'localeChange',
@@ -300,11 +311,11 @@ YUI().add('ys_l10n', function(Y) {
 					
 					Y.Object.each(
 						keys,
-						function(l10n)
+						function(I18n)
 						{
-							if (l10n)
+							if (I18n)
 							{
-								l10n.set('locale', locale);
+								I18n.set('locale', locale);
 							}
 						}
 					);
@@ -331,35 +342,77 @@ YUI().add('ys_l10n', function(Y) {
 		 */
 		createKey: function(key, params)
 		{
-			var l10n = new L10n({
+			var i = new I18n({
 					key: key,
 					locale: this.get('locale'),
 					params: params
 				}),
 				keys = this.get('keys');
 			
-			keys[l10n.get('id')] = l10n;
+			keys[i.get('id')] = i;
 			
 			this.set('keys', keys);
 			
-			return l10n;
+			return i;
 		}
 	},
 	{
-		NAME: 'L10nManager',
+		NAME: 'I18nManager',
 		ATTRS: {
 			/**
 			 * Global language configuration
 			 */
 			locale: {
-				valueFn: function()
+				value: DEFAULT_LOCALE,
+				setter: function(locale)
 				{
-					return navigator.language || navigator.userLanguage || 'en';
+					var found = false,
+						dft = DEFAULT_LOCALE;
+					
+					/**
+					 * Look into config if asked locale is available
+					 */
+					if (Y.config.locales)
+					{
+						Y.Array.some(
+							Y.config.locales,
+							function(l)
+							{
+								if (l.sameas)
+								{
+									Y.Array.some(
+										l.sameas,
+										function(s)
+										{
+											if (s === locale)
+											{
+												locale = l.locale;
+												found = true;
+												return found;
+											}
+										}
+									);
+								}
+								if (true === l.default)
+								{
+									dft = l.locale
+								}
+								return found;
+							}
+						);
+					}
+					
+					if (!found)
+					{
+						locale = dft;
+					}
+					
+					return locale;
 				},
 				broadcast: 1
 			},
 			/**
-			 * Collection of l10n objects
+			 * Collection of I18n objects
 			 */
 			keys: {
 				valueFn: Object
@@ -368,10 +421,10 @@ YUI().add('ys_l10n', function(Y) {
 	});
 	
 	/**
-	 * Instanciate new L10nManager in the ys namespace
+	 * Instanciate new I18nManager in the ys namespace
 	 */
-	Y.namespace(NS).L10nManager = new L10nManager();
-	Y.namespace(NS).L10nManager.L10n = L10n;
+	Y.namespace(NS).I18nManager = new I18nManager();
+	Y.namespace(NS).I18nManager.I18n = I18n;
 	/**
 	 * Create a usefull global function : __()
 	 * @param {string} key Translation key
@@ -380,7 +433,7 @@ YUI().add('ys_l10n', function(Y) {
 	 */
 	window.__ = function(key, params, tostring)
 	{
-		return Y.ys.L10nManager.localize(key, params, tostring);
+		return Y.ys.I18nManager.localize(key, params, tostring);
 	};
 	
 }, '1.0', {requires: ["base"]});

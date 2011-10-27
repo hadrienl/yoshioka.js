@@ -45,7 +45,7 @@ Maker.prototype._parseFile = function(path)
 			/**
 			 * Check file type
 			 */
-			if (path.match(/\.l10n\.js$/))
+			if (path.match(/\.i18n\.js$/))
 			{
 				/**
 				 * Locale file
@@ -86,7 +86,7 @@ Maker.prototype._parseLocaleFile = function(path)
 	var locale = (locale = path.match(/locales\/([^\/]+)/)) ?
 			locale[1] : null,
 		file = (file = path.split(/\//)) && file[file.length - 1],
-		module = 'l10n_'+locale+'_'+file.replace(/.l10n\.js?/, '');
+		module = 'i18n_'+locale+'_'+file.replace(/.i18n\.js?/, '');
 	
 	/**
 	 * Generate config object for

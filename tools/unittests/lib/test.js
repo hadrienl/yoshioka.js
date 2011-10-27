@@ -1,12 +1,12 @@
-YUI().add('l10n_en_hello', function(Y) {
-	Y.namespace('ys.L10n.en').hello =
+YUI().add('i18n_en_US_hello', function(Y) {
+	Y.namespace('ys.I18n.en_US').hello =
 	{
 		"world": 'Hello World!'
 	};
 });
 
-YUI().add('l10n_fr_hello', function(Y) {
-	Y.namespace('ys.L10n.fr').hello =
+YUI().add('i18n_fr_FR_hello', function(Y) {
+	Y.namespace('ys.I18n.fr_FR').hello =
 	{
 		"world": 'Bonjour Monde !'
 	};
@@ -15,19 +15,27 @@ YUI().add('l10n_fr_hello', function(Y) {
 YUI().add('ys_test', function(Y) {
 	var suite = new Y.Test.Suite("TestSuite Yoshioka");
 	
+	Y.config.locales = [{
+		"locale": "en_US",
+		"sameas": ["en", "en_EN", "en_US", "en_UK"],
+		"default": true
+	},
+	{
+		"locale": "fr_FR",
+		"sameas": ["fr", "fr_FR"]
+	}];
+	
 	/**
-	 * Test L10nManager. The correct way to add locales in a DOM
+	 * Test I18nManager. The correct way to add locales in a DOM
 	 */
 	suite.add(
 		new Y.Test.Case({
 
-			name: "TestCase L10nManager",
+			name: "TestCase I18nManager",
 		
 			setUp: function()
 			{
-				Y.ys.L10nManager.set('locale', 'en');
-				
-				this.data = Y.ys.L10nManager.localize(
+				this.data = Y.ys.I18nManager.localize(
 					'hello~world'
 				);
 				
@@ -37,9 +45,51 @@ YUI().add('ys_test', function(Y) {
 			{
 				this.data.remove();
 			},
-		
+			testDefaultLocale: function()
+			{
+				Y.assert(
+					(Y.ys.I18nManager.get('locale') === 'en_US') ||
+					(Y.ys.I18nManager.get('locale') === 'fr_FR')
+				);
+			},
+			testChangeLocale: function()
+			{
+				Y.ys.I18nManager.set('locale', 'en');
+				
+				Y.Assert.areEqual(
+					'en_US',
+					Y.ys.I18nManager.get('locale'),
+					'Locale would be en_US'
+				);
+				
+				Y.ys.I18nManager.set('locale', 'fr');
+				
+				Y.Assert.areEqual(
+					'fr_FR',
+					Y.ys.I18nManager.get('locale'),
+					'Locale would be fr_FR'
+				);
+				
+				Y.ys.I18nManager.set('locale', 'en_UK');
+				
+				Y.Assert.areEqual(
+					'en_US',
+					Y.ys.I18nManager.get('locale'),
+					'Locale would be en_US'
+				);
+				
+				Y.ys.I18nManager.set('locale', 'it');
+				
+				Y.Assert.areEqual(
+					'en_US',
+					Y.ys.I18nManager.get('locale'),
+					'Locale would be en_US'
+				);
+			},
 			testSpanInnerHTML : function ()
 			{
+				Y.ys.I18nManager.set('locale', 'en');
+				
 				Y.Assert.areEqual(
 					'Hello World!',
 					this.data.get('innerHTML')
@@ -47,7 +97,8 @@ YUI().add('ys_test', function(Y) {
 			},
 			testSpanInnerHTMLAfterLocaleChange : function ()
 			{
-				Y.ys.L10nManager.set('locale', 'fr');
+				Y.ys.I18nManager.set('locale', 'fr');
+				
 				Y.Assert.areEqual(
 					'Bonjour Monde !',
 					this.data.get('innerHTML')
@@ -62,15 +113,15 @@ YUI().add('ys_test', function(Y) {
 	suite.add(
 		new Y.Test.Case({
 
-			name: "TestCase L10nManager string mode",
+			name: "TestCase I18nManager string mode",
 		
 			setUp: function()
 			{
 				var span;
 				
-				Y.ys.L10nManager.set('locale', 'en');
+				Y.ys.I18nManager.set('locale', 'en');
 				
-				span = Y.ys.L10nManager.localize(
+				span = Y.ys.I18nManager.localize(
 					'hello~world',
 					null,
 					true
@@ -98,7 +149,7 @@ YUI().add('ys_test', function(Y) {
 			},
 			testSpanInnerHTMLAfterLocaleChange : function ()
 			{
-				Y.ys.L10nManager.set('locale', 'fr');
+				Y.ys.I18nManager.set('locale', 'fr');
 				Y.Assert.areEqual(
 					'Bonjour Monde !',
 					this.data.get('innerHTML')
@@ -108,18 +159,18 @@ YUI().add('ys_test', function(Y) {
 	);
 	
 	/**
-	 * Test L10n only
+	 * Test I18n only
 	 */
 	suite.add(
 		new Y.Test.Case({
 
-			name: "TestCase L10n",
+			name: "TestCase I18n",
 		
 			setUp: function()
 			{
-				this.data = new Y.ys.L10nManager.L10n({
+				this.data = new Y.ys.I18nManager.I18n({
 						key: 'hello~world',
-						locale: 'en'
+						locale: 'en_US'
 					});
 				
 				Y.one(document.body).append(this.data.localize());
@@ -138,7 +189,7 @@ YUI().add('ys_test', function(Y) {
 			},
 			testSpanInnerHTMLAfterLocaleChange : function ()
 			{
-				this.data.set('locale', 'fr');
+				this.data.set('locale', 'fr_FR');
 				Y.Assert.areEqual(
 					'Bonjour Monde !',
 					this.data.get('translation')
@@ -148,4 +199,4 @@ YUI().add('ys_test', function(Y) {
 	);
 	
 	Y.Test.Runner.add(suite);
-}, '1.0', {requires: ["ys_l10n"]});
+}, '1.0', {requires: ["ys_i18n"]});

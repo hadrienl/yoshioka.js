@@ -128,7 +128,7 @@ FileParser.prototype = {
 				
 					this.filecontent = data.toString();
 				
-					c = new compiler.L10nCompiler({
+					c = new compiler.I18nCompiler({
 						file: this._getFilePath(),
 						filecontent: this.filecontent
 					});
