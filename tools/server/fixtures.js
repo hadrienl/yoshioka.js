@@ -33,11 +33,13 @@ Fixtures.prototype = {
 	getData: function()
 	{
 		var method = this._postData.method,
-			json, data;
+			fixtures, data;
 			
 		try
 		{
-			json = fs.readFileSync(APP_PATH+'/fixtures/'+method+'.js')
+			fixtures = fs.readFileSync(
+				APP_PATH+'/fixtures/'+method+'.js'
+			).toString()
 		}
 		catch (e)
 		{
@@ -45,11 +47,11 @@ Fixtures.prototype = {
 				"File "+APP_PATH+'/fixtures/'+method+'.js'+" does not exists"
 			);
 		}
-		
 		try
 		{
-			json = JSON.parse(
-				json
+			fixtures = JSON.parse(
+				fixtures
+				
 			);
 		}
 		catch (e)
@@ -59,7 +61,7 @@ Fixtures.prototype = {
 			);
 		}
 		
-		json.fixtures.forEach(
+		fixtures.forEach(
 			function(f)
 			{
 				var matchall = true,
