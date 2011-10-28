@@ -78,6 +78,12 @@ Cli.prototype = {
 		{
 			this._showBuild();
 		}
+		else if ('q' === answer ||
+				'exit' === answer ||
+				'quit' === answer)
+		{
+			this._exitServer();
+		}
 		else if (answer === 'nyancat')
 		{
 			this._showNyanCat();
@@ -98,7 +104,8 @@ Cli.prototype = {
 " - install : install a new Application\n"+
 " - build (b) : build your project\n"+
 " - set [OPTION] [PARAM]: Set a configuration :\n"+
-"    - fixtures (on|off) : Tell API to use fixtures files or real API proxyfied"
+"    - fixtures (on|off) : Tell API to use fixtures files or real API proxyfied\n"+
+" - exit (q|quit) : exit the server\n"
 		);
 		this.initPrompt();
 	},
@@ -240,6 +247,11 @@ Cli.prototype = {
 			this._fixtures = set;
 		}
 		return this._fixtures;
+	},
+	
+	_exitServer: function()
+	{
+		process.exit(0);
 	}
 };
 
