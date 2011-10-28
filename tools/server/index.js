@@ -8,6 +8,7 @@ httpProxy = require('http-proxy'),
 util = require('util'),
 fs = require('fs'),
 
+getconfig = require('../make/getconfig'),
 UnitTests = require('../unittests').UnitTests,
 Cli = require('./cli').Cli,
 FileParser = require('./fileparser').FileParser,
@@ -25,9 +26,11 @@ Server.prototype = {
 	_port: null,
 	_config: null,
 	
-	init: function(config)
+	init: function()
 	{
-		config || (config = {});
+		var config = getconfig.getConfig({
+			dev: true
+		});
 		
 		this._cli = new Cli(config);
 		
