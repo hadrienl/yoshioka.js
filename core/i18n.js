@@ -1,3 +1,8 @@
+/**
+ * Internationalisation tools
+ * @module ys_i18n
+ * @requires base
+ */
 YUI().add('ys_i18n', function(Y) {
 	
 	var NS = 'ys',
@@ -27,8 +32,36 @@ YUI().add('ys_i18n', function(Y) {
 	    DOMNodeRemovedFromDocument: true
 	});
 	
+	/**
+	 * I18n object helps to get a live translation of text.
+	 * @class I18nManager.I18n
+	 * @namespace Y.ys
+	 * @extends Y.Base
+	 * @constructor
+	 * @param {Object} config Object with configuration property name/value
+	 * pairs. The object can be used to provide default values for the objects
+	 * published attributes.
+	 *
+	 * <p>
+	 * The config object can also contain the following non-attribute
+	 * properties, providing a convenient way to configure events listeners and
+	 * plugins for the instance, as part of the constructor call:
+	 * </p>
+	 *
+	 * <dl>
+	 *     <dt>params</dt>
+	 *     <dd>Object of name/value text to replace @@name@@ into
+	 * translation</dd>
+	 *		<dt></dt>
+	 * </dl>
+	 */
 	Y.extend(I18n, Y.Base, {
 		
+		/**
+		 * Initialize a i18n object
+		 * @method initializer
+		 * @protected
+		 */
 		initializer: function(config)
 		{
 			/**
@@ -46,7 +79,7 @@ YUI().add('ys_i18n', function(Y) {
 							k+'Change',
 							function()
 							{
-								this.insertTranslation();
+								this._insertTranslation();
 							},
 							this
 						);
@@ -76,7 +109,7 @@ YUI().add('ys_i18n', function(Y) {
 				'translationChange',
 				function(e)
 				{
-					this.insertTranslation();
+					this._insertTranslation();
 				}
 			);
 		},
@@ -84,7 +117,9 @@ YUI().add('ys_i18n', function(Y) {
 		/**
 		 * Load the translations file, and get the localized string from the key
 		 * Call is asynchronized, so it will update `translation` attr when
-		 * it'll be load, and so, fire `translationChange`event.
+		 * it'll be load, and so, fire `translationChange` event.
+		 * @method getLocalizedString
+		 * @public
 		 */
 		getLocalizedString: function()
 		{
@@ -134,6 +169,12 @@ YUI().add('ys_i18n', function(Y) {
 		/**
 		 * Get a localized string from key
 		 * key has the form : 'module~key'
+		 * @method localize
+		 * @param {boolean} tostring Set to true if you want a node as a string
+		 * to set as innerHTML of a parent node. Default is Y.Node object to
+		 * be append in a parent node.
+		 * @return Y.Node|string
+		 * @public
 		 */
 		localize: function(tostring)
 		{
@@ -170,6 +211,9 @@ YUI().add('ys_i18n', function(Y) {
 		
 		/**
 		 * Get node from attr or from dom
+		 * @method getNode
+		 * @return Y.Node
+		 * @public
 		 */
 		getNode: function()
 		{
@@ -190,8 +234,11 @@ YUI().add('ys_i18n', function(Y) {
 		/**
 		 * Replace translation string with uptodate params in the node span
 		 * container
+		 * @method _insertTranslation
+		 * @return string
+		 * @protected
 		 */
-		insertTranslation: function()
+		_insertTranslation: function()
 		{
 			var node = this.getNode()
 				t = this.get('translation');
@@ -219,7 +266,11 @@ YUI().add('ys_i18n', function(Y) {
 			
 			return t;
 		},
-		
+		/**
+		 * Destruct the node and purge all its events listeners
+		 * @method destructor
+		 * @protected
+		 */
 		destructor: function()
 		{
 			var node = this.get('node');
@@ -235,6 +286,8 @@ YUI().add('ys_i18n', function(Y) {
 		ATTRS: {
 			/**
 			 * A random GUID generated at the instanciation
+			 * @attribute id
+			 * @private
 			 */
 			id: {
 				valueFn: function()
@@ -244,19 +297,29 @@ YUI().add('ys_i18n', function(Y) {
 			},
 			/**
 			 * Language code for the translation
+			 * @attribute locale
+			 * @public
 			 */
 			locale: {
 				value: null,
+				/**
+				 * Fired when locale code has changed
+				 * @event localeChange
+				 */
 				broadcast: 1
 			},
 			/**
 			 * Translation key
+			 * @attribute key
+			 * @public
 			 */
 			key: {
 				value: null
 			},
 			/**
 			 * Container node
+			 * @attribute node
+			 * @private
 			 */
 			node: {
 				setter: function(n)
@@ -278,16 +341,34 @@ YUI().add('ys_i18n', function(Y) {
 			},
 			/**
 			 * Translation text
+			 * @attribute translation
+			 * @public
 			 */
 			translation: {
 				value: '',
+				/**
+				 * Fired when translated text has changed
+				 * @event translationChange
+				 */
 				broadcast: 1
 			}
 		}
 	});
 	
+	/**
+	 * I18nManager helps to create new translations and globally set locale code
+	 * @class I18nManager
+	 * @namespace Y.ys
+	 * @extends Y.Base
+	 * @constructor
+	 */
 	Y.extend(I18nManager, Y.Base, {
-		
+		/**
+		 * Initialize the manager and set the default locale code : from the
+		 * browser or from the app_config
+		 * @method initializer
+		 * @protected
+		 */
 		initializer: function()
 		{
 			/**
@@ -325,6 +406,14 @@ YUI().add('ys_i18n', function(Y) {
 		/**
 		 * Get a localized string from key
 		 * key has the form : 'module~key'
+		 * @method localize
+		 * @param {string} key The key of the locale to translate. Must have the
+		 * form `file~key`. `key` can have /[a-zA-Z0-9\.\-_]/ characters.
+		 * @param {object} params Parameters to give to the translation. The
+		 * translation must have some @@name@@ keyword to place the parameter.
+		 * @param {boolean} tostring True if you want a string to insert in a innerHTML. Default if you want a Y.Node to append in DOM.
+		 * @return string|Y.Node
+		 * @public
 		 */
 		localize: function(key, params, tostring)
 		{
@@ -338,6 +427,13 @@ YUI().add('ys_i18n', function(Y) {
 		
 		/**
 		 * Create a new key
+		 * @method createKey
+		 * @param {string} key The key of the locale to translate. Must have the
+		 * form `file~key`. `key` can have /[a-zA-Z0-9\.\-_]/ characters.
+		 * @param {object} params Parameters to give to the translation. The
+		 * translation must have some @@name@@ keyword to place the parameter.
+		 * @return Y.ys.I18n
+		 * @public
 		 */
 		createKey: function(key, params)
 		{
@@ -360,6 +456,8 @@ YUI().add('ys_i18n', function(Y) {
 		ATTRS: {
 			/**
 			 * Global language configuration
+			 * @attribute locale
+			 * @public
 			 */
 			locale: {
 				value: DEFAULT_LOCALE,
@@ -408,10 +506,16 @@ YUI().add('ys_i18n', function(Y) {
 					
 					return locale;
 				},
+				/**
+				 * Fired when the locale has been changed
+				 * @event localeChange
+				 */
 				broadcast: 1
 			},
 			/**
 			 * Collection of I18n objects
+			 * @attribute keys
+			 * @protected
 			 */
 			keys: {
 				valueFn: Object
@@ -426,6 +530,7 @@ YUI().add('ys_i18n', function(Y) {
 	Y.namespace(NS).I18nManager.I18n = I18n;
 	/**
 	 * Create a usefull global function : __()
+	 * @method window.__
 	 * @param {string} key Translation key
 	 * @param {object} param Object of params to give to the locale
 	 * @param {boolean} tostring Do you want a Node or a string ?

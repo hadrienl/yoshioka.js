@@ -1,3 +1,8 @@
+/**
+ * View
+ * @module ys_view
+ * @requires view, node, get, substitute
+ */
 YUI().add('ys_view', function(Y) {
 
 	var NS = 'ys',
@@ -6,22 +11,42 @@ YUI().add('ys_view', function(Y) {
 		{
 			View.superclass.constructor.apply(this, arguments);
 		};
-
+	
+	/**
+	 * Y.ys.View extends Y.View and add it all the magic of yoshioka. With this
+	 * view, you can dynamically load other views and construct your interface.
+	 * You can use templates, locales, load and unload css.
+	 * @class View
+	 * @namespace Y.ys
+	 * @extend Y.View
+	 * @constructor
+	 */
 	Y.namespace(NS).View = Y.extend(View, Y.View, {
-
+		
+		/**
+		 * List of loaded css modules
+		 * @attribute _css_modules
+		 * @private
+		 */
 		_css_modules: null,
 
 		/**
 		 * Current view in place
+		 * @attribute _currentview
+		 * @private
 		 */
 		_currentview: null,
 		/**
 		 * Current state in place
+		 * @attribute _loading
+		 * @private
 		 */
 		_loading: null,
 
 		/**
 		 * Scan all css modules in requires and load them if needed
+		 * @method initializer
+		 * @protected
 		 */
 		initializer: function()
 		{
@@ -49,7 +74,7 @@ YUI().add('ys_view', function(Y) {
 				{
 					if (r.match(/^css_/))
 					{
-						this.loadCssModule(
+						this._loadCssModule(
 							[r]
 						);
 						this._css_modules[this._css_modules.length] = r;
@@ -65,6 +90,9 @@ YUI().add('ys_view', function(Y) {
 		 * bind the event of the view,
 		 * then sync the content.
 		 * The container will be returned to be appened on a parent node.
+		 * @method render
+		 * @public
+		 * @retun Y.Node
 		 */
 		render: function()
 		{
@@ -76,6 +104,8 @@ YUI().add('ys_view', function(Y) {
 		},
 		/**
 		 * Render the template and append nodes in this.container node
+		 * @method renderUI
+		 * @protected
 		 */
 		renderUI: function()
 		{
@@ -83,6 +113,8 @@ YUI().add('ys_view', function(Y) {
 		},
 		/**
 		 * Bind event listener to this.container DOM
+		 * @method bindUI
+		 * @protected
 		 */
 		bindUI: function()
 		{
@@ -90,6 +122,8 @@ YUI().add('ys_view', function(Y) {
 		},
 		/**
 		 * Update this.container DOM nodes
+		 * @method syncUI
+		 * @protected
 		 */
 		syncUI: function()
 		{
@@ -98,6 +132,8 @@ YUI().add('ys_view', function(Y) {
 		
 		/**
 		 * Remove all css links of this view
+		 * method destructor
+		 * @protected
 		 */
 		destructor: function()
 		{
@@ -109,7 +145,7 @@ YUI().add('ys_view', function(Y) {
 				{
 					if (r.match(/^css_/))
 					{
-						this.unloadCssModule(
+						this._unloadCssModule(
 							[r]
 						);
 					}
@@ -120,8 +156,12 @@ YUI().add('ys_view', function(Y) {
 		},
 		/**
 		 * Load a css link by its path
+		 * @method _loadCssModule
+		 * @param {string} modulename Name of the CSS module
+		 * @param {boolean} unload True if you want to unload the module
+		 * @protected
 		 */
-		loadCssModule: function(modulename, unload)
+		_loadCssModule: function(modulename, unload)
 		{
 			var path;
 			
@@ -151,14 +191,29 @@ YUI().add('ys_view', function(Y) {
 		},
 		/**
 		 * Unload a css link by its path
+		 * @method _unloadCssModule
+		 * @param {string} modulename Name of the CSS module
+		 * @protected
 		 */
-		unloadCssModule: function(modulename)
+		_unloadCssModule: function(modulename)
 		{
-			this.loadCssModule(modulename, true);
+			this._loadCssModule(modulename, true);
 		},
 		
 		/**
 		 * Return a Node compiled template
+		 * @method compileTpl
+		 * @param {object} params Object of parameters :
+		 * <dl>
+		 *		<dt>tpl</dt>
+		 * 		<dd>Alternative template</dd>
+		 *		<dt>Ohter parameters</dt>
+		 *		<dd>…are given to Y.substitute method to replace `{name}`
+		 *		keywords into template</dd>
+		 * </dl>
+		 * @public
+		 * @return Y.Node
+		 * @throws {Error} when no template is given
 		 */
 		compileTpl: function(params)
 		{
@@ -210,16 +265,34 @@ YUI().add('ys_view', function(Y) {
 		},
 		
 		/**
-		 * Append a view to a node in the container view with params
+		 * Append a view to a node in the container view with params. Only one
+		 * view can be loaded at a time, so if another view is already loading,
+		 * this one will be queued and delayed 100ms later, waiting for its
+		 * turn.
+		 * @method setView
 		 * @param {string} name View name.
-		 * 		The module and classname will be defined from this name :
-		 * 		module : {app}_name_view
-		 * 		classname : Y.yourapp.NameView
-		 * 			(yourapp is configured in default_config `app` param)
+		 * 	<p>The module and classname will be defined from this name :</p>
+		 * 	<dl>
+		 * 		<dt>module</dt>
+		 * 		<dd>app\_name\_view</dd>
+		 * 		<dt>classname</dt>
+		 * 		<dd>Y.yourapp.NameView (yourapp is configured in default_config
+		 * 		`app` param)</dd>
+		 * 	</dl>
 		 * @param {string} place A CSS classname representing the element where
-		 *		to append the view in the main container
-		 * @param {Object} params Parameters to give to the view's constructor
-		 * @example this.setView('articleslist', 'main', {type: 'published'})
+		 * to append the view in the main container
+		 * @param {Object} params Config to give to the view's constructor
+		 * @param {function} callback A callback function to execute after
+		 * the view's module has been loaded
+		 * @example <pre>
+		 *this.setView(
+		 *	'articleslist',
+		 *	'main',
+		 *	{
+		 *		type: 'published'
+		 *	}
+		 *);</pre>
+		 * @public
 		 */
 		setView: function(name, place, params, callback)
 		{
@@ -245,6 +318,11 @@ YUI().add('ys_view', function(Y) {
 			}
 			this._setView(name, place, params, callback);
 		},
+		/**
+		 * The real view setter ! When queue is free, the hard work can begin.
+		 * @method _setView
+		 * @protected
+		 */
 		_setView: function(name, place, params, callback)
 		{
 				/**
@@ -314,6 +392,22 @@ YUI().add('ys_view', function(Y) {
 				Y.one('html').removeClass('_loading_view');
 			}
 		},
+		/**
+		 * The callback for the _setView method. Executed when the module has
+		 * been loaded. It instanciates the view, remove the current loaded
+		 * view, then execute the callback given in setView or append the
+		 * rendered view into the given place
+		 * @method _setViewCallback
+		 * @param {string} classname The view javascript classname
+		 * @param {object} param The config object to construct the view
+		 * @param {Y.Node} node The node where to append the view
+		 * @param {string} place The className of the place where to append the
+		 * view
+		 * @param {function} callback Callback to execute
+		 * @protected
+		 * throws {Error} If the view class does not exists. You _MUST_ declare
+		 * a Y.yourapp.NameView class extending Y.ys.View
+		 */
 		_setViewCallback: function(classname, params, node, place, callback)
 		{
 			var viewclass =
@@ -340,7 +434,7 @@ YUI().add('ys_view', function(Y) {
 			/**
 			 * Destroy previously instancied view
 			 */
-			this.removeCurrentView(place, view);
+			this._removeCurrentView(place, view);
 
 			/**
 			 * Append view to the given node in main view
@@ -358,7 +452,16 @@ YUI().add('ys_view', function(Y) {
 
 			this._loading[place] = false;
 		},
-		removeCurrentView: function(place, view)
+		/**
+		 * Remove current view. Can be overrided to do something before
+		 * destroying the view
+		 * @method _removeCurrentView
+		 * @param {string} place The className of the place where to append the
+		 * view
+		 * @param {Y.ys.View} The new view which take the place of the previous
+		 * @protected
+		 */
+		_removeCurrentView: function(place, view)
 		{
 			if (this._currentview[place])
 			{
@@ -366,6 +469,12 @@ YUI().add('ys_view', function(Y) {
 			}
 			this._currentview[place] = view;
 		},
+		/**
+		 * Remove the view. Can be overrided to do something before destroy the
+		 * view
+		 * @method remove
+		 * @public
+		 */
 		remove: function()
 		{
 			this.destroy();

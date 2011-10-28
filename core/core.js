@@ -1,13 +1,33 @@
+/**
+ * The framework core that made the dream become true
+ * @module ys_core
+ * @requires controller, model, ys_routes, substitute, ys_i18n
+ */
 YUI().add('ys_core', function(Y) {
-
+	
 	var NS = 'ys',
-
+		
 		Core = function()
 		{
 			Core.superclass.constructor.apply(this, arguments);
 		};
-
+		
+	/**
+	 * Core object. It extends Y.Controller and manage routes
+	 * by updating a Coord
+	 * @class Core
+	 * @namespace Y.ys
+	 * @extends Y.Controller
+	 * @constructor
+	 */
 	Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
+		/**
+		 * Callback for path changes which update coord object
+		 * @method _updateAttrs
+		 * @param {object} attrs Routes statics attributes (set in routes.js)
+		 * @param {object} params Dynamic parameters extracted from uri
+		 * @protected
+		 */
 		_updateAttrs: function(attrs, params)
 		{
 			var attrsp = {},
@@ -60,6 +80,12 @@ YUI().add('ys_core', function(Y) {
 			
 			this.set('coord', coord);
 		},
+		/**
+		 * Y.substitue alias
+		 * @method _substitute
+		 * @return string with new value
+		 * @protected
+		 */
 		_substitute: function(v, params)
 		{
 			return Y.substitute(
@@ -67,6 +93,14 @@ YUI().add('ys_core', function(Y) {
 				params
 			);
 		},
+		/**
+		 * Substitute keywords in a value by values in an object
+		 * @method _substituteObj
+		 * @param {string} v original value
+		 * @param {object} params Values to replace
+		 * @return object with new values
+		 * @protected
+		 */
 		_substituteObj: function(v, params)
 		{
 			var newo = {};
@@ -80,6 +114,15 @@ YUI().add('ys_core', function(Y) {
 			);
 			return newo;
 		},
+		/**
+		 * Load routes from routes.js
+		 * @method loadRoutes
+		 * @param {Array} routes Array of objects with a path value and some
+		 * arbitrary values associated
+		 * @return Y.ys.Coord object wich contains attributes which will
+		 * be updated
+		 * @public
+		 */
 		loadRoutes: function(routes)
 		{
 			routes || (routes = []);
@@ -106,7 +149,12 @@ YUI().add('ys_core', function(Y) {
 			return this.get('coord');
 		},
 		/**
-		 * Method to enhance a link to save its href to controller
+		 * Replace click event of a link (`a` tag) to make it call the
+		 * Y.Controller.save() method in place of loading its href and update
+		 * Y.ys.Coord object
+		 * @method enhance
+		 * @param {Node|NodeList} links Node or nodeList of `a` elements
+		 * @public
 		 */
 		enhance: function(links)
 		{
@@ -126,6 +174,12 @@ YUI().add('ys_core', function(Y) {
 				);
 			}
 		},
+		/**
+		 * Set the click event on the link
+		 * @method _enhance
+		 * @param {Node} link Node `a` element
+		 * @protected
+		 */
 		_enhance: function(link)
 		{
 			link.on(
@@ -146,6 +200,14 @@ YUI().add('ys_core', function(Y) {
 				link
 			);
 		},
+		/**
+		 * Load a module, add it to the Y object and execute a callback.
+		 * It's an ehnaced version of the Y.use method
+		 * @method use
+		 * @param {string} module Module to load
+		 * @param {Function} callback Callback to execute
+		 * @public
+		 */
 		use: function(module, callback)
 		{
 			if (Y.Env._used[module])
@@ -167,6 +229,11 @@ YUI().add('ys_core', function(Y) {
 	{
 		NAME: 'Core',
 		ATTRS: {
+			/**
+			 * Coord object which is updated when path change
+			 * @property coord
+			 * @type Y.Model
+			 */
 			coord: {
 				valueFn: function()
 				{
@@ -175,11 +242,23 @@ YUI().add('ys_core', function(Y) {
 			}
 		}
 	});
-
+	
+	/**
+	 * @class Controller
+	 * @namespace Y.ys
+	 * @extends Y.ys.Core
+	 */
 	Y.namespace(NS).Controller = new (Y.namespace(NS).Core)();
 	
+	/**
+	 * Coord object. Listen to its `change` event to know if a route has changed
+	 * @class Coord
+	 * @namespace Y.ys
+	 * @extends Y.Model
+	 * @event change event
+	 */
 	Y.namespace(NS).Coord = Y.namespace(NS).Controller.loadRoutes(Y[NS].routes);
-
+	
 	Y.namespace(NS).use = Y.namespace(NS).Controller.use;
 
 }, '1.0', {requires: ["controller", "model", "ys_routes", "substitute", "ys_i18n"]})
