@@ -27,7 +27,7 @@ YUI().add('ys_view', function(Y) {
 		{
 			var modulename = Y.config.app+'_'+
 				this.constructor.NAME.toLowerCase().replace('view', '_view'),
-				module = Y.config.groups[YUI_config.app].modules[modulename],
+				module = Y.config.groups[Y.config.app].modules[modulename],
 				requires = module ? module.requires : null;
 
 			/**
@@ -189,7 +189,12 @@ YUI().add('ys_view', function(Y) {
 				);
 			}
 			
-			 node = Y.Node.create(
+			if (!tpl)
+			{
+				throw new Error("No template given.");
+			}
+			
+			node = Y.Node.create(
 				Y.substitute(
 					tpl,
 					params

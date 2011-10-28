@@ -77,6 +77,11 @@ Server.prototype = {
 			f,
 			fixtures_path = null;
 		
+		if (url.match(/\/$/))
+		{
+			url+='index.html';
+		}
+		
 		/**
 		 * If url is __unittests, then, display unit tests
 		 */

@@ -65,7 +65,11 @@ HTMLCompiler.prototype =
 		this._filecontent = this._filecontent
 			.replace(
 				/\{\$basepath\}/gi,
-				this._basepath);
+				this._basepath)
+			.replace(
+				/\{\$core_config\}/gi,
+				this._getCoreConfig());
+		
 		
 		/**
 		 * specials tags
@@ -133,6 +137,15 @@ HTMLCompiler.prototype =
 		path = this._file.split(/\//);
 		path.pop();
 		return path.join('/').replace(APP_PATH, '');
+	},
+	/**
+	 * Get core config json for unittests
+	 */
+	_getCoreConfig: function()
+	{
+		return fs.readFileSync(
+			APP_PATH+'yoshioka.js/core/core_config.js'
+		).toString();
 	}
 };
 exports.HTMLCompiler = HTMLCompiler;

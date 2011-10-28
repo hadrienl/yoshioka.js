@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>yoshioka.js Unit Tests</title>
+<script type="text/javascript" charset="utf-8" src="http://yui.yahooapis.com/3.4.0/build/yui/yui-min.js"></script>
+<script type="text/javascript" charset="utf-8" src="{$basepath}/tests/core.test.js"></script>
+<script type="text/javascript" charset="utf-8" src="{$basepath}/tests/i18n.test.js"></script>
+<script type="text/javascript" charset="utf-8" src="{$basepath}/tests/view.test.js"></script>
+<style>
+	.yui3-console-entry-pass,
+	.yui3-console-entry-fail {
+		font-size: 2em;
+	}
+</style>
+</head>
+<body class="yui3-skin-sam">
+	<h1>yoshioka.js Unit Tests</h1>
+	<div id="logger"></div>
+	<script type="text/javascript" charset="utf-8">
+	//<![CDATA[
+		YUI({
+			groups: {
+				core: {$core_config}
+			}
+		}).use("test", "console", "ys_core_test", "ys_i18n_test", "ys_view_test", function(Y) {
+			var yconsole = new Y.Console({
+				newestOnTop: false,
+				logSource: Y.Global,
+				height: '800px',
+				width: '100%',
+				style: 'block'
+			});
+
+			yconsole.render('#logger');
+
+			Y.Test.Runner.run();
+		});
+	//]]>
+	</script>
+</body>
+</html>

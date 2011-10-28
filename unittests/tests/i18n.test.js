@@ -12,8 +12,8 @@ YUI().add('i18n_fr_FR_hello', function(Y) {
 	};
 });
 
-YUI().add('ys_test', function(Y) {
-	var suite = new Y.Test.Suite("TestSuite Yoshioka");
+YUI().add('ys_i18n_test', function(Y) {
+	var suite = new Y.Test.Suite("I18nManager");
 	
 	Y.config.locales = [{
 		"locale": "en_US",
@@ -31,7 +31,7 @@ YUI().add('ys_test', function(Y) {
 	suite.add(
 		new Y.Test.Case({
 
-			name: "TestCase I18nManager",
+			name: "I18nManager",
 		
 			setUp: function()
 			{
@@ -113,7 +113,7 @@ YUI().add('ys_test', function(Y) {
 	suite.add(
 		new Y.Test.Case({
 
-			name: "TestCase I18nManager string mode",
+			name: "I18nManager string mode",
 		
 			setUp: function()
 			{
@@ -164,7 +164,7 @@ YUI().add('ys_test', function(Y) {
 	suite.add(
 		new Y.Test.Case({
 
-			name: "TestCase I18n",
+			name: "I18n",
 		
 			setUp: function()
 			{
