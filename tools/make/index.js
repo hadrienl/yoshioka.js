@@ -140,6 +140,8 @@ Maker.prototype._parseJSFile = function(path)
 			}
 			if (!module)
 			{
+				this._filecount--;
+				this._checkFileCount();
 				return;
 			}
 
