@@ -328,7 +328,8 @@ FileParser.prototype = {
 				}
 				catch (e)
 				{
-					throw new Error("routes.js file is not a valid JSON.\n");
+					console.log("your routes.js file is not a valid JSON.\n");
+					return this._callback404();
 				}
 				
 				data.forEach(

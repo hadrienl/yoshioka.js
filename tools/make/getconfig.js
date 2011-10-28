@@ -22,12 +22,22 @@ exports.getConfig = function(config)
 	{
 		//console.log(app_config_path);
 		app_config = fs.readFileSync(app_config_path).toString();
-		//console.log(app_config)
-		app_config || (app_config = '{}');
+	}
+	catch (e)
+	{
+		console.log("Your config/app_config.js does not exists.");
+		app_config = {};
+	}
+	
+	app_config || (app_config = '{}');
+	
+	try
+	{
 		app_config = JSON.parse(app_config);
 	}
 	catch (e)
 	{
+		console.log("Your config/app_config.js is not a valid JSON.");
 		app_config = {};
 	}
 	if (true === config.dev)
