@@ -1,3 +1,7 @@
+/**
+ * Some compiler helpers : html, js templates, internationalisation, css, routes
+ * @module tools/compiler
+ */
 exports.HTMLCompiler = require('./html').HTMLCompiler;
 exports.TemplateCompiler = require('./template').TemplateCompiler;
 exports.I18nCompiler = require('./i18n').I18nCompiler;

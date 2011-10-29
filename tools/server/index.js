@@ -1,3 +1,9 @@
+/**
+ * Server yoshioka.js. It compile and serve all the files for the developpement
+ * phase. Then it can build an autonome static version of the application.
+ * @module tools/server
+ */
+
 (function(){
 
 var
@@ -19,13 +25,50 @@ Server = function(config)
 	this.init(config);
 };
 
+/**
+ * Server
+ * @class Server
+ * @constructor
+ */
 Server.prototype = {
+	/**
+	 * Proxy object for API request proxy pass
+	 * @attribute _proxy
+	 * @private
+	 */
 	_proxy: null,
+	/**
+	 * Cli object
+	 * @attribute _cli
+	 * @private
+	 */
 	_cli: null,
+	/**
+	 * HTTP server object
+	 * @attribute _http
+	 * @private
+	 */
 	_http: null,
+	/**
+	 * Port number for HTTP server
+	 * @attribute _port
+	 * @private
+	 */
 	_port: null,
+	/**
+	 * Config object get from tools/make/getconfig
+	 * @attribute _config
+	 * @private
+	 */
 	_config: null,
 	
+	/**
+	 * Init Server with config from add_config.js and dev_config.js.
+	 * Start a HTTP server and wait for client request. Call _control method
+	 * on request.
+	 * @method init
+	 * @private
+	 */
 	init: function()
 	{
 		var config = getconfig.getConfig({
@@ -70,7 +113,15 @@ Server.prototype = {
 		
 		this._http.listen(this._port);
 	},
-	
+	/**
+	 * Dispatch the request by calling the correct callback according to the
+	 * request
+	 * @method _control
+	 * @param {Request} req Reques
+	 * @param {Response} res Response
+	 * @param {string} postData POST data as a string
+	 * @private
+	 */
 	_control :function (req, res, postData)
 	{
 		var url = req.url,

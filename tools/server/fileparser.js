@@ -1,3 +1,6 @@
+/**
+ * @module tools/server/fileparser
+ */
 (function() {
 
 var
@@ -9,26 +12,71 @@ fs = require('fs'),
 Maker = require('../make').Maker,
 compiler = require('../compiler'),
 
-/**
- * FileGetter which get a file path and transform
- * its content as its filetype
- */
 FileParser = function(config)
 {
 	this.init(config);
 };
 
 /**
- * FileGetter is a helper to parse a file by its type
+ * FileGetter which get a file path and transform
+ * its content as its filetype
+ * @class FileParser
+ * @constructor
+ * @param {object} config Config contains this parameters :
+ * <dl>
+ * 	<dt>url</dt>
+ * 	<dd>Url of the file to parse</dd>
+ * </dl>
  */
 FileParser.prototype = {
+	/**
+	 * File path as an array of directories
+	 * @attribute path
+	 * @type Array
+	 * @private
+	 */
 	path: null,
+	/**
+	 * Filename
+	 * @attribute filename
+	 * @type string
+	 * @private
+	 */
 	filename: null,
+	/**
+	 * File extension
+	 * @attribute ext
+	 * @type string
+	 * @private
+	 */
 	ext: null,
+	/**
+	 * File content
+	 * @attribute filecontent
+	 * @type string
+	 * @private
+	 */
 	filecontent: null,
+	/**
+	 * Content type
+	 * @attribute contenttype
+	 * @type string
+	 * @private
+	 */
 	contenttype: null,
+	/**
+	 * Callback to execute after the filecontent as been retreived
+	 * @attribute callback
+	 * @type Function
+	 * @private
+	 */
 	callback: null,
 	
+	/**
+	 * Init fileparser
+	 * @method init
+	 * @private
+	 */
 	init: function(config)
 	{
 		var url = config.url,
@@ -43,18 +91,34 @@ FileParser.prototype = {
 		this.filename = filename;
 		this.ext = ext;
 	},
+	/**
+	 * Compile the file content and execute a callback to send a response
+	 * @method getResponse
+	 * @param {Function} callback Callback to execute. Take FileParser object
+	 * as param
+	 * @public
+	 */
 	getResponse: function(callback)
 	{
 		this.callback = callback;
 		
 		this.parseFile();
 	},
-	
+	/**
+	 * Get file path from the path array and filename
+	 * @method _getFilePath
+	 * @return string
+	 * @private
+	 */
 	_getFilePath: function()
 	{
 		return (this.path.join('/')+'/'+this.filename).replace(/\/+/, '/');
 	},
-	
+	/**
+	 * Parse the file
+	 * @method parseFile
+	 * @private
+	 */
 	parseFile: function()
 	{
 		switch (this.ext)
@@ -69,7 +133,11 @@ FileParser.prototype = {
 				return this.readFile();
 		}
 	},
-	
+	/**
+	 * Compile HTML content
+	 * @method compileHTML
+	 * @private
+	 */
 	compileHTML: function()
 	{
 		this.contenttype = 'text/html';
@@ -101,6 +169,11 @@ FileParser.prototype = {
 			}.bind(this)
 		);
 	},
+	/**
+	 * Compile Javascript content
+	 * @method compileJS
+	 * @private
+	 */
 	compileJS: function()
 	{
 		this.contenttype = 'text/javascript';
@@ -192,6 +265,11 @@ FileParser.prototype = {
 			);
 		}
 	},
+	/**
+	 * Compile CSS content
+	 * @method compileCSS
+	 * @private
+	 */
 	compileCSS: function()
 	{
 		this.contenttype = 'text/css';
@@ -209,7 +287,11 @@ FileParser.prototype = {
 			}.bind(this)
 		);
 	},
-	
+	/**
+	 * Read file content
+	 * @method readFile
+	 * @private
+	 */
 	readFile: function()
 	{
 		switch (this.ext)
@@ -236,7 +318,11 @@ FileParser.prototype = {
 			}.bind(this)
 		);
 	},
-	
+	/**
+	 * Make config.js file with Maker
+	 * @method makeConfig
+	 * @private
+	 */
 	makeConfig: function()
 	{
 		var maker = new Maker({
@@ -274,7 +360,11 @@ FileParser.prototype = {
 		);
 		maker.fetch();
 	},
-	
+	/**
+	 * Compile routes
+	 * @method makeRoutes
+	 * @private
+	 */
 	makeRoutes: function()
 	{
 		var c = new compiler.RoutesCompiler();
@@ -295,7 +385,11 @@ FileParser.prototype = {
 			this._callbackError(e);
 		}
 	},
-	
+	/**
+	 * Set final values and execute the callback
+	 * @method _callback
+	 * @private
+	 */
 	_callback: function()
 	{
 		this.httpcode = 200;
@@ -304,7 +398,9 @@ FileParser.prototype = {
 		);
 	},
 	/**
-	 * File not found, return index.html
+	 * Exceute an error callback.
+	 * @method _callbackError
+	 * @private
 	 */
 	_callbackError: function(err)
 	{
@@ -371,6 +467,11 @@ FileParser.prototype = {
 			}.bind(this)
 		);
 	},
+	/**
+	 * Execute an error Callback as a 404 not found response sent to the client
+	 * @method _callback404
+	 * @private
+	 */
 	_callback404: function()
 	{
 		var filepath = this._getFilePath();

@@ -1,3 +1,7 @@
+/**
+ * Build engine
+ * @module tools/build
+ */
 (function() {
 
 var

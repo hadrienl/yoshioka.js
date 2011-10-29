@@ -1,3 +1,6 @@
+/**
+ * @module tools/server/cli
+ */
 (function() {
 
 var
@@ -11,13 +14,29 @@ Cli = function(config)
 };
 
 /**
- * Command Line Interface
+ * Command Line Interface to communicate with the server
+ * @class Cli
  */
 Cli.prototype = {
 	
+	/**
+	 * Port on which HTTP server listen to
+	 * @attribute _port
+	 * @private
+	 */
 	_port: null,
+	/**
+	 * Fixtures setting
+	 * @attribute _fixtures
+	 * @private
+	 */
 	_fixtures: true,
 	
+	/**
+	 * Init CLI with tools/make/getconfig config
+	 * @method init
+	 * @private
+	 */
 	init: function(config)
 	{
 		config || (config = {});
@@ -47,6 +66,8 @@ Cli.prototype = {
 	},
 	/**
 	 * Display a prompt and wait for a command
+	 * @method initPrompt
+	 * @private
 	 */
 	initPrompt: function()
 	{
@@ -57,6 +78,8 @@ Cli.prototype = {
 	},
 	/**
 	 * Process the user's given command
+	 * @method answerInitPrompt
+	 * @private
 	 */
 	answerInitPrompt: function(answer)
 	{
@@ -95,6 +118,8 @@ Cli.prototype = {
 	},
 	/**
 	 * Display all the available commands
+	 * @method _showHelp
+	 * @private
 	 */
 	_showHelp: function()
 	{
@@ -110,7 +135,9 @@ Cli.prototype = {
 		this.initPrompt();
 	},
 	/**
-	 *
+	 * Display install process
+	 * @method _showInstall
+	 * @private
 	 */
 	_showInstall: function(answer)
 	{
@@ -140,6 +167,11 @@ Cli.prototype = {
 			);
 		}
 	},
+	/**
+	 * Install process step 2
+	 * @method _installStep2
+	 * @private
+	 */
 	_installStep2: function(answer)
 	{
 		var Installer = require('./installer').Installer, i;
@@ -174,6 +206,8 @@ Cli.prototype = {
 	},
 	/**
 	 * Display the different available config set
+	 * @method _showSet
+	 * @private
 	 */
 	_showSet: function(answer)
 	{
@@ -193,6 +227,8 @@ Cli.prototype = {
 	},
 	/**
 	 * Display and launch the build process
+	 * @method _showBuild
+	 * @private
 	 */
 	_showBuild: function()
 	{
@@ -211,6 +247,8 @@ Cli.prototype = {
 	},
 	/**
 	 * Display a cat
+	 * @method _showNyanCat
+	 * @private
 	 */
 	_showNyanCat: function()
 	{
@@ -222,6 +260,8 @@ Cli.prototype = {
 	
 	/**
 	 * Run the build script
+	 * @method build
+	 * @private
 	 */
 	build: function()
 	{
@@ -239,6 +279,13 @@ Cli.prototype = {
 		);
 		builder.build();
 	},
+	/**
+	 * Set fixtures param
+	 * @method useFixtures
+	 * @param {boolean} set True to use files fixtures, false to use the real
+	 * API accross a proxy
+	 * @private
+	 */
 	useFixtures: function(set)
 	{
 		if (set === true ||
@@ -248,7 +295,11 @@ Cli.prototype = {
 		}
 		return this._fixtures;
 	},
-	
+	/**
+	 * Exit server
+	 * @method _exitServer
+	 * @private
+	 */
 	_exitServer: function()
 	{
 		process.exit(0);

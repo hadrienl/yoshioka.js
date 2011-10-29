@@ -1,3 +1,7 @@
+/**
+ * Templates compiler
+ * @module tools/compiler/template
+ */
 (function() {
 
 var fs = require('fs'),

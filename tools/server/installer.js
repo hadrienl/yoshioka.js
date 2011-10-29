@@ -1,3 +1,6 @@
+/**
+ * @module tools/server/installer
+ */
 (function() {
 
 var
@@ -14,9 +17,31 @@ Installer = function(config)
 	this.init(config);
 };
 
+/**
+ * Installer tool. It install the first application by copying dist folder.
+ * @class Installer
+ * @extends Fetcher
+ * @constructor
+ * @param {object} config Config with these parameters :
+ * <dl>
+ * 	<dt>namespace</dt>
+ * 	<dd>Application namespace</dd>
+ * </dl>
+ */
 Installer.prototype = new Fetcher();
 Installer.superclass = Fetcher.prototype;
+/**
+ * New application namespace
+ * @attribute _namespace
+ * @type string
+ * @private
+ */
 Installer.prototype._namespace = null;
+/**
+ * Init the installer
+ * @method init
+ * @private
+ */
 Installer.prototype.init = function(config)
 {
 	Installer.superclass.init.apply(this, arguments);
@@ -35,6 +60,11 @@ Installer.prototype.init = function(config)
 		}.bind(this)
 	);
 };
+/**
+ * Run the installer process
+ * @method run
+ * @public
+ */
 Installer.prototype.run = function()
 {
 	try
@@ -46,10 +76,21 @@ Installer.prototype.run = function()
 		this.emit('failure', e);
 	}
 };
+/**
+ * Copy all files in the `dist` folder
+ * @method _copyFiles
+ * @private
+ */
 Installer.prototype._copyFiles = function()
 {
 	this.fetch();
 };
+/**
+ * Parse a file, create its pathname in the app dir, and write the compiled new
+ * one
+ * @method _parseFile
+ * @private
+ */
 Installer.prototype._parseFile = function(path)
 {
 	var newpath = APP_PATH+path.replace(YS_PATH+'dist/', '');
@@ -76,6 +117,11 @@ Installer.prototype._parseFile = function(path)
 		}.bind(this)
 	);
 };
+/**
+ * Compile file
+ * @method _compileFile
+ * @private
+ */
 Installer.prototype._compileFile = function(content)
 {
 	return content.replace(

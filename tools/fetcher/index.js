@@ -1,3 +1,7 @@
+/**
+ * Fetch a filesystem recursively and call some method according to the filetype
+ * @module tools/fetcher
+ */
 (function(){
 
 var
@@ -11,7 +15,12 @@ Fetcher = function(config)
 {
 	this.init.apply(this, arguments);
 };
-
+/**
+ * Fetch a filesystem recursively and call some method according to the filetype
+ * from a list of directories
+ * @class Fetcher
+ * @extends EventEmitter
+ */
 Fetcher.prototype = new events.EventEmitter();
 Fetcher.prototype.dirs = null;
 Fetcher.prototype.files = null;

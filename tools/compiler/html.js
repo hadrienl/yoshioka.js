@@ -1,3 +1,7 @@
+/**
+ * HTML compiler
+ * @module tools/compiler/html
+ */
 (function() {
 
 var

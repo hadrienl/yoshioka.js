@@ -1,3 +1,7 @@
+/**
+ * CSS compiler
+ * @module tools/compiler/css
+ */
 (function() {
 
 var

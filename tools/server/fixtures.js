@@ -1,3 +1,6 @@
+/**
+ * @module tools/server/fixtures
+ */
 (function() {
 
 var
@@ -11,9 +14,37 @@ Fixtures = function(config)
 {
 	this.init(config);
 };
+/**
+ * Fixtures class process fixtures files and send the correct data to the client
+ * @class Fixtures
+ * @constructor
+ * @param {object} config Config with these parameters :
+ * <dl>
+ * 	<dt>request</dt>
+ * 	<dd>Request object from HTTP server</dd>
+ * 	<dt>postData</dt>
+ * 	<dd>POST data from HTTP server</dd>
+ * </dl>
+ */
 Fixtures.prototype = {
+	/**
+	 * Client request
+	 * @attribute request
+	 * @private
+	 */
 	request: null,
+	/**
+	 * POST data sent by the client
+	 * @attribute postData
+	 * @private
+	 */
 	postData: null,
+	
+	/**
+	 * Compile Javascript content
+	 * @attribute request
+	 * @private
+	 */
 	init: function(config)
 	{
 		config || (config = {});
@@ -29,7 +60,14 @@ Fixtures.prototype = {
 			this._postData = qs.parse(config.postData);
 		}
 	},
-	
+	/**
+	 * Get data from a fixtures file
+	 * @method getData
+	 * @return JSON
+	 * @throws {Error} If fixture file does not exists
+	 * @throws {Error} If fixtures files is not a valid JSON
+	 * @public
+	 */
 	getData: function()
 	{
 		var method = this._postData.method,

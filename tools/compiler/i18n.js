@@ -1,3 +1,7 @@
+/**
+ * Internationalisation compiler
+ * @module tools/compiler/i18n
+ */
 (function() {
 
 var fs = require('fs'),

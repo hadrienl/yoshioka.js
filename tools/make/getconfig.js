@@ -1,3 +1,6 @@
+/**
+ * @module tools/make/getconfig
+ */
 (function() {
 
 var
@@ -8,7 +11,10 @@ app_config_path = APP_PATH+'/config/app_config.js',
 dev_config_path = APP_PATH+'/config/dev_config.js',
 
 fs = require('fs');
-
+/**
+ * Get the configuration JSON from app\_config.js and dev\_config.js
+ * @method getConfig
+ */
 exports.getConfig = function(config)
 {
 	var app_config = null, dev_config = null;

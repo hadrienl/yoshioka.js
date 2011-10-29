@@ -1,3 +1,7 @@
+/**
+ * Make the YUI_config file from all the application files and config
+ * @module tools/make
+ */
 (function(){
 
 var
@@ -11,6 +15,10 @@ getconfig = require('./getconfig'),
 
 Fetcher = require('../fetcher').Fetcher,
 
+/**
+ * Make the YUI_config file from all the application files and config
+ * @class Maker
+ */
 Maker = function(config)
 {
 	this.init.apply(this, arguments);

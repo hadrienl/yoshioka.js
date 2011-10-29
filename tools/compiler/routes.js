@@ -1,3 +1,7 @@
+/**
+ * Routes compiler
+ * @module tools/compiler/routes
+ */
 (function() {
 
 var
