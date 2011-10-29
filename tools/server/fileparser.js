@@ -188,7 +188,8 @@ FileParser.prototype = {
 		{
 			return this.makeRoutes();
 		}
-		else if ('/config/errors.js' === filepath)
+		else if ('/config/errors.js' === filepath ||
+				filepath.match(/yoshioka\.js/))
 		{
 			/**
 			 * compile class view into yui module

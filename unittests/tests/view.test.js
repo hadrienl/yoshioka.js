@@ -75,4 +75,4 @@ YUI().add('ys/view/test', function(Y) {
 	);
 	
 	Y.Test.Runner.add(suite);
-}, '1.0', {requires: ["ys_view"]});
+}, '1.0', {requires: ["ys/view"]});

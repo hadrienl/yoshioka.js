@@ -184,4 +184,4 @@ YUI().add('ys/core/test', function(Y) {
 	);
 	
 	Y.Test.Runner.add(suite);
-}, '1.0', {requires: ["ys_core", "node", 'node-event-simulate']});
+}, '1.0', {requires: ["ys/core", "node", 'node-event-simulate']});

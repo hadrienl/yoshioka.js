@@ -26,7 +26,7 @@ Builder.prototype = new Maker();
 Builder.superclass = Maker.prototype;
 Builder.prototype._buildname = null;
 Builder.prototype._buildpath = null;
-Builder.prototype._ignore = ['config/config.js', 'config/app_config.js', 'yoshioka.js/core/core_config.js'];
+Builder.prototype._ignore = ['config/config.js', 'config/app_config.js', 'config/dev_config.js', 'yoshioka.js/core/core_config.js'];
 Builder.prototype.init = function(config)
 {
 	events.EventEmitter.call(this);
@@ -134,41 +134,69 @@ Builder.prototype._parseJSFile = function(path)
 		return;
 	}
 	
+	this._mkdir(path, APP_PATH+this._buildpath+'/');
+	
 	if (path.match(/routes.js$/))
 	{
 		c = new compiler.RoutesCompiler();
+		c.parse(function(path, content)
+		{
+			fs.writeFile(
+				APP_PATH+this._buildpath+path,
+				content,
+				'utf-8',
+				function(path, err, data)
+				{
+					/**
+					 * Compress build file with YUICompressor
+					 */
+					this.compressJS(
+						path,
+						function(err, stdout, stderr)
+						{
+							this._filecount--;
+							this._checkFileCount();
+						}.bind(this)
+					);
+				}.bind(this, path)
+			);
+		}.bind(this, path));
+		return;
 	}
 	else
 	{
 		c = new compiler.TemplateCompiler({
 			file: path
 		});
-	}
-	
-	this._mkdir(path, BUILD_DIR+this._buildname+'/');
-	
-	c.parse(function(path, content)
-	{
-		fs.writeFile(
-			this._buildpath+path,
-			content,
-			'utf-8',
-			function(path, err, data)
+		c.parse(function(path, content)
+		{
+			var c = new compiler.ModuleCompiler({
+				filecontent: content
+			});
+			c.parse(function(path, content)
 			{
-				/**
-				 * Compress build file with YUICompressor
-				 */
-				this.compressJS(
-					path,
-					function(err, stdout, stderr)
+				fs.writeFile(
+					APP_PATH+this._buildpath+path,
+					content,
+					'utf-8',
+					function(path, err, data)
 					{
-						this._filecount--;
-						this._checkFileCount();
-					}.bind(this)
+						/**
+						 * Compress build file with YUICompressor
+						 */
+						this.compressJS(
+							path,
+							function(err, stdout, stderr)
+							{
+								this._filecount--;
+								this._checkFileCount();
+							}.bind(this)
+						);
+					}.bind(this, path)
 				);
-			}.bind(this, path)
-		);
-	}.bind(this, path));
+			}.bind(this, path));
+		}.bind(this, path));
+	}
 };
 Builder.prototype._parseLocaleFile = function(path)
 {
@@ -176,12 +204,12 @@ Builder.prototype._parseLocaleFile = function(path)
 		file: path
 	});
 	
-	this._mkdir(path, BUILD_DIR+this._buildname+'/');
+	this._mkdir(path, APP_PATH+this._buildpath+'/');
 	
 	c.parse(function(path, content)
 	{
 		fs.writeFile(
-			this._buildpath+path,
+			APP_PATH+this._buildpath+path,
 			content,
 			'utf-8',
 			function(path, err, data)
@@ -207,12 +235,12 @@ Builder.prototype._parseCSSFile = function(path)
 		file: path
 	});
 	
-	this._mkdir(path, BUILD_DIR+this._buildname+'/');
+	this._mkdir(path, APP_PATH+this._buildpath+'/');
 	
 	c.parse(function(path, content)
 	{
 		fs.writeFile(
-			this._buildpath+path,
+			APP_PATH+this._buildpath+path,
 			content,
 			function(path, err, data)
 			{
@@ -248,7 +276,7 @@ Builder.prototype._parseStaticFile = function(path)
 		return;
 	}
 	
-	this._mkdir(path, BUILD_DIR+this._buildname+'/');
+	this._mkdir(path, APP_PATH+this._buildpath+'/');
 	
 	/**
 	 * Simple copy file in build folder
@@ -258,7 +286,7 @@ Builder.prototype._parseStaticFile = function(path)
 	);
 	
 	fs.writeFileSync(
-		this._buildpath+path,
+		APP_PATH+this._buildpath+path,
 		content
 	);
 	
@@ -274,7 +302,7 @@ Builder.prototype._parseHTMLFile = function(path, writepath)
 	c.parse(function(path, content)
 	{
 		fs.writeFile(
-			this._buildpath+path,
+			APP_PATH+this._buildpath+path,
 			content
 		);
 		this._filecount--;
@@ -284,7 +312,7 @@ Builder.prototype._parseHTMLFile = function(path, writepath)
 Builder.prototype.compressJS = function(path, callback)
 {
 	var cmd = exec(
-			'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type js --charset utf8 '+this._buildpath+path+' -o '+this._buildpath+path,
+			'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type js --charset utf8 '+APP_PATH+this._buildpath+path+' -o '+APP_PATH+this._buildpath+path,
 			function(callback, path, err, stdout, stderr)
 			{
 				if (err)
@@ -299,7 +327,7 @@ Builder.prototype.compressJS = function(path, callback)
 Builder.prototype.compressCSS = function(path, callback)
 {
 	var cmd = exec(
-			'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type css --charset utf8 '+this._buildpath+path+' -o '+this._buildpath+path,
+			'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type css --charset utf8 '+APP_PATH+this._buildpath+path+' -o '+APP_PATH+this._buildpath+path,
 			function(callback, path, err, stdout, stderr)
 			{
 				if (err)

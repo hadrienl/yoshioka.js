@@ -83,10 +83,13 @@ ModuleCompiler.prototype = {
 				.replace(/\*/g, '')
 				.split(/,/);
 		
-		this._filecontent =
+		if (module)
+		{
+			this._filecontent =
 "YUI().add('"+module+"', function(Y) {\n"+
 this._filecontent+"\n"+
 "}, '1.234', {requires: "+JSON.stringify(requires)+"})";
+		}
 
 		return this._filecontent;
 	}

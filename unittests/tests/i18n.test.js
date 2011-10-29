@@ -199,4 +199,4 @@ YUI().add('ys/i18n/test', function(Y) {
 	);
 	
 	Y.Test.Runner.add(suite);
-}, '1.0', {requires: ["ys_i18n"]});
+}, '1.0', {requires: ["ys/i18n"]});
