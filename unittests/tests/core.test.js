@@ -1,4 +1,4 @@
-YUI().add('ys_core_test', function(Y) {
+YUI().add('ys/core/test', function(Y) {
 	var suite = new Y.Test.Suite("Core");
 	
 	suite.add(

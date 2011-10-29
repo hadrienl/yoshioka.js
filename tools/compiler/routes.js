@@ -7,7 +7,7 @@
 var
 
 APP_PATH = __dirname.replace(/yoshioka\.js.*$/, '')+'/',
-JS_TEMPLATE = "YUI().add('ys_routes', function(Y) {Y.namespace('ys').routes={$routes};});",
+JS_TEMPLATE = "YUI().add('ys/routes', function(Y) {Y.namespace('ys').routes={$routes};});",
 
 fs = require('fs'),
 

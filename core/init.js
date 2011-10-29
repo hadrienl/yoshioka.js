@@ -1,8 +1,8 @@
 YUI().use(
 	'errors',
-	'ys_core',
+	'ys/core',
 	'node',
-	YUI_config.app+'_'+YUI_config.mainview+'_view',
+	YUI_config.app+'/views/'+YUI_config.mainview,
 	function(Y)
 {
 	var NS = 'ys',

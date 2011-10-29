@@ -1,18 +1,18 @@
 {
 	"base": "/",
 	"modules": {
-		"ys_routes": {
+		"ys/routes": {
 			"path": "config/routes.js"
 		},
-		"ys_core": {
+		"ys/core": {
 			"path": "yoshioka.js/core/core.js",
-			"requires": ["controller", "model", "ys_routes", "substitute", "ys_i18n", "ys_view"]
+			"requires": ["controller", "model", "ys/routes", "substitute", "ys/i18n", "ys/view"]
 		},
-		"ys_i18n": {
+		"ys/i18n": {
 			"path": "yoshioka.js/core/i18n.js",
 			"requires": ["base"]
 		},
-		"ys_view": {
+		"ys/view": {
 			"path": "yoshioka.js/core/view.js",
 			"requires": ["view", "node", "get", "substitute"]
 		}

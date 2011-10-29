@@ -3,7 +3,7 @@
  * @module ys_view
  * @requires view, node, get, substitute
  */
-YUI().add('ys_view', function(Y) {
+YUI().add('ys/view', function(Y) {
 
 	var NS = 'ys',
 
@@ -338,7 +338,7 @@ YUI().add('ys_view', function(Y) {
 				/**
 				 * Module name
 				 */
-				module = Y.config.app+'_'+name+'_'+'view',
+				module = Y.config.app+'/'+name+'/'+'view',
 				/**
 				 * Put this in a variable to use it in the new sandbox
 				 */

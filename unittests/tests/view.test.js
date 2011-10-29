@@ -1,4 +1,4 @@
-YUI().add('ys_view_test', function(Y) {
+YUI().add('ys/view/test', function(Y) {
 	var suite = new Y.Test.Suite("View");
 	
 	Y.config.app = 'core';

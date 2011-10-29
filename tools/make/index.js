@@ -41,6 +41,10 @@ Maker.prototype.init = function(config)
 	this.basepath = config.basepath ? config.basepath : '/';
 	this._modules = {};
 	this._dev = config.dev;
+	
+	this._appConfig = getconfig.getConfig({
+		dev: this._dev
+	});
 };
 /**
  * Parse a file
@@ -98,7 +102,7 @@ Maker.prototype._parseLocaleFile = function(path)
 	var locale = (locale = path.match(/locales\/([^\/]+)/)) ?
 			locale[1] : null,
 		file = (file = path.split(/\//)) && file[file.length - 1],
-		module = 'i18n_'+locale+'_'+file.replace(/.i18n\.js?/, '');
+		module = 'i18n/'+locale+'/'+file.replace(/.i18n\.js?/, '');
 	
 	/**
 	 * Generate config object for
@@ -128,31 +132,27 @@ Maker.prototype._parseJSFile = function(path)
 				 * get module name from
 				 * YUI().add call
 				 */
-				module = script.match(
-					/add\(['"](.*?)['"]/
-				),
+				module = (module = script.match(
+						/\@module ([a-zA-Z0-9\/\-\_]+)/
+					)) && module[1],
 				/**
 				 * Get the requires array
 				 */
-				requires = script.match(
-					/requires\s*?\:\s*?(\[.*?\])/
-				);
+				requires = (requires = script.match(
+						/\@requires ([a-zA-Z0-9\/\-\_\,\s\*]+)(\@|(\*\/))/
+					)) && requires[1]
+					.replace(/\n/g, ' ')
+					.replace(/\s/g, '')
+					.replace(/\*/g, '')
+					.split(/,/);
 
-			if (module)
-			{
-				module = module[1];
-			}
-			if (requires)
-			{
-				requires = requires[1];
-			}
 			if (!module)
 			{
 				this._filecount--;
 				this._checkFileCount();
 				return;
 			}
-
+			
 			/**
 			 * Generate config object for
 			 * this module
@@ -161,7 +161,7 @@ Maker.prototype._parseJSFile = function(path)
 			this._modules[module].path = path;
 			if (requires)
 			{
-				this._modules[module].requires = JSON.parse(requires)
+				this._modules[module].requires = requires
 			}
 			
 			/**
@@ -175,8 +175,11 @@ Maker.prototype._parseJSFile = function(path)
 };
 Maker.prototype._parseCSSFile = function(path)
 {
-	var file = (file = path.split(/\//)) && file[file.length - 1],
-		module = path.match(/([^\/]+)\/assets\//),
+	var file = (file = path.split(/\//))
+		&& file[file.length - 1].split(/\./)[0],
+		
+		module = (module = path.match(/([^\/]+)\/assets\//)) && module[1],
+		
 		isplugin = path.match(/^plugins\//);
 	
 	if (!module)
@@ -184,7 +187,10 @@ Maker.prototype._parseCSSFile = function(path)
 		throw 'CSS file unknown path : ' + path;
 	}
 
-	module = 'css_'+(isplugin ? 'plugins_':'')+module[1]+'_'+file.split(/\./)[0];
+	module = (isplugin ?
+		 'plugins':this._appConfig.app)+
+		'/views/'+module+'/assets/'+file;
+	
 	/**
 	 * Generate config object for
 	 * this module
@@ -226,10 +232,7 @@ Maker.prototype.writeConfig = function(path)
 	/**
 	 * Get the default config file
 	 */
-	var appConfig = getconfig.getConfig({
-			dev: this._dev
-		}),
-		coreConfig, YUI_config;
+	var coreConfig, YUI_config;
 	
 	path || (path = APP_PATH);
 	
@@ -247,7 +250,7 @@ Maker.prototype.writeConfig = function(path)
 	/**
 	 * Set YUI_config default values
 	 */
-	YUI_config = appConfig;
+	YUI_config = this._appConfig;
 	YUI_config.app || (YUI_config.app = 'ys');
 	YUI_config.appmainview || (YUI_config.appmainview = 'main');
 	YUI_config.groups || (YUI_config.groups = {});

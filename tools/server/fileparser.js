@@ -176,20 +176,35 @@ FileParser.prototype = {
 	 */
 	compileJS: function()
 	{
+		var filepath = this._getFilePath();
+		
 		this.contenttype = 'text/javascript';
 		
-		if (this._getFilePath() === '/config/config.js')
+		if ('/config/config.js' === filepath)
 		{
 			return this.makeConfig();
 		}
-		if (this._getFilePath() === '/config/routes.js')
+		else if ('/config/routes.js' === filepath)
 		{
 			return this.makeRoutes();
 		}
-		else if (this._getFilePath().match(/locales/))
+		else if ('/config/errors.js' === filepath)
+		{
+			/**
+			 * compile class view into yui module
+			 */
+			c = new compiler.ModuleCompiler({
+				file: filepath
+			});
+			c.parse(function(content) {
+				this.filecontent = content;
+				this._callback();
+			}.bind(this));
+		}
+		else if (filepath.match(/locales/))
 		{
 			fs.readFile(
-				APP_PATH+this._getFilePath(),
+				APP_PATH+filepath,
 				function(err, data)
 				{
 					var c;
@@ -217,10 +232,10 @@ FileParser.prototype = {
 				}.bind(this)
 			);
 		}
-		else if (this._getFilePath().match(/views/))
+		else if (filepath.match(/views/))
 		{
 			fs.readFile(
-				APP_PATH+this._getFilePath(),
+				APP_PATH+filepath,
 				function(err, data)
 				{
 					var c;
@@ -231,20 +246,32 @@ FileParser.prototype = {
 					}
 				
 					this.filecontent = data.toString();
-				
+					
+					/**
+					 * Insert templates into class view
+					 */
 					c = new compiler.TemplateCompiler({
 						file: this._getFilePath(),
 						filecontent: this.filecontent
 					});
 					
-					c.parse(
-						function(content)
-						{
+					c.parse(function(content)
+					{
+						var c;
+						
+						this.filecontent = content;
+						
+						/**
+						 * compile class view into yui module
+						 */
+						c = new compiler.ModuleCompiler({
+							filecontent: content
+						});
+						c.parse(function(content) {
 							this.filecontent = content;
-
 							this._callback();
-						}.bind(this)
-					);
+						}.bind(this));
+					}.bind(this));
 				}.bind(this)
 			);
 		}

@@ -3,7 +3,7 @@
  * @module ys_core
  * @requires controller, model, ys_routes, substitute, ys_i18n
  */
-YUI().add('ys_core', function(Y) {
+YUI().add('ys/core', function(Y) {
 	
 	var NS = 'ys',
 		
@@ -261,4 +261,4 @@ YUI().add('ys_core', function(Y) {
 	
 	Y.namespace(NS).use = Y.namespace(NS).Controller.use;
 
-}, '1.0', {requires: ["controller", "model", "ys_routes", "substitute", "ys_i18n"]})
+}, '1.0', {requires: ["controller", "model", "ys/routes", "substitute", "ys/i18n"]})

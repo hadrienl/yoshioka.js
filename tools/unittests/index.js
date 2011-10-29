@@ -51,12 +51,12 @@ UnitTests.prototype = {
 							var ctn = fs.readFileSync(
 									APP_PATH+testpath+f
 								),
-								module = ctn.toString().match(
-									/YUI\(.*?\).add\((.*?),/
-								);
+								module = (module = ctn.toString().match(
+										/\@module ([a-zA-Z0-9\/\-\_]+)/
+									)) && module[1];
 							
 							this._srcs[this._srcs.length] = '<script src="/'+testpath+f+'"></script>';
-							this._modules[this._modules.length] = module[1];
+							this._modules[this._modules.length] = '"'+module+'"';
 						}.bind(this)
 					);
 				}

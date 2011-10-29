@@ -3,7 +3,7 @@
  * @module ys_i18n
  * @requires base
  */
-YUI().add('ys_i18n', function(Y) {
+YUI().add('ys/i18n', function(Y) {
 	
 	var NS = 'ys',
 		
@@ -127,7 +127,7 @@ YUI().add('ys_i18n', function(Y) {
 				module = raw_key ? raw_key[0] : null,
 				key = raw_key ? raw_key[1] : null,
 				locale = this.get('locale'),
-				name = 'i18n_'+locale+'_'+module,
+				name = 'i18n/'+locale+'/'+module,
 				self = this;
 			
 			if (!module)

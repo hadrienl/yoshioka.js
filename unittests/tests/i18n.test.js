@@ -1,18 +1,18 @@
-YUI().add('i18n_en_US_hello', function(Y) {
+YUI().add('i18n/en_US/hello', function(Y) {
 	Y.namespace('ys.I18n.en_US').hello =
 	{
 		"world": 'Hello World!'
 	};
 });
 
-YUI().add('i18n_fr_FR_hello', function(Y) {
+YUI().add('i18n/fr_FR/hello', function(Y) {
 	Y.namespace('ys.I18n.fr_FR').hello =
 	{
 		"world": 'Bonjour Monde !'
 	};
 });
 
-YUI().add('ys_i18n_test', function(Y) {
+YUI().add('ys/i18n/test', function(Y) {
 	var suite = new Y.Test.Suite("I18nManager");
 	
 	Y.config.locales = [{

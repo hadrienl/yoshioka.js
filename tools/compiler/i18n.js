@@ -58,7 +58,7 @@ I18nCompiler.prototype =
 		var pathparts = this._file.match(/([^\/]+)\/([^\/]+)\.i18n/),
 			locale = pathparts[1],
 			file = pathparts[2],
-			module = 'i18n_'+locale+'_'+file,
+			module = 'i18n/'+locale+'/'+file,
 			lines = {};
 		
 		/**

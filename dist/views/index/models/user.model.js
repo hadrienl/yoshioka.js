@@ -1,22 +1,23 @@
-YUI().add('index_user_model', function(Y) {
+/**
+ * @module yourapp/views/index/models/user
+ * @requires model
+ */
+var
+
+NS = 'yourapp',
+
+User = function(config)
+{
+	User.superclass.constructor.apply(this, arguments);
+};
+
+Y.namespace(NS).User = Y.extend(User, Y.Model, {
 	
-	var
-	NS = 'yourapp',
-	
-	User = function(config)
-	{
-		User.superclass.constructor.apply(this, arguments);
-	};
-	
-	Y.namespace(NS).User = Y.extend(User, Y.Model, {
-		
-	},
-	{
-		ATTRS: {
-			name: {
-				value: 'Anonymous'
-			}
+},
+{
+	ATTRS: {
+		name: {
+			value: 'Anonymous'
 		}
-	});
-	
-}, '1.0', {requires: ["model"]});
+	}
+});
