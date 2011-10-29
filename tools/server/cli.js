@@ -232,7 +232,6 @@ Cli.prototype = {
 	 */
 	_showBuild: function()
 	{
-		return this.build();
 		this.cli.question(
 			"Have you run the unit tests before ? (YES or no) ",
 			function(answer)
