@@ -26,6 +26,8 @@ Builder.prototype = new Maker();
 Builder.superclass = Maker.prototype;
 Builder.prototype._buildname = null;
 Builder.prototype._buildpath = null;
+Builder.prototype._coreconfig = null;
+Builder.prototype._appconfig = null;
 Builder.prototype._ignore = ['config/config.js', 'config/app_config.js', 'config/dev_config.js', 'yoshioka.js/core/core_config.js'];
 Builder.prototype.init = function(config)
 {
@@ -35,6 +37,17 @@ Builder.prototype.init = function(config)
 	this._filecount = 0;
 	this._buildname = new Date().getTime();
 	this._buildpath = BUILD_DIR+this._buildname+'/';
+	
+	this._coreconfig = JSON.parse(
+		fs.readFileSync(
+			APP_PATH+'yoshioka.js/core/core_config.js'
+		).toString()
+	);
+	this._appconfig = JSON.parse(
+		fs.readFileSync(
+			APP_PATH+'config/app_config.js'
+		).toString()
+	);
 };
 Builder.prototype.build = function()
 {
@@ -320,6 +333,7 @@ Builder.prototype.compressJS = function(path, callback)
 					util.print('YUICompressor detects errors in '+path+" :\n");
 					util.print(stderr);
 				}
+				this.insertCopyright(path);
 				callback && callback(err, stdout, stderr);
 			}.bind(this, callback, path)
 		);
@@ -335,10 +349,39 @@ Builder.prototype.compressCSS = function(path, callback)
 					util.print('YUICompressor detects errors in '+path+" :\n");
 					util.print(stderr);
 				}
+				this.insertCopyright(path);
 				callback && callback(err, stdout, stderr);
 			}.bind(this, callback, path)
 		);
 };
+Builder.prototype.insertCopyright = function(path)
+{
+	var copyright = "/*\n{name} {version}\n{text}\n*/\n",
+		data,
+		filecontent = fs.readFileSync(APP_PATH+this._buildpath+path).toString();
+	
+	if (path.match(/yoshioka\.js/))
+	{
+		data = this._coreconfig.copyright;
+	}
+	else
+	{
+		data = this._appconfig.copyright;
+	}
+	
+	if (data)
+	{
+		filecontent = copyright
+			.replace(/\{name\}/, data.name)
+			.replace(/\{version\}/, data.version)
+			.replace(/\{text\}/, data.text)
+			+ filecontent;
+	}
+	fs.writeFileSync(
+		APP_PATH+this._buildpath+path,
+		filecontent
+	);
+}
 
 exports.Builder = Builder;
 

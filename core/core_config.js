@@ -16,5 +16,10 @@
 			"path": "yoshioka.js/core/view.js",
 			"requires": ["view", "node", "get", "substitute"]
 		}
+	},
+	"copyright": {
+		"name": "Yoshioka.js",
+		"version": "0.1",
+		"text": "Copyright 2011 EBuzzing Group All rights reserved\nLicensed under the BSD License."
 	}
 }
