@@ -137,6 +137,10 @@ Cli.prototype = {
 "Available commands are :\n"+
 " - help (h) : display this help\n"+
 " - install : install a new Application\n"+
+" - create : create files :\n"+
+"	- create view <viewname> : create a new view javascript class file, html template and javascript unit test class file\n"+
+"	- create subview <subviewname> for <viewname> : create subview javascript class file and unit test class file\n" +
+"	- create model <modelname> for <viewname> : create model javascript class file and unit test class file\n"+
 " - build (b) : build your project\n"+
 " - set [OPTION] [PARAM]: Set a configuration :\n"+
 "    - fixtures (on|off) : Tell API to use fixtures files or real API proxyfied\n"+
