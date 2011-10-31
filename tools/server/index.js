@@ -55,12 +55,6 @@ Server.prototype = {
 	 * @private
 	 */
 	_port: null,
-	/**
-	 * Config object get from tools/make/getconfig
-	 * @attribute _config
-	 * @private
-	 */
-	_config: null,
 	
 	/**
 	 * Init Server with config from add_config.js and dev_config.js.
@@ -82,7 +76,6 @@ Server.prototype = {
 		this._proxy = new httpProxy.RoutingProxy();
 		
 		this._port = config.port || 1636;
-		this._config = config || {};
 		
 		this._http = http.createServer(
 			function(req, res)
@@ -128,7 +121,10 @@ Server.prototype = {
 	{
 		var url = req.url,
 			f,
-			fixtures_path = null;
+			fixtures_path = null,
+			config = getconfig.getConfig({
+				dev: true
+			});
 		
 		if (url.match(/\/$/))
 		{
@@ -190,10 +186,10 @@ Server.prototype = {
 		 * Check if url is a proxy path which need to be proxyfied
 		 * (the API for example)
 		 */
-		if (this._config &&
-			this._config.fixtures)
+		if (config &&
+			config.fixtures)
 		{
-			this._config.fixtures.forEach(
+			config.fixtures.forEach(
 				function(p)
 				{
 					if (url.match(p.path))
