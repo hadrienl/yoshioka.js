@@ -75,7 +75,9 @@ Server.prototype = {
 			dev: true
 		});
 		
-		this._cli = new Cli(config);
+		this._cli = new Cli({
+			dev: true
+		});
 		
 		this._proxy = new httpProxy.RoutingProxy();
 		

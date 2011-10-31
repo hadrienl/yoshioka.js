@@ -337,7 +337,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 			/**
 			 * Module name
 			 */
-			module = Y.config.app+'/'+name+'/'+'view',
+			module = Y.config.app+'/views/'+name,
 			/**
 			 * Put this in a variable to use it in the new sandbox
 			 */
