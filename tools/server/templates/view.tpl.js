@@ -17,6 +17,12 @@ var NS = '{appname}',
  * @constructor
  */
 Y.namespace(NS).{viewclass} = Y.extend({viewclass}, Y.ys.View, {
+	/**
+	 * View template defined in {view}.tpl.html file
+	 * @property template
+	 * @type string
+	 * @protected
+	 */
 	template: {${view}.tpl}
 },
 {

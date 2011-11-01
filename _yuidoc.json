@@ -1,0 +1,12 @@
+{
+	"name": "yoshioka.js",
+	"description": "Javascript MVC framework based on YUI3",
+	"version": "0.1",
+	"url": "http://github.com/hadrienl/yoshioka.js",
+	"options": {
+		"linkNatives": "true",
+		"attributesEmit": "true",
+		"paths": [ "./" ],
+		"exclude": "tools/server/templates/"
+	}
+}

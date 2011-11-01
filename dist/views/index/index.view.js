@@ -15,6 +15,8 @@ var NS = 'yourapp',
 
 /**
  * Index view
+ * @class IndexView
+ * @namespace Y.test
  */
 Y.namespace(NS).IndexView = Y.extend(IndexView, Y.ys.View, {
 	template: {$index.tpl},

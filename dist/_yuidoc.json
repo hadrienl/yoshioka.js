@@ -1,0 +1,12 @@
+{
+	"name": "yourapp",
+	"description": "Description of yourapp",
+	"version": "0.1",
+	"url": "http://github.com/hadrienl/yoshioka.js",
+	"options": {
+		"linkNatives": "true",
+		"attributesEmit": "true",
+		"paths": [ "./" ],
+		"exclude": "yoshioka.js"
+	}
+}
