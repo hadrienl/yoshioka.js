@@ -250,7 +250,26 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
 Y.namespace(NS).Controller = new (Y.namespace(NS).Core)();
 
 /**
- * Coord object. Listen to its `change` event to know if a route has changed
+ * Coord object. Listen to its `change` event to know if a route has changed.
+ * <p>When you configure a route, you specify an object with a `path` attribute and some arbitraries attributes of your choice. This attributes are set to the Coord object in the way you can listen to them in any views.</p>
+ * <p>By example, if you specify this routes :</p>
+ * <pre>[{
+ * 	"path": "/",
+ * 	"foo": "bar"
+ * },
+ * {
+ * 	"path": "/hello",
+ * 	"foo": "hello"
+ * }]</pre>
+ * <p>So, Y.ys.Coord.get('foo') will return `bar` for path / and `hello` for path /hello. A view can listen to Y.ys.Coord attributes change to do behavior :</p>
+ * <pre>
+ * Y.ys.Coord.after(
+ * 	'fooChange',
+ * 	this.doSomething,
+ * 	this
+ * );
+ * </pre>
+ * <p>Each time the path change and the attribute foo's value change, the view will execute its method doSomething().</p>
  * @class Coord
  * @namespace Y.ys
  * @extends Y.Model

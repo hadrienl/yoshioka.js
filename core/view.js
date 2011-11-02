@@ -15,6 +15,19 @@ var NS = 'ys',
  * Y.ys.View extends Y.View and add it all the magic of yoshioka. With this
  * view, you can dynamically load other views and construct your interface.
  * You can use templates, locales, load and unload css.
+ * <p>When you instanciate a view, you append its container node to a parent by
+ * calling render() method :</p>
+ * <pre>
+ * var view = new Y.ys.MyView();
+ * Y.one(document.body).append(
+ * 	view.render()
+ * );
+ * </pre>
+ * <p>Will append the node in page body.</p>
+ * <p>The render() method will call renderUI(), bindUI() and syncUI() methods, then, will return this.container. So when you write a view, you just have to write this three methods.</p>
+ * <ul><li>renderUI() will generate all the DOM from template(s) or javascript</li>
+ * <li>bindUI() will listen to events relative to the view</li>
+ * <li>syncUI() will update variables in view's DOM from it's attributes and models. You'll have to call it anytime an attribute used in the view has changed.</li></ul>
  * @class View
  * @namespace Y.ys
  * @extend Y.View
