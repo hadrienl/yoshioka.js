@@ -31,7 +31,7 @@ exports.getConfig = function(config)
 	}
 	catch (e)
 	{
-		console.log("Your config/app_config.js does not exists.");
+		console.log("Your config/app_config.js does not exist.");
 		app_config = {};
 	}
 	

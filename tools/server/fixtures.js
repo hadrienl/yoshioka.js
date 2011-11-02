@@ -64,7 +64,7 @@ Fixtures.prototype = {
 	 * Get data from a fixtures file
 	 * @method getData
 	 * @return JSON
-	 * @throws {Error} If fixture file does not exists
+	 * @throws {Error} If fixture file does not exist
 	 * @throws {Error} If fixtures files is not a valid JSON
 	 * @public
 	 */
@@ -82,7 +82,7 @@ Fixtures.prototype = {
 		catch (e)
 		{
 			throw new Error(
-				"File "+APP_PATH+'/fixtures/'+method+'.js'+" does not exists"
+				"File "+APP_PATH+'/fixtures/'+method+'.js'+" does not exist"
 			);
 		}
 		try

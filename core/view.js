@@ -179,7 +179,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 		
 		if (!Y.config.groups[YUI_config.app].modules[modulename])
 		{
-			throw new Error("Module "+modulename+" does not exists.")
+			throw new Error("Module "+modulename+" does not exist.")
 		}
 		path = Y.config.groups[YUI_config.app].base+
 			Y.config.groups[YUI_config.app].modules[modulename].path,
@@ -417,7 +417,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 	 * view
 	 * @param {function} callback Callback to execute
 	 * @protected
-	 * throws {Error} If the view class does not exists. You _MUST_ declare
+	 * throws {Error} If the view class does not exist. You _MUST_ declare
 	 * a Y.yourapp.NameView class extending Y.ys.View
 	 */
 	_setViewCallback: function(classname, params, node, place, callback)
@@ -436,7 +436,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 		catch (e)
 		{
 			throw new Error(
-				"This view does not exists. You must declare a "+
+				"This view does not exist. You must declare a "+
 				"`Y."+Y.config.app+"."+classname+"` class in a "+
 				"`"+Y.config.app+"_"+
 				classname.toLowerCase().replace('view', '_view')+"` module"

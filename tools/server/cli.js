@@ -336,7 +336,7 @@ Cli.prototype = {
 				fs.statSync(APP_PATH+'views/' + args[3].toLowerCase());
 			}
 			catch (e){
-				this.cli.write("View "+args[3]+" does not exists.\n");
+				this.cli.write("View "+args[3]+" does not exist.\n");
 				return this.initPrompt();
 			}
 			
@@ -419,7 +419,7 @@ Cli.prototype = {
 				fs.statSync(APP_PATH+'views/' + args[3].toLowerCase());
 			}
 			catch (e){
-				this.cli.write("View "+args[3]+" does not exists.\n");
+				this.cli.write("View "+args[3]+" does not exist.\n");
 				return this.initPrompt();
 			}
 			
