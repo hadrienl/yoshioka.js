@@ -43,13 +43,11 @@ Cli.prototype = {
 	{
 		config || (config = {});
 		
-		this._appconfig = getconfig.getConfig({
-			dev: config.dev
-		});
-		
 		this._port = config.port || 80;
 		
 		this._fixtures = true;
+		
+		this._dev = config.dev;
 		
 		this.cli = rl.createInterface(
 			process.stdin, process.stdout, null);
@@ -476,7 +474,10 @@ Cli.prototype = {
 	{
 		var viewclass = view.substring(0,1).toUpperCase()+
 				view.substring(1).toLowerCase() + 'View',
-			appname = this._appconfig.app,
+			appconfig = getconfig.getConfig({
+				dev: this._dev
+			}),
+			appname = appconfig.app,
 			module = appname+'/views/'+view.toLowerCase();
 		
 		return fs.readFileSync(__dirname+'/templates/view.tpl.js').toString()
@@ -489,7 +490,10 @@ Cli.prototype = {
 	{
 		var viewclass = view.substring(0,1).toUpperCase()+
 				view.substring(1).toLowerCase() + 'View',
-			appname = this._appconfig.app,
+			appconfig = getconfig.getConfig({
+				dev: this._dev
+			}),
+			appname = appconfig.app,
 			requires = appname+'/views/'+view.toLowerCase();
 			module = appname+'/views/'+view.toLowerCase()+
 				'/tests/'+view.toLowerCase();
@@ -512,7 +516,10 @@ Cli.prototype = {
 	{
 		var viewclass = subview.substring(0,1).toUpperCase()+
 				subview.substring(1).toLowerCase() + 'Subview',
-			appname = this._appconfig.app,
+			appconfig = getconfig.getConfig({
+				dev: this._dev
+			}),
+			appname = appconfig.app,
 			module = appname+'/views/'+view.toLowerCase()+'/subviews/'+subview.toLowerCase();
 		
 		return fs.readFileSync(__dirname+'/templates/view.tpl.js').toString()
@@ -525,7 +532,10 @@ Cli.prototype = {
 	{
 		var viewclass = subview.substring(0,1).toUpperCase()+
 				subview.substring(1).toLowerCase() + 'Subview',
-			appname = this._appconfig.app,
+			appconfig = getconfig.getConfig({
+				dev: this._dev
+			}),
+			appname = appconfig.app,
 			requires = appname+'/views/'+view.toLowerCase()+'/subviews/'+subview.toLowerCase(),
 			module = appname+'/views/'+view.toLowerCase()+
 				'/tests/subviews/'+subview.toLowerCase();
@@ -542,7 +552,10 @@ Cli.prototype = {
 	{
 		var modelclass = model.substring(0,1).toUpperCase()+
 				model.substring(1).toLowerCase() + 'Model',
-			appname = this._appconfig.app,
+			appconfig = getconfig.getConfig({
+				dev: this._dev
+			}),
+			appname = appconfig.app,
 			module = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase();
 		
 		return fs.readFileSync(__dirname+'/templates/view.model.tpl.js').toString()
@@ -554,7 +567,10 @@ Cli.prototype = {
 	{
 		var viewclass = model.substring(0,1).toUpperCase()+
 				model.substring(1).toLowerCase() + 'Model',
-			appname = this._appconfig.app,
+			appconfig = getconfig.getConfig({
+				dev: this._dev
+			}),
+			appname = appconfig.app,
 			requires = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase(),
 			module = appname+'/views/'+view.toLowerCase()+
 				'/tests/models/'+model.toLowerCase();
