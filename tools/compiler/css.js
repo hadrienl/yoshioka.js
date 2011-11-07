@@ -55,6 +55,9 @@ CSSCompiler.prototype = {
 			less = require('less');
 			less.render(
 				this._filecontent,
+				{
+					paths: [APP_PATH+'less/']
+				},
 				function (callback, e, css)
 				{
 					if (callback)
