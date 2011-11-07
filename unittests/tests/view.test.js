@@ -10,7 +10,7 @@ YUI().add('ys/view/test', function(Y) {
 			
 			_should: {
 				error: {
-					testRender1: "No template given."
+					testRender_withoutTpl: "No template given."
 				}
 			},
 			
@@ -23,18 +23,13 @@ YUI().add('ys/view/test', function(Y) {
 				this.data.destroy();
 			},
 		
-			testRender1 : function ()
+			testRender_withoutTpl : function ()
 			{
 				this._node = this.data.render();
 				Y.one(document.body).append(this._node);
-				
-				Y.Assert.areEqual(
-					'<div></div>',
-					this.data.container.get('innerHTML')
-				);
 			},
 			
-			testRender2 : function ()
+			testRender_withTemplate : function ()
 			{
 				this.data.template = '<p>Test</p>';
 				this._node = this.data.render();
@@ -50,7 +45,7 @@ YUI().add('ys/view/test', function(Y) {
 				);
 			},
 			
-			testRender3 : function ()
+			testRender_manualTemplate : function ()
 			{
 				this.data.template = '<p>Test</p>';
 				this.data.renderUI = function()
@@ -69,6 +64,51 @@ YUI().add('ys/view/test', function(Y) {
 				Y.Assert.areEqual(
 					'yoshioka',
 					this.data.container.all('p').item(1).get('innerHTML')
+				);
+			},
+			
+			testExtractSubTemplate: function()
+			{
+				var extracts;
+				
+				this.data.template = '<div><p>Global</p><div class="sub">Sub</div></div>';
+				
+				Y.Assert.areEqual(
+					this.data.template,
+					this.data.extractSubTemplate()[0]
+				);
+				
+				extracts = this.data.extractSubTemplate(
+					{
+						tpl: this.data.template
+					},
+					[{
+						selector: '.sub',
+						outer: true,
+						clean: true
+					}]
+				);
+				Y.Assert.areEqual(
+					'<div><p>Global</p></div>',
+					extracts[0]
+				);
+				Y.Assert.areEqual(
+					'<div class="sub">Sub</div>',
+					extracts[1]
+				);
+				
+				Y.Assert.areEqual(
+					0,
+					this.data.compileTpl({
+						tpl: extracts[0]
+					}).all('div').size()
+				);
+				
+				Y.Assert.areEqual(
+					"Sub",
+					this.data.compileTpl({
+						tpl: extracts[1]
+					}).get('innerHTML')
 				);
 			}
 		})

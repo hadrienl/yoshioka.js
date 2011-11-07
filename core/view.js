@@ -490,6 +490,95 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 	remove: function()
 	{
 		this.destroy();
+	},
+	
+	/**
+	 * Extract subtemplates
+	 * @method extractSubTemplate
+	 * @param {object} params same as compileTpl(param…)
+	 * @param {object} options Extraction parameters. Array of parameters object :
+	 * <dl>
+	 * 	<dt>selector</dt>
+	 * 	<dd>expression passed to Node.one() method to get the node to extract</dd>
+	 * 	<dt>outer</dt>
+	 * 	<dd>True if you want to extract the outerHTML of the selected node. Default is false</dd>
+	 * 	<dt>clean</dt>
+	 * 	<dd>Remove the extracted zone from the main template. Default is true.</dd>
+	 * </dl>
+	 * @example <pre>view.extractSubTemplate(
+	 * {
+	 * 	tpl: '&lt;div&gt;foo&lt;div class="sub"&gt;bar&lt;/div&gt;&lt;/div&gt;'
+	 * },
+	 * {
+	 * 	selector: '.sub',
+	 * 	outer: true,
+	 * 	clean: true
+	 * }
+	 * );</pre>
+	 * @public
+	 */
+	extractSubTemplate: function(params, options)
+	{
+		var node,
+			response = [''],
+			removeId = /\s+id=["']yui[^"']*?["']/;
+		
+		params ||(params = {});
+		
+		params.tpl || (params.tpl = this.template);
+		
+		if (!options ||
+			!Y.Lang.isArray(options))
+		{
+			return [params.tpl];
+		}
+		
+		node = Y.Node.create(Y.substitute(
+			'<div>' + params.tpl + '</div>',
+			params
+		));
+		Y.Array.each(
+			options,
+			function(o)
+			{
+				var sel = o.selector,
+					outer = !(o.outer === false),
+					clean = !(o.clean === false),
+					zone, content;
+				
+				if (!sel)
+				{
+					throw new Error('Selector is not set');
+				}
+				
+				zone = node.one(sel);
+				
+				if (outer)
+				{
+					content = zone.get('outerHTML');
+					
+					if (clean)
+					{
+						zone.remove();
+					}
+				}
+				else
+				{
+					content = zone.get('innerHTML');
+					
+					if (clean)
+					{
+						zone.set('innerHTML', '');
+					}
+				}
+				response[response.length] = content
+					.replace(removeId, '')
+			},
+			this
+		);
+		response[0] = node.get('innerHTML');
+		
+		return response;
 	}
 },
 {
