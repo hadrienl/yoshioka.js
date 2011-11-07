@@ -104,6 +104,7 @@ Fixtures.prototype = {
 			{
 				var matchall = true,
 					i;
+				
 				for (i in this._postData)
 				{
 					if (i === 'method')
@@ -116,12 +117,25 @@ Fixtures.prototype = {
 					}
 				}
 				
+				for (i in f['match'])
+				{
+					if (f['match'][i] !== this._postData[i])
+					{
+						matchall = false;
+					}
+				}
+				
 				if (matchall)
 				{
 					data = f.data;
 				}
 			}.bind(this)
 		);
+		
+		if (data === undefined)
+		{
+			throw new Error("No data found");
+		}
 		
 		return JSON.stringify(data);
 	}
