@@ -163,7 +163,7 @@ YUI().add('ys/core/test', function(Y) {
 			testUseWithCallback: function()
 			{
 				this.data.use(
-					'ys_core',
+					'ys/core',
 					Y.bind(
 						function(Y)
 						{
