@@ -37,20 +37,20 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 	
 	/**
 	 * List of loaded css modules
-	 * @attribute _css_modules
+	 * @property _css_modules
 	 * @private
 	 */
 	_css_modules: null,
 
 	/**
 	 * Current view in place
-	 * @attribute _currentview
+	 * @property _currentview
 	 * @private
 	 */
 	_currentview: null,
 	/**
 	 * Current state in place
-	 * @attribute _loading
+	 * @property _loading
 	 * @private
 	 */
 	_loading: null,
@@ -104,7 +104,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 	 * The container will be returned to be appened on a parent node.
 	 * @method render
 	 * @public
-	 * @retun Y.Node
+	 * @return Y.Node
 	 */
 	render: function()
 	{
