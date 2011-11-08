@@ -544,7 +544,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 				var sel = o.selector,
 					outer = !(o.outer === false),
 					clean = !(o.clean === false),
-					zone, content;
+					zone, content, div = Y.Node.create('<div></div>');
 				
 				if (!sel)
 				{
@@ -555,7 +555,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 				
 				if (outer)
 				{
-					content = zone.get('outerHTML');
+					div.append(zone);
+					content = div.get('innerHTML');
 					
 					if (clean)
 					{
