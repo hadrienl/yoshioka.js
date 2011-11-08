@@ -134,11 +134,13 @@ Server.prototype = {
 		/**
 		 * If url is __unittests, then, display unit tests
 		 */
-		if (url === '/__unittests')
+		if (url.match(/^\/__unittests/))
 		{
 			try
 			{
-				f = new UnitTests();
+				f = new UnitTests({
+					test: url.match(/^\/__unittests(\/(.*?)$)?/)[2]
+				});
 			}
 			catch (e)
 			{

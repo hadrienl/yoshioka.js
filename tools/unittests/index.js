@@ -7,21 +7,29 @@ fs = require('fs'),
 
 UnitTests = function(config)
 {
-	this.init();
+	this.init(config);
 }
 UnitTests.prototype = {
 	
 	_srcs: null,
 	_modules: null,
 	
-	init: function()
+	init: function(config)
 	{
+		var test = config.test || null,
+			views;
+		
+		if (test)
+		{
+			test = test.match(/^(.*?)\/(.*?)$/);
+		}
+		
 		/**
 		 * Look for each tests files in views folder
 		 */
 		try
 		{
-			var views = fs.readdirSync(
+			views = fs.readdirSync(
 				APP_PATH+VIEWS_DIR
 			);
 		}
@@ -30,7 +38,9 @@ UnitTests.prototype = {
 			/**
 			 * No views folder : application has not been installed
 			 */
-			throw new Error("Folder views not found. Please reinstall your application.");
+			throw new Error(
+				"Folder views not found. Please reinstall your application."
+			);
 		}
 		
 		this._srcs = [];
@@ -39,15 +49,24 @@ UnitTests.prototype = {
 		views.forEach(
 			function(v)
 			{
+				if (test && v !== test[1])
+				{
+					return;
+				}
 				try
 				{
 					var testpath = VIEWS_DIR+v+'/'+TEST_DIR,
 						testfolder = fs.readdirSync(
 						APP_PATH+testpath
 					);
+					
 					testfolder.forEach(
 						function(f)
 						{
+							if (test && f !== test[2]+'.test.js')
+							{
+								return;
+							}
 							var ctn = fs.readFileSync(
 									APP_PATH+testpath+f
 								),
