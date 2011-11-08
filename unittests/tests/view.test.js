@@ -114,5 +114,50 @@ YUI().add('ys/view/test', function(Y) {
 		})
 	);
 	
+	suite.add(
+		new Y.Test.Case({
+
+			name: "View Getters",
+			
+			setUp: function()
+			{
+				this.data = new Y.ys.View();
+				this.data.template = '<div class="main"></div>';
+				Y.one(document.body).append(this.data.render());
+			},
+			tearDown: function()
+			{
+				this.data.destroy();
+			},
+		
+			testGetCurrentView : function ()
+			{
+				Y.namespace('core').TestView = Y.ys.View;
+				
+				Y.namespace('core').TestView.prototype.template = '<div>Hello World</div>';
+				
+				Y.Env._used['core/views/test'] = true;
+				
+				this.data.setView(
+					'test',
+					'main'
+				);
+				
+				this.wait(function()
+				{
+					Y.Assert.areEqual(
+						"Hello World",
+						this.data.getCurrentView('main')
+							.container.one('div').get('innerHTML')
+					);
+					
+					Y.Assert.isNull(
+						this.data.getCurrentView('kikoo')
+					);
+				}, 200);
+			}
+		})
+	);
+	
 	Y.Test.Runner.add(suite);
 }, '1.0', {requires: ["ys/view"]});

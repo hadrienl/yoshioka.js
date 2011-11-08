@@ -579,6 +579,16 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 		response[0] = node.get('innerHTML');
 		
 		return response;
+	},
+	/**
+	 * Get current view instance in given place
+	 * @method getCurrentView
+	 * @param {string} place Classname of the node's place where the view is appened
+	 * @public
+	 */
+	getCurrentView: function(place)
+	{
+		return this._currentview[place] || null;
 	}
 },
 {
