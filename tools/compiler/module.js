@@ -36,6 +36,19 @@ ModuleCompiler.prototype = {
 				APP_PATH+'/'+this._file,
 				function(callback, err, data)
 				{
+					if (err)
+					{
+						if(err.code =="ENOENT")
+						{
+							console.log("File content seems to be missing or is not valid. "+err);
+						}
+						else
+						{
+							console.log(err);
+						}
+						
+						return this._parse(callback);
+					}
 					this._filecontent = data.toString();
 					this._parse(callback);
 				}.bind(this, callback)
