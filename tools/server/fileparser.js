@@ -455,26 +455,29 @@ FileParser.prototype = {
 					console.log("your routes.js file is not a valid JSON.\n");
 					return this._callback404();
 				}
-				
+				/**
+				 * TO REVIEW
+				 */
 				data.forEach(
 					function(p)
 					{
-						var regexp = (function(path)
-						{
-							if (path instanceof RegExp) {
-								return path;
-							}
+						var keys = [],
+							regexp = (function(path)
+							{
+								if (path instanceof RegExp) {
+									return path;
+								}
 
-							path = path.replace(
-								/([:*])([\w-]+)/g,
-								function (match, operator, key)
-								{
-									keys.push(key);
-									return operator === '*' ? '(.*?)' : '([^/]*)';
-								});
+								path = path.replace(
+									/([:*])([\w-]+)/g,
+									function (match, operator, key)
+									{
+										keys.push(key);
+										return operator === '*' ? '(.*?)' : '([^/]*)';
+									});
 
-							return new RegExp('^' + path + '$');
-						})(p.path);
+								return new RegExp('^' + path + '$');
+							})(p.path);
 						
 						if (regexp.exec(this._getFilePath()))
 						{
