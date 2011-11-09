@@ -233,7 +233,7 @@ FileParser.prototype = {
 				}.bind(this)
 			);
 		}
-		else if (filepath.match(/views/))
+		else if (filepath.match(/(views)|(plugins)/))
 		{
 			fs.readFile(
 				APP_PATH+filepath,
