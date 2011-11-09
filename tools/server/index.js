@@ -80,29 +80,7 @@ Server.prototype = {
 		this._http = http.createServer(
 			function(req, res)
 			{
-				var d = '';
-				
-				if (req.method == 'POST')
-				{
-					req.on(
-						'data',
-						function (data)
-						{
-							d += data;
-						}
-					);
-					req.on(
-						'end',
-						function()
-						{
-							this._control(req, res, d);
-						}.bind(this)
-					);
-				}
-				else
-				{
-					this._control(req, res);
-				}
+				this._control(req, res);
 			}.bind(this)
 		);
 		
@@ -114,10 +92,9 @@ Server.prototype = {
 	 * @method _control
 	 * @param {Request} req Reques
 	 * @param {Response} res Response
-	 * @param {string} postData POST data as a string
 	 * @private
 	 */
-	_control :function (req, res, postData)
+	_control :function (req, res)
 	{
 		var url = req.url,
 			f,
@@ -205,24 +182,49 @@ Server.prototype = {
 			{
 				if (this._cli.useFixtures())
 				{
-					f = new Fixtures({
-						request: req,
-						postData: postData
-					});
-					try
+					req.postData = '';
+
+					if (req.method == 'POST')
 					{
-						res.writeHead(200, {'Content-Type': 'text/plain'});
-						res.end(
-							f.getData()
+						req.on(
+							'data',
+							function (data)
+							{
+								req.postData += data;
+							}
+						);
+						req.on(
+							'end',
+							function()
+							{
+								var f = new Fixtures({
+									request: req,
+									postData: req.postData
+								});
+								try
+								{
+									res.writeHead(
+										200,
+										{'Content-Type': 'text/plain'}
+									);
+									res.end(
+										f.getData()
+									);
+								}
+								catch (e)
+								{
+									res.writeHead(
+										500,
+										{'Content-Type': 'text/plain'}
+									);
+									res.end(
+										e.message
+									);
+								}
+							}.bind(this)
 						);
 					}
-					catch (e)
-					{
-						res.writeHead(500, {'Content-Type': 'text/plain'});
-						res.end(
-							e.message
-						);
-					}
+					
 					return;
 				}
 				else
