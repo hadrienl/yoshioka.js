@@ -111,7 +111,7 @@ Fixtures.prototype = {
 					{
 						continue;
 					}
-					if (f['match'][i] !== this._postData[i])
+					if (f['match'][i] != this._postData[i])
 					{
 						matchall = false;
 					}
@@ -119,7 +119,7 @@ Fixtures.prototype = {
 				
 				for (i in f['match'])
 				{
-					if (f['match'][i] !== this._postData[i])
+					if (f['match'][i] != this._postData[i])
 					{
 						matchall = false;
 					}
