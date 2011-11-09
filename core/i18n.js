@@ -261,6 +261,8 @@ Y.extend(I18n, Y.Base, {
 				'innerHTML',
 				t
 			);
+			
+			node.fire('i18n:change', {translation: t});
 		}
 		
 		return t;
