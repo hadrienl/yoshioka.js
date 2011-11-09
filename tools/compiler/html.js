@@ -84,10 +84,11 @@ HTMLCompiler.prototype =
 	},
 	_parseCSSBlock: function(callback)
 	{
-		var block = this._filecontent.match(CSS_BLOCK_REG)
+		var block = this._filecontent.match(CSS_BLOCK_REG);
+		
 		if (block)
 		{
-			this._compileCSSBlock(
+			return this._compileCSSBlock(
 				block[0].replace(
 					BR_REG,
 					"\n"
@@ -104,7 +105,6 @@ HTMLCompiler.prototype =
 			BR_REG,
 			"\n"
 		);
-		
 		if (callback)
 		{
 			return callback(this._filecontent);
@@ -123,7 +123,14 @@ HTMLCompiler.prototype =
 		});
 		c.parse(function(block, callback, content)
 		{
-			this._filecontent = this._filecontent.replace(block.replace(/\n/g, BR), content);
+			this._filecontent = this._filecontent
+				.replace(/\n/g, BR)
+				.replace(
+					block.replace(/\n/g, BR),
+					content.replace(/\n/g, BR)
+				)
+				.replace(BR_REG, "\n");
+			
 			this._parseCSSBlock(callback);
 		}.bind(this, block, callback));
 	},
