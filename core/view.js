@@ -54,6 +54,15 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 	 * @private
 	 */
 	_loading: null,
+	
+	/**
+	 * Store your custom events listener in this array which will be cleaned
+	 * into the destroy process
+	 * @property _events
+	 * @type Array
+	 * @private
+	 */
+	_events: null,
 
 	/**
 	 * Scan all css modules in requires and load them if needed
@@ -72,6 +81,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 		 */
 		this._currentview = {};
 		this._loading = {};
+		this._events = [];
 
 		if (!requires)
 		{
@@ -164,7 +174,15 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 			},
 			this
 		);
-
+		
+		Y.Array.each(
+			this._events,
+			function(e)
+			{
+				e.detach();
+			}
+		);
+		this._events = null;
 	},
 	/**
 	 * Load a css link by its path
@@ -590,6 +608,18 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 	getCurrentView: function(place)
 	{
 		return this._currentview[place] || null;
+	},
+	
+	/**
+	 * Store an event to not forget to clean it in the destroy process
+	 * @method storeEvent
+	 * @param {Y.Event} e Event to store
+	 * @return Y.Event
+	 * @public
+	 */
+	storeEvent: function(e)
+	{
+		return (this._events[this._events.length] = e);
 	}
 },
 {
