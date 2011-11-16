@@ -74,7 +74,7 @@
 '<p>in '+e.results.duration+" ms</p>"
 							);
 
-						n.one('.close').on(
+						n.on(
 							'click',
 							function(e)
 							{
@@ -91,7 +91,6 @@
 						n.one('.resume').append(resume);
 
 						b.append(n);
-						console.debug(e.results);
 					}
 				)
 				Y.Test.Runner.run();
