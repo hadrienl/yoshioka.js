@@ -122,6 +122,15 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
 		this.bindUI();
 		this.syncUI();
 		
+		Y.later(
+			1,
+			this,
+			function()
+			{
+				this.fire('render');
+			}
+		);
+		
 		return this.container;
 	},
 	/**
