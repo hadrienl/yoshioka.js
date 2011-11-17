@@ -24,7 +24,7 @@ UnitTests.prototype = {
 		{
 			test = test.match(/^(.*?)\/(.*?)$/);
 		}
-		
+		console.log(test)
 		/**
 		 * Look for each tests files in views folder
 		 */
@@ -75,7 +75,7 @@ UnitTests.prototype = {
 		viewpaths.concat(pluginpaths).forEach(
 			function(v)
 			{
-				if (test && v !== test[1])
+				if (test && v !== VIEWS_DIR+test[1] && v !== PLUGINS_DIR+test[1])
 				{
 					return;
 				}
