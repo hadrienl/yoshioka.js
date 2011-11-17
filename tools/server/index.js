@@ -8,6 +8,8 @@
 
 var
 
+APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
+
 http = require('http'),
 httpProxy = require('http-proxy'),
 
@@ -18,12 +20,27 @@ getconfig = require('../make/getconfig'),
 UnitTests = require('../unittests').UnitTests,
 Cli = require('./cli').Cli,
 FileParser = require('./fileparser').FileParser,
-Fixtures = require('./fixtures').Fixtures,
+Fixtures,
 
 Server = function(config)
 {
 	this.init(config);
 };
+
+try
+{
+	/**
+	 * Try to load your own fixture class
+	 */
+	Fixtures = require(APP_PATH+'fixtures').Fixtures;
+}
+catch (e) {
+	/**
+	 * Load the bundled one
+	 */
+	Fixtures = require('./fixtures').Fixtures;
+}
+
 
 /**
  * Server
