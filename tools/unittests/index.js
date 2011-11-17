@@ -24,7 +24,7 @@ UnitTests.prototype = {
 		{
 			test = test.match(/^(.*?)\/(.*?)$/);
 		}
-		console.log(test)
+		
 		/**
 		 * Look for each tests files in views folder
 		 */
