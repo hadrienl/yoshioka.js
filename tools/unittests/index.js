@@ -1,6 +1,7 @@
 var
 APP_PATH = __dirname.replace(/yoshioka.js.*?$/, ''),
 VIEWS_DIR = 'views/',
+PLUGINS_DIR = 'plugins/',
 TEST_DIR = 'tests/',
 
 fs = require('fs'),
@@ -17,7 +18,7 @@ UnitTests.prototype = {
 	init: function(config)
 	{
 		var test = config.test || null,
-			views;
+			viewpaths = [], pluginpaths = [];
 		
 		if (test)
 		{
@@ -29,8 +30,15 @@ UnitTests.prototype = {
 		 */
 		try
 		{
-			views = fs.readdirSync(
+			viewpaths = fs.readdirSync(
 				APP_PATH+VIEWS_DIR
+			);
+			
+			viewpaths.forEach(
+				function(p, k)
+				{
+					viewpaths[k] = VIEWS_DIR+p;
+				}
 			);
 		}
 		catch (e)
@@ -43,10 +51,28 @@ UnitTests.prototype = {
 			);
 		}
 		
+		try
+		{
+			pluginpaths = fs.readdirSync(
+				APP_PATH+PLUGINS_DIR
+			);
+			
+			pluginpaths.forEach(
+				function(p, k)
+				{
+					pluginpaths[k] = PLUGINS_DIR+p;
+				}
+			);
+		}
+		catch (e)
+		{
+			
+		}
+		
 		this._srcs = [];
 		this._modules = [];
 		
-		views.forEach(
+		viewpaths.concat(pluginpaths).forEach(
 			function(v)
 			{
 				if (test && v !== test[1])
@@ -55,7 +81,7 @@ UnitTests.prototype = {
 				}
 				try
 				{
-					var testpath = VIEWS_DIR+v+'/'+TEST_DIR,
+					var testpath = v+'/'+TEST_DIR,
 						testfolder = fs.readdirSync(
 						APP_PATH+testpath
 					);
