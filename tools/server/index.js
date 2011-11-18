@@ -120,7 +120,7 @@ Server.prototype = {
 				dev: true
 			});
 		
-		if (url.match(/\/$/))
+		if (url.match(/^\/$/))
 		{
 			url+='index.html';
 		}

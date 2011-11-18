@@ -467,15 +467,16 @@ FileParser.prototype = {
 								if (path instanceof RegExp) {
 									return path;
 								}
-
+								
 								path = path.replace(
 									/([:*])([\w-]+)/g,
 									function (match, operator, key)
 									{
 										keys.push(key);
-										return operator === '*' ? '(.*?)' : '([^/]*)';
-									});
-
+										return operator === '*' ? '(.*?)' : '([a-zA-Z0-9]*)';
+									}
+								);
+								
 								return new RegExp('^' + path + '$');
 							})(p.path);
 						
