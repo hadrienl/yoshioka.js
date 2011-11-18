@@ -188,7 +188,7 @@ Server.prototype = {
 			config.fixtures.forEach(
 				function(p)
 				{
-					if (url.match(p.path))
+					if (url.match(new RegExp(p.path)))
 					{
 						fixtures_path = p;
 					}
