@@ -20,11 +20,6 @@ UnitTests.prototype = {
 		var test = config.test || null,
 			viewpaths = [], pluginpaths = [];
 		
-		if (test)
-		{
-			test = test.match(/^(.*?)\/(.*?)$/);
-		}
-		
 		/**
 		 * Look for each tests files in views folder
 		 */
@@ -75,10 +70,6 @@ UnitTests.prototype = {
 		viewpaths.concat(pluginpaths).forEach(
 			function(v)
 			{
-				if (test && v !== VIEWS_DIR+test[1] && v !== PLUGINS_DIR+test[1])
-				{
-					return;
-				}
 				try
 				{
 					var testpath = v+'/'+TEST_DIR,
@@ -89,17 +80,16 @@ UnitTests.prototype = {
 					testfolder.forEach(
 						function(f)
 						{
-							if (test && f !== test[2]+'.test.js')
-							{
-								return;
-							}
 							var ctn = fs.readFileSync(
 									APP_PATH+testpath+f
 								),
 								module = (module = ctn.toString().match(
 										/\@module ([a-zA-Z0-9\/\-\_]+)/
 									)) && module[1];
-							
+							if (test && module !== test)
+							{
+								return;
+							}
 							this._srcs[this._srcs.length] = '<script src="/'+testpath+f+'"></script>';
 							this._modules[this._modules.length] = '"'+module+'"';
 						}.bind(this)
@@ -127,9 +117,27 @@ UnitTests.prototype = {
 			.replace(
 				/\{\$testsmodules\}/,
 				this._modules.join(',')
+			)
+			.replace(
+				/\{\$testslinks\}/,
+				this._createTestsLinks()
 			);
 		
 		return html;
+	},
+	
+	_createTestsLinks: function()
+	{
+		var list = '';
+		
+		this._modules.forEach(
+			function(m)
+			{
+				list += '<li><a href="/__unittests/'+m.replace(/"/g, '')+'">'+m.replace(/"/g, '')+'</a></li>';
+			}
+		);
+		
+		return list;
 	}
 };
 
