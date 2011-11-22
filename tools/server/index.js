@@ -11,7 +11,6 @@ var
 APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
 
 http = require('http'),
-httpProxy = require('http-proxy'),
 
 util = require('util'),
 fs = require('fs'),
@@ -49,12 +48,6 @@ catch (e) {
  */
 Server.prototype = {
 	/**
-	 * Proxy object for API request proxy pass
-	 * @attribute _proxy
-	 * @private
-	 */
-	_proxy: null,
-	/**
 	 * Cli object
 	 * @attribute _cli
 	 * @private
@@ -89,8 +82,6 @@ Server.prototype = {
 		this._cli = new Cli({
 			dev: true
 		});
-		
-		this._proxy = new httpProxy.RoutingProxy();
 		
 		this._port = config.port || 1636;
 		
@@ -179,8 +170,7 @@ Server.prototype = {
 		}
 
 		/**
-		 * Check if url is a proxy path which need to be proxyfied
-		 * (the API for example)
+		 * Check if url is a fixtures path (the API for example)
 		 */
 		if (config &&
 			config.fixtures)
@@ -197,70 +187,14 @@ Server.prototype = {
 			
 			if (fixtures_path)
 			{
-				if (this._cli.useFixtures())
-				{
-					req.postData = '';
-
-					if (req.method == 'POST')
-					{
-						req.on(
-							'data',
-							function (data)
-							{
-								req.postData += data;
-							}
-						);
-						req.on(
-							'end',
-							function()
-							{
-								var f = new Fixtures({
-									request: req,
-									postData: req.postData
-								});
-								try
-								{
-									res.writeHead(
-										200,
-										{'Content-Type': 'text/plain'}
-									);
-									res.end(
-										f.getData()
-									);
-								}
-								catch (e)
-								{
-									res.writeHead(
-										500,
-										{'Content-Type': 'text/plain'}
-									);
-									res.end(
-										e.message
-									);
-								}
-							}.bind(this)
-						);
-					}
-					
-					return;
-				}
-				else
-				{
-					if (fixtures_path.replace_url)
-					{
-						url = url.match(fixtures_path.replace_url);
-						url = url ? url[1]: '/';
-						req.url = url;
-					}
-					this._proxy.proxyRequest(req, res, {
-						host: fixtures_path.proxy.host || '127.0.0.1',
-						port: fixtures_path.proxy.port || '80'
-					});
-					return;
-				}
+				/**
+				 * Call the fixture handler
+				 */
+				new Fixtures(req, res, fixtures_path);
+				return;
 			}
 		}
-
+		
 		/**
 		 * In all other case, construct a new FileParser object
 		 */
@@ -279,11 +213,6 @@ Server.prototype = {
 				f.filecontent
 			);
 		}.bind(res))
-
-		/**
-		 * Delete the FileParser
-		 */
-		delete f;
 	}
 };
 

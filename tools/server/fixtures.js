@@ -10,9 +10,9 @@ APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
 fs = require('fs'),
 qs = require('querystring'),
 
-Fixtures = function(config)
+Fixtures = function(req, res, config)
 {
-	this.init(config);
+	this.init(req, res, config);
 };
 /**
  * Fixtures class process fixtures files and send the correct data to the client
@@ -32,32 +32,78 @@ Fixtures.prototype = {
 	 * @attribute request
 	 * @private
 	 */
-	request: null,
+	req: null,
+	/**
+	 * Client response
+	 * @attribute res
+	 * @private
+	 */
+	res: null,
+	/**
+	 * Path config
+	 */
+	config: null,
 	/**
 	 * POST data sent by the client
 	 * @attribute postData
 	 * @private
 	 */
-	postData: null,
+	postData: '',
 	
 	/**
 	 * Compile Javascript content
 	 * @attribute request
 	 * @private
 	 */
-	init: function(config)
+	init: function(req, res, config)
 	{
-		config || (config = {});
+		this.req = req;
+		this.res = res;
+		this.config = config;
 		
-		this._request = config.request;
-		
+		if (req.method == 'POST')
+		{
+			req.on(
+				'data',
+				function (data)
+				{
+					this.postData += data;
+				}.bind(this)
+			);
+			req.on(
+				'end',
+				function()
+				{
+					return this.getReponse();
+				}.bind(this)
+			);
+		}
+		else
+		{
+			return this.getReponse();
+		}
+	},
+	getReponse: function()
+	{
 		try
 		{
-			this._postData = JSON.parse(config.postData);
+			this.res.writeHead(
+				200,
+				{'Content-Type': 'text/plain'}
+			);
+			this.res.end(
+				this.getData()
+			);
 		}
 		catch (e)
 		{
-			this._postData = qs.parse(config.postData);
+			this.res.writeHead(
+				500,
+				{'Content-Type': 'text/plain'}
+			);
+			this.res.end(
+				e.message
+			);
 		}
 	},
 	/**
@@ -70,33 +116,47 @@ Fixtures.prototype = {
 	 */
 	getData: function()
 	{
-		var method = this._postData.method,
-			fixtures, data;
-			
+		var path = this.req.url.replace(new RegExp(this.config.path), ''),
+			method, fixtures, data;
+		
+		try
+		{
+			this.postData = JSON.parse(this.postData);
+			path = this.postData.method + '_' + path;
+		}
+		catch (e)
+		{
+			this.postData = {};
+		}
+		
 		try
 		{
 			fixtures = fs.readFileSync(
-				APP_PATH+'/fixtures/'+method+'.js'
+				APP_PATH+'/fixtures/'+path+'.js'
 			).toString()
 		}
 		catch (e)
 		{
 			throw new Error(
-				"File "+APP_PATH+'/fixtures/'+method+'.js'+" does not exist"
+				"File "+APP_PATH+'/fixtures/'+path+'.js'+" does not exist"
 			);
 		}
 		try
 		{
 			fixtures = JSON.parse(
 				fixtures
-				
 			);
 		}
 		catch (e)
 		{
 			throw new Error(
-				"Syntax error in file "+APP_PATH+'/fixtures/'+method+'.js'
+				"Syntax error in file "+APP_PATH+'/fixtures/'+path+'.js'
 			);
+		}
+		
+		if (!this.postData.params)
+		{
+			throw new Error("No data found");
 		}
 		
 		fixtures.forEach(
@@ -105,13 +165,13 @@ Fixtures.prototype = {
 				var matchall = true,
 					i;
 				
-				for (i in this._postData)
+				for (i in this.postData.params)
 				{
 					if (i === 'method')
 					{
 						continue;
 					}
-					if (f['match'][i] != this._postData[i])
+					if (f['match'][i] != this.postData.params[i])
 					{
 						matchall = false;
 					}
@@ -119,7 +179,7 @@ Fixtures.prototype = {
 				
 				for (i in f['match'])
 				{
-					if (f['match'][i] != this._postData[i])
+					if (f['match'][i] != this.postData.params[i])
 					{
 						matchall = false;
 					}
