@@ -273,7 +273,6 @@ Builder.prototype._parseCSSFile = function(path)
 		);
 	}.bind(this, path));
 	
-	//console.log(path);
 	this._filecount--;
 	this._checkFileCount();
 };

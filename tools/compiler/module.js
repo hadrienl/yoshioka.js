@@ -68,7 +68,6 @@ ModuleCompiler.prototype = {
 		}
 		catch (e)
 		{
-			console.log(e)
 			if (callback)
 			{
 				return callback(this._filecontent);

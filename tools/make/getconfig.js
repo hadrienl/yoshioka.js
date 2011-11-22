@@ -26,7 +26,6 @@ exports.getConfig = function(config)
 	 */
 	try
 	{
-		//console.log(app_config_path);
 		app_config = fs.readFileSync(app_config_path).toString();
 	}
 	catch (e)

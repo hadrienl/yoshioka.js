@@ -51,7 +51,6 @@ RoutesCompiler.prototype = {
 		}
 		catch (e)
 		{
-			console.log(e)
 			throw new Error("routes.js file is not a valid JSON.\n");
 		}
 		
