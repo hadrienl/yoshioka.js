@@ -171,7 +171,8 @@ Fixtures.prototype = {
 					{
 						continue;
 					}
-					if (f['match'][i] != this.postData.params[i])
+					if (f['match'][i] !== '*' &&
+						f['match'][i] != this.postData.params[i])
 					{
 						matchall = false;
 					}
@@ -179,7 +180,8 @@ Fixtures.prototype = {
 				
 				for (i in f['match'])
 				{
-					if (f['match'][i] != this.postData.params[i])
+					if (f['match'][i] !== '*' &&
+						f['match'][i] != this.postData.params[i])
 					{
 						matchall = false;
 					}
