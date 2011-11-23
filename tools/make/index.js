@@ -174,8 +174,10 @@ Maker.prototype._parseJSFile = function(path)
 };
 Maker.prototype._parseCSSFile = function(path)
 {
-	var file = (file = path.split(/\//))
-		&& file[file.length - 1].split(/\./)[0],
+	var file = (file = path.split(/\//)) &&
+		(file = file[file.length - 1].split(/\./)) &&
+		file.pop() &&
+		file.join('.'),
 		
 		module = (module = path.match(/([^\/]+)\/assets\//)) && module[1],
 		
@@ -185,11 +187,10 @@ Maker.prototype._parseCSSFile = function(path)
 	{
 		throw 'CSS file unknown path : ' + path;
 	}
-
-	module = (isplugin ?
-		 'plugins':this._appConfig.app)+
-		'/views/'+module+'/assets/'+file;
 	
+	module = this._appConfig.app +
+		(isplugin ? '/plugins/' : '/views/')+module+'/assets/'+file;
+	console.log(file);
 	/**
 	 * Generate config object for
 	 * this module
