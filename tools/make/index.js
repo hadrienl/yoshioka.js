@@ -190,7 +190,7 @@ Maker.prototype._parseCSSFile = function(path)
 	
 	module = this._appConfig.app +
 		(isplugin ? '/plugins/' : '/views/')+module+'/assets/'+file;
-	console.log(file);
+	
 	/**
 	 * Generate config object for
 	 * this module

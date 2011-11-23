@@ -69,6 +69,9 @@ CSSCompiler.prototype = {
 		}
 		catch (e)
 		{
+			console.error(
+				'Less '+e.type+' error : "'+e.message+'" in file '+this._file
+			);
 			if (callback)
 			{
 				return callback(this._filecontent);
