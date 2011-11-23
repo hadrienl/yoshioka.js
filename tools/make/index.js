@@ -138,13 +138,13 @@ Maker.prototype._parseJSFile = function(path)
 				/**
 				 * Get the requires array
 				 */
-				requires = (requires = script.replace(/\n/g, ' ').match(
-						/\@requires ([a-zA-Z0-9\/\-\_\,\.\s\*]+)\s\*/
+				requires = (requires = script.replace(/\n/g, '').match(
+						/\@requires ([a-zA-Z0-9\/\-\_\,\.\s]+)\s\*/
 					)) && requires[1]
 					.replace(/\s/g, '')
 					.replace(/\*/g, '')
 					.split(/,/);
-					
+
 			if (!module)
 			{
 				this._filecount--;
