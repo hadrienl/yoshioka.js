@@ -4,10 +4,9 @@ some text
 REQUIREMENT
 
 	Development environment :
-	- node 0.5.9
-	- npm
-	- http-proxy (npm install http-proxy)
-	- Java
+	- node 0.6.2
+	- less (via npm)
+	- JRE (for yuicompressor)
 	Production environment :
 	- Quick static web server
 
