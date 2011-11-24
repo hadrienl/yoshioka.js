@@ -2,9 +2,9 @@ REQUIREMENTS
 
 - Node.js
 
-	wget http://nodejs.org/dist/node-v0.4.12.tar.gz
-	tar xvzf node-v0.5.10.tar.gz
-	cd node-v0.5.10
+	wget http://nodejs.org/dist/node-v0.6.2.tar.gz
+	tar xvzf node-v0.6.2.tar.gz
+	cd node-v0.6.2
 	./configure
 	make
 	sudo make install
