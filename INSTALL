@@ -9,7 +9,7 @@ REQUIREMENTS
 	make
 	sudo make install
 
-- npm
+- npm (optional, for Less)
 
 	git clone https://github.com/isaacs/npm.git
 	cd npm
@@ -17,12 +17,11 @@ REQUIREMENTS
 	make
 	sudo make install
 
-- Node.js modules
+- Less (http://lesscss.org/)
 
-	sudo npm install http-proxy -g
 	sudo npm install less -g
 
-- Java
+- Java Runtime
 	sudo apt-get install default-jre (for a debian like distrib)
 
 INSTALLATION
