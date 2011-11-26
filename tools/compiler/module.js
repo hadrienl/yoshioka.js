@@ -87,8 +87,10 @@ ModuleCompiler.prototype = {
 			/**
 			 * Get requires modules in the comment `@requires`
 			 */
-			requires = (requires = this._filecontent.replace(/\n/g, '').match(
-					/\@requires ([a-zA-Z0-9\/\-\_\,\.\s\*]+)\s\*/
+			requires = (requires = this._filecontent.replace(/\n/g, '')
+				.match(/\/\*.*?\*\//)[0]
+				.match(
+					/\@requires ([a-zA-Z0-9\/\-\_\,\.\s\*]+)\s\*(\/|\s@)/
 				)) && requires[1]
 				.replace(/\s\*/g, '')
 				.replace(/,$/, '')
