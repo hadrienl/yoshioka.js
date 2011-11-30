@@ -98,7 +98,7 @@ Builder.prototype._makeConfig = function()
 		maker = new Maker({
 			dirs: ['locales', 'plugins', 'views'],
 			apppath: this._buildpath,
-			basepath: this._buildname+'/'
+			basepath: '/'+this._buildname+'/'
 		});
 	maker.on(
 		'parseEnd',
@@ -160,6 +160,9 @@ Builder.prototype._parseJSFile = function(path)
 				'utf-8',
 				function(path, err, data)
 				{
+					this._filecount--;
+					this._checkFileCount();
+					return;
 					/**
 					 * Compress build file with YUICompressor
 					 */
@@ -194,6 +197,9 @@ Builder.prototype._parseJSFile = function(path)
 					'utf-8',
 					function(path, err, data)
 					{
+						this._filecount--;
+						this._checkFileCount();
+						return;
 						/**
 						 * Compress build file with YUICompressor
 						 */
@@ -227,6 +233,9 @@ Builder.prototype._parseLocaleFile = function(path)
 			'utf-8',
 			function(path, err, data)
 			{
+				this._filecount--;
+				this._checkFileCount();
+				return;
 				/**
 				 * Compress build file with YUICompressor
 				 */
@@ -257,6 +266,10 @@ Builder.prototype._parseCSSFile = function(path)
 			content,
 			function(path, err, data)
 			{
+				
+				this._filecount--;
+				this._checkFileCount();
+				return;
 				/**
 				 * Compress build file with YUICompressor
 				 */
