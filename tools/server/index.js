@@ -138,10 +138,13 @@ Server.prototype = {
 			/**
 			 * Start unit tests
 			 */
-			res.writeHead(200, {'Content-Type': 'text/html'});
-			res.end(
-				f.getHTML()
-			);
+			f.getHTML(function(content)
+			{
+				res.writeHead(200, {'Content-Type': 'text/html'});
+				res.end(
+					content
+				);
+			});
 			return;
 		}
 		

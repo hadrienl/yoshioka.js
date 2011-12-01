@@ -6,6 +6,8 @@ TEST_DIR = 'tests/',
 
 fs = require('fs'),
 
+compiler = require('../compiler'),
+
 UnitTests = function(config)
 {
 	this.init(config);
@@ -105,25 +107,29 @@ UnitTests.prototype = {
 		)
 	},
 	
-	getHTML: function()
+	getHTML: function(callback)
 	{
-		var html = fs.readFileSync(__dirname+'/lib/index.html').toString();
-		
-		html = html
-			.replace(
-				/\{\$testssrc\}/,
-				this._srcs.join('')
-			)
-			.replace(
-				/\{\$testsmodules\}/,
-				this._modules.join(',')
-			)
-			.replace(
-				/\{\$testslinks\}/,
-				this._createTestsLinks()
-			);
-		
-		return html;
+		var c = new compiler.HTMLCompiler({
+			file: 'yoshioka.js/tools/unittests/lib/index.html'
+		});
+		c.parse(function(callback, content)
+		{
+			html = content
+				.replace(
+					/\{\$testssrc\}/,
+					this._srcs.join('')
+				)
+				.replace(
+					/\{\$testsmodules\}/,
+					this._modules.join(',')
+				)
+				.replace(
+					/\{\$testslinks\}/,
+					this._createTestsLinks()
+				);
+			
+			callback(html);
+		}.bind(this, callback));
 	},
 	
 	_createTestsLinks: function()

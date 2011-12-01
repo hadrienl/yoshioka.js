@@ -11,6 +11,7 @@ BR = '[[__BR__]]',
 BR_REG = /\[\[__BR__\]\]/g,
 CSS_BLOCK_REG = /\{css\}(.*?)\{\/css\}/gi,
 fs = require('fs'),
+getconfig = require('../make/getconfig'),
 
 CSSCompiler = require('./css').CSSCompiler,
 
@@ -51,6 +52,10 @@ HTMLCompiler.prototype =
 				APP_PATH+'/'+this._file,
 				function(callback, err, data)
 				{
+					if (err)
+					{
+						throw err;
+					}
 					this._filecontent = data.toString();
 					this._parse(callback);
 				}.bind(this, callback)
@@ -63,6 +68,9 @@ HTMLCompiler.prototype =
 	},
 	_parse: function(callback)
 	{
+		var config = getconfig.getConfig({
+			dev: true
+		});
 		/**
 		 * Replace some tags
 		 */
@@ -72,8 +80,11 @@ HTMLCompiler.prototype =
 				this._basepath)
 			.replace(
 				/\{\$core_config\}/gi,
-				this._getCoreConfig());
-		
+				this._getCoreConfig())
+			.replace(
+				/\{\$yuipath\}/gi,
+				config.yuipath || 'http://yui.yahooapis.com/3.4.1/build'
+			);
 		
 		/**
 		 * specials tags
