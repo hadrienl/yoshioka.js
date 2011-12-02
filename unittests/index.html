@@ -6,10 +6,41 @@
 <script type="text/javascript" charset="utf-8" src="{$basepath}/tests/core.test.js"></script>
 <script type="text/javascript" charset="utf-8" src="{$basepath}/tests/i18n.test.js"></script>
 <script type="text/javascript" charset="utf-8" src="{$basepath}/tests/view.test.js"></script>
-<style>
-	.yui3-console-entry-pass,
-	.yui3-console-entry-fail {
-		font-size: 2em;
+<style type="text/css" media="screen">
+	.results {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: green;
+	}
+	.results.failed {
+		background: red;
+	}
+	.results .resume {
+		background: url('/yoshioka.js/tools/unittests/lib/successkid.jpg') no-repeat bottom right;
+		width: 696px;
+		height: 618px;
+		margin: 20px auto;
+		font-size: 20px;
+		font-family: 'helvetica neue', helvetica;
+	}
+	.results.failed .resume {
+		background: url('/yoshioka.js/tools/unittests/lib/rageguy.jpg');
+	}
+	.results .resume p {
+		margin: 10px;
+	}
+	.results .close {
+		background: red;
+		width: 18px;
+		height: 18px;
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		text-indent: -10000px;
+		background: url('/yoshioka.js/tools/unittests/lib/close.gif');
 	}
 </style>
 </head>
@@ -32,7 +63,42 @@
 			});
 
 			yconsole.render('#logger');
+			
+			Y.Test.Runner.on(
+				'complete',
+				function(e)
+				{
+					var b = Y.one(document.body),
+						n = Y.Node.create(
+'<div class="results"><div class="resume"></div><div class="close">Close</div></div>'
+						),
+						resume = Y.Node.create(
+'<p>'+e.results.passed+" tests passed</p>"+
+'<p>'+e.results.ignored+" tests ignored</p>"+
+'<p>'+e.results.failed+" tests failed</p>"+
+'<p>in '+e.results.duration+" ms</p>"
+						);
 
+					n.on(
+						'click',
+						function(e)
+						{
+							e.preventDefault();
+							this.hide();
+						},
+						n
+					);
+
+					if (e.results.failed > 0)
+					{
+						n.addClass('failed');
+					}
+					n.one('.resume').append(resume);
+
+					b.append(n);
+				}
+			)
+			
 			Y.Test.Runner.run();
 		});
 	//]]>
