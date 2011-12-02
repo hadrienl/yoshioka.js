@@ -31,6 +31,10 @@ Builder.prototype._appconfig = null;
 Builder.prototype._ignore = ['config/config.js', 'config/app_config.js', 'config/dev_config.js', 'yoshioka.js/core/core_config.js'];
 Builder.prototype.init = function(config)
 {
+	var path = config && config.path || null;
+	
+	BUILD_DIR = path ? path : BUILD_DIR;
+	
 	events.EventEmitter.call(this);
 	
 	this.dirs = ['yoshioka.js/core', 'locales', 'plugins', 'views', 'config'];
@@ -163,17 +167,6 @@ Builder.prototype._parseJSFile = function(path)
 					this._filecount--;
 					this._checkFileCount();
 					return;
-					/**
-					 * Compress build file with YUICompressor
-					 */
-					this.compressJS(
-						path,
-						function(err, stdout, stderr)
-						{
-							this._filecount--;
-							this._checkFileCount();
-						}.bind(this)
-					);
 				}.bind(this, path)
 			);
 		}.bind(this, path));
@@ -200,17 +193,6 @@ Builder.prototype._parseJSFile = function(path)
 						this._filecount--;
 						this._checkFileCount();
 						return;
-						/**
-						 * Compress build file with YUICompressor
-						 */
-						this.compressJS(
-							path,
-							function(err, stdout, stderr)
-							{
-								this._filecount--;
-								this._checkFileCount();
-							}.bind(this)
-						);
 					}.bind(this, path)
 				);
 			}.bind(this, path));
@@ -236,17 +218,6 @@ Builder.prototype._parseLocaleFile = function(path)
 				this._filecount--;
 				this._checkFileCount();
 				return;
-				/**
-				 * Compress build file with YUICompressor
-				 */
-				this.compressJS(
-					path,
-					function(err, stdout, stderr)
-					{
-						this._filecount--;
-						this._checkFileCount();
-					}.bind(this)
-				);
 			}.bind(this, path)
 		);
 	}.bind(this, path))
@@ -270,17 +241,6 @@ Builder.prototype._parseCSSFile = function(path)
 				this._filecount--;
 				this._checkFileCount();
 				return;
-				/**
-				 * Compress build file with YUICompressor
-				 */
-				this.compressCSS(
-					path,
-					function()
-					{
-						this._filecount--;
-						this._checkFileCount();
-					}.bind(this)
-				);
 
 			}.bind(this, path)
 		);
@@ -333,38 +293,6 @@ Builder.prototype._parseHTMLFile = function(path, writepath)
 		this._filecount--;
 		this._checkFileCount();
 	}.bind(this, writepath || path));
-};
-Builder.prototype.compressJS = function(path, callback)
-{
-	var cmd = exec(
-			'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type js --charset utf8 '+APP_PATH+this._buildpath+path+' -o '+APP_PATH+this._buildpath+path,
-			function(callback, path, err, stdout, stderr)
-			{
-				if (err)
-				{
-					util.print('YUICompressor detects errors in '+path+" :\n");
-					util.print(stderr);
-				}
-				this.insertCopyright(path);
-				callback && callback(err, stdout, stderr);
-			}.bind(this, callback, path)
-		);
-};
-Builder.prototype.compressCSS = function(path, callback)
-{
-	var cmd = exec(
-			'java -jar '+__dirname+'/yuicompressor-2.4.6.jar --type css --charset utf8 '+APP_PATH+this._buildpath+path+' -o '+APP_PATH+this._buildpath+path,
-			function(callback, path, err, stdout, stderr)
-			{
-				if (err)
-				{
-					util.print('YUICompressor detects errors in '+path+" :\n");
-					util.print(stderr);
-				}
-				this.insertCopyright(path);
-				callback && callback(err, stdout, stderr);
-			}.bind(this, callback, path)
-		);
 };
 Builder.prototype.insertCopyright = function(path)
 {

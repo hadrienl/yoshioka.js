@@ -48,20 +48,26 @@ catch (e) {
  */
 Server.prototype = {
 	/**
+	 * Server init config
+	 * @property _config
+	 * @private
+	 */
+	_config: null,
+	/**
 	 * Cli object
-	 * @attribute _cli
+	 * @property _cli
 	 * @private
 	 */
 	_cli: null,
 	/**
 	 * HTTP server object
-	 * @attribute _http
+	 * @property _http
 	 * @private
 	 */
 	_http: null,
 	/**
 	 * Port number for HTTP server
-	 * @attribute _port
+	 * @property _port
 	 * @private
 	 */
 	_port: null,
@@ -73,17 +79,48 @@ Server.prototype = {
 	 * @method init
 	 * @private
 	 */
-	init: function()
+	init: function(config)
 	{
-		var config = getconfig.getConfig({
+		this._config = config || {};
+		
+		this._config.app = getconfig.getConfig({
 			dev: true
 		});
+		
+		if (this._config.build)
+		{
+			// Build the app !!
+			var Builder = require('../build').Builder,
+				builder = new Builder();
+
+			builder.on(
+				'parseEnd',
+				function()
+				{
+					// Compress
+					var Compressor = require('../build/compressor').Compressor,
+						compressor = new Compressor({
+							path: this._buildpath
+						});
+					console.log("Compressing…");
+					compressor.compress(function()
+					{
+						console.log('Done !');
+					});
+				}
+			);
+			console.log("Building…");
+			builder.build({
+				path: this._config.build
+			});
+			return;
+		}
 		
 		this._cli = new Cli({
 			dev: true
 		});
 		
-		this._port = config.port || 1636;
+		this._port = this._config.app.port || 1636;
 		
 		this._http = http.createServer(
 			function(req, res)

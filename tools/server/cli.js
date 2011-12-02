@@ -630,11 +630,20 @@ Cli.prototype = {
 		this.cli.write("Building…\n");
 		builder.on(
 			'parseEnd',
-			function()
+			function(path)
 			{
-				this.cli.write("\nDone !\n");
-				this.initPrompt();
-			}.bind(this)
+				// Compress
+				var Compressor = require('../build/compressor').Compressor,
+					compressor = new Compressor({
+						path: path
+					});
+				console.log("Compressing…");
+				compressor.compress(function()
+				{
+					console.log("Done !");
+					this.initPrompt();
+				}.bind(this));
+			}.bind(this, builder._buildpath)
 		);
 		builder.build();
 	},
