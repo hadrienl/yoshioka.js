@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Code Coverage</title>
+		<meta charset="utf-8"/>
+		<script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
+		<style type="text/css" media="screen">
+			iframe {
+				width: 0;
+				height: 0;
+				position: absolute;
+				top: -10000px;
+				left: -10000px;
+			}
+			progress {
+				width: 100%;
+			}
+		</style>
+	</head>
+	<body class="yui3-skin-sam">
+		<h1>Code Coverage</h1>
+		<p>Please wait…</p>
+		<script type="text/javascript" charset="utf-8">
+		//<![CDATA[
+			YUI().use("node", "io", "json", function(Y) {
+				var check = function()
+					{
+						Y.later(
+							500,
+							null,
+							function()
+							{
+								Y.io(
+									'/__coverage/check/{$guid}',
+									{
+										on: {
+											success: function(id, data)
+											{
+												var data = Y.JSON.parse(data.responseText);
+
+												if (data.status === 'in progress')
+												{
+													check();
+												}
+												else if (data.status === 'finished')
+												{
+													start();
+												}
+												else
+												{
+													console.error('ERROR');
+												}
+											}
+										}
+									}
+								);
+							}
+						);
+					},
+					start = function()
+					{
+						var iframe = Y.Node.create('<iframe>'),
+							progress = Y.Node.create('<progress value="0" max="1000"></progress>');
+
+						iframe.setAttribute('src', '/coverage/{$guid}/tests.html');
+						Y.one(document.body).append(iframe);
+						Y.one(document.body).append(progress);
+
+						Y.one(window).on(
+							'message',
+							function(e)
+							{
+								var data = Y.JSON.parse(e._event.data);
+
+								switch (data.status)
+								{
+									case 'start':
+										progress.setAttribute('max', data.nb);
+										progress.setAttribute('value', 0);
+										break;
+									case 'inprogress':
+										progress.setAttribute('value', data.nb);
+										break;
+									case 'finished':
+										progress.setAttribute('value', progress.getAttribute('max'));
+										Y.one(document.body).append(Y.Node.create('<p>Done ! Redirecting to the results…</p>'));
+										// Send coverage data to server
+										Y.io(
+											'/__coverage/report/{$guid}',
+											{
+												method: 'post',
+												data: data.coverage,
+												on: {
+													success: function(id, data)
+													{
+														var data = Y.JSON.parse(data.responseText);
+
+														// redirect to the result page
+														window.location = data.url;
+													}
+												}
+											}
+										);
+										break;
+								}
+							},
+							progress
+						);
+					};
+				check();
+			});
+		//]]>
+		</script>
+	</body>
+</html>

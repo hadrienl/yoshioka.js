@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Code Coverage</title>
+		<meta charset="utf-8"/>
+		<script src="/coverage/{$guid}/config/config.js"></script>
+		<script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
+		{$testssrc}
+	</head>
+	<body class="yui3-skin-sam">
+		<h1>Code Coverage</h1>
+		<script type="text/javascript" charset="utf-8">
+		//<![CDATA[
+			YUI().use("node", "ys/core", "test"{$testsmodules}, function(Y) {
+				
+				Y.Test.Runner.on(
+					'begin',
+					function()
+					{
+						window.parent.postMessage(
+							Y.JSON.stringify({
+								status: 'start',
+								nb: Y.Test.Runner.masterSuite.items.length
+							}),
+							"*"
+						);
+					}
+				);
+				
+				Y.Test.Runner.on(
+					'testsuitecomplete',
+					function(e)
+					{
+						var i = 0;
+						
+						// Get test suite position
+						Y.Test.Runner.masterSuite.items.some(
+							function(t)
+							{
+								if (t === e.testSuite)
+								{
+									return true;
+								}
+								i++;
+							}
+						);
+						
+						window.parent.postMessage(
+							Y.JSON.stringify({
+								status: 'inprogress',
+								nb: i
+							}),
+							"*"
+						);
+					}
+				);
+				
+				
+				Y.Test.Runner.on(
+					'complete',
+					function(e)
+					{
+						window.parent.postMessage(
+							Y.JSON.stringify({
+								status: 'finished',
+								coverage: this.getCoverage(Y.Coverage.Format.JSON)
+							}),
+							"*"
+						);
+					}
+				);
+				Y.Test.Runner.run();
+			});
+		//]]>
+		</script>
+	</body>
+</html>

@@ -60,6 +60,15 @@ ModuleCompiler.prototype = {
 		}
 	},
 	
+	parseSync: function()
+	{
+		if (!this._filecontent)
+		{
+			this._filecontent = fs.readFileSync(APP_PATH+'/'+this._file).toString();
+		}
+		return this._compile();
+	},
+	
 	_parse: function(callback)
 	{
 		try

@@ -31,16 +31,16 @@ Builder.prototype._appconfig = null;
 Builder.prototype._ignore = ['config/config.js', 'config/app_config.js', 'config/dev_config.js', 'yoshioka.js/core/core_config.js'];
 Builder.prototype.init = function(config)
 {
-	var path = config && config.path || null;
+	var buildname = config && config.buildname || new Date().getTime(),
+		buildpath = config && config.buildpath || BUILD_DIR+buildname+'/';
 	
-	BUILD_DIR = path ? path : BUILD_DIR;
+	this._buildname = buildname;
+	this._buildpath = buildpath;
 	
 	events.EventEmitter.call(this);
 	
 	this.dirs = ['yoshioka.js/core', 'locales', 'plugins', 'views', 'config'];
 	this._filecount = 0;
-	this._buildname = new Date().getTime();
-	this._buildpath = BUILD_DIR+this._buildname+'/';
 	
 	this._coreconfig = JSON.parse(
 		fs.readFileSync(

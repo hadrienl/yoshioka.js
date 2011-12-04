@@ -19,6 +19,7 @@ getconfig = require('../make/getconfig'),
 UnitTests = require('../unittests').UnitTests,
 Cli = require('./cli').Cli,
 FileParser = require('./fileparser').FileParser,
+Coverage = require('../coverage').Coverage,
 Fixtures,
 
 Server = function(config)
@@ -91,7 +92,9 @@ Server.prototype = {
 		{
 			// Build the app !!
 			var Builder = require('../build').Builder,
-				builder = new Builder();
+				builder = new Builder({
+					path: this._config.build
+				});
 
 			builder.on(
 				'parseEnd',
@@ -110,9 +113,7 @@ Server.prototype = {
 				}
 			);
 			console.log("Building…");
-			builder.build({
-				path: this._config.build
-			});
+			builder.build();
 			return;
 		}
 		
@@ -187,6 +188,46 @@ Server.prototype = {
 					content
 				);
 			});
+			return;
+		}
+		
+		/**
+		 * If url starts with /__coverage, start the code coverage process
+		 */
+		if (url.match(/^\/__coverage\//))
+		{
+			f = new Coverage({
+				req: req,
+				res: res
+			});
+			return f.process();
+		}
+		if (url.match(/^\/coverage\//))
+		{
+			if (url.match(/html$/))
+			{
+				res.writeHead(200, {'Content-Type': 'text/html'});
+			}
+			else if (url.match(/css$/))
+			{
+				res.writeHead(200, {'Content-Type': 'text/stylesheet'});
+			}
+			else if (url.match(/js$/))
+			{
+				res.writeHead(200, {'Content-Type': 'text/javascript'});
+			}
+			try
+			{
+				res.end(
+					fs.readFileSync(APP_PATH+url)
+				);
+			}
+			catch (e)
+			{
+				res.end(
+					''
+				);
+			}
 			return;
 		}
 		
