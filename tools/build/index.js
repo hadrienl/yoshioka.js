@@ -110,9 +110,9 @@ Builder.prototype._makeConfig = function()
 		{
 			try
 			{
-				maker.writeConfig(
-					APP_PATH+this._buildpath
-				);
+				maker.writeConfig({
+					path: APP_PATH+this._buildpath
+				});
 			}
 			catch (e)
 			{

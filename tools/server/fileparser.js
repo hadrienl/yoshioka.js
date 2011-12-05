@@ -184,6 +184,12 @@ FileParser.prototype = {
 		{
 			return this.makeConfig();
 		}
+		else if ('/config/tconfig.js' === filepath)
+		{
+			return this.makeConfig({
+				tests: true
+			});
+		}
 		else if ('/config/routes.js' === filepath)
 		{
 			return this.makeRoutes();
@@ -351,13 +357,14 @@ FileParser.prototype = {
 	 * @method makeConfig
 	 * @private
 	 */
-	makeConfig: function()
+	makeConfig: function(config)
 	{
 		var maker = new Maker({
 			dirs: ['locales', 'plugins', 'views'],
 			files: ['config/errors.js'],
 			basepath: '/',
-			dev: true
+			dev: true,
+			tests: config && config.tests
 		});
 
 		maker.on(
@@ -381,10 +388,12 @@ FileParser.prototype = {
 		);
 		maker.on(
 			'parseEnd',
-			function()
+			function(config)
 			{
-				this.writeConfig();
-			}
+				this.writeConfig({
+					tests: config && config.tests
+				});
+			}.bind(maker, config)
 		);
 		maker.fetch();
 	},

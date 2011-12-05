@@ -41,9 +41,11 @@ Maker.prototype.init = function(config)
 	this.basepath = config.basepath ? config.basepath : '/';
 	this._modules = {};
 	this._dev = config.dev;
+	this._tests = config.tests;
 	
 	this._appConfig = getconfig.getConfig({
-		dev: this._dev
+		dev: this._dev,
+		tests: this._tests
 	});
 };
 /**
@@ -231,14 +233,18 @@ Maker.prototype._checkFileCount = function()
 	}
 };
 // Write config file
-Maker.prototype.writeConfig = function(path)
+Maker.prototype.writeConfig = function(config)
 {
 	/**
 	 * Get the default config file
 	 */
-	var coreConfig, YUI_config;
+	var coreConfig, YUI_config, filename;
 	
-	path || (path = APP_PATH);
+	config || (config = {});
+	
+	config.path || (config.path = APP_PATH);
+	
+	filename = (true === config.tests) ? 'tconfig.js' : 'config.js'
 	
 	try
 	{
@@ -268,9 +274,9 @@ Maker.prototype.writeConfig = function(path)
 		(YUI_config.groups[YUI_config.app] = {});
 	YUI_config.groups[YUI_config.app].modules = this._modules;
 	YUI_config.groups[YUI_config.app].base = this.basepath;
-
+	
 	fs.writeFile(
-		path+'config/config.js',
+		config.path+'config/'+filename,
 		'YUI_config=' + JSON.stringify(YUI_config) + ';',
 		function(err)
 		{

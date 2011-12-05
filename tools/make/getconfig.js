@@ -9,6 +9,7 @@ APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
 
 app_config_path = APP_PATH+'/config/app_config.js',
 dev_config_path = APP_PATH+'/config/dev_config.js',
+tests_config_path = APP_PATH+'/config/tests_config.js',
 
 fs = require('fs');
 /**
@@ -72,7 +73,33 @@ exports.getConfig = function(config)
 			
 		}
 	}
-	
+	if (true === config.tests)
+	{
+		/**
+		 * Get tests config
+		 */
+		try
+		{
+			tests_config = fs.readFileSync(tests_config_path).toString();
+
+			tests_config || (tests_config = '{}');
+			tests_config = JSON.parse(tests_config);
+			tests_config || (tests_config = {});
+			tests_config.port || (tests_config.port = 1636);
+
+			/**
+			 * Merge app_config and dev_config
+			 */
+			for (var i in tests_config)
+			{
+				app_config[i] = tests_config[i];
+			}
+		}
+		catch (e)
+		{
+			
+		}
+	}
 	return app_config;
 };
 
