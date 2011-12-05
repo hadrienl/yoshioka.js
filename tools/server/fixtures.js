@@ -165,6 +165,11 @@ Fixtures.prototype = {
 				var matchall = true,
 					i;
 				
+				if (data)
+				{
+					return;
+				}
+				
 				for (i in this.postData.params)
 				{
 					if (i === 'method')
