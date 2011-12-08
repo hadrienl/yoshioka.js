@@ -49,7 +49,7 @@
 		<div id="logger"></div>
 		<script type="text/javascript" charset="utf-8">
 		//<![CDATA[
-			YUI().use("node", "ys/core", "test", "console", {$testsmodules}, function(Y) {
+			YUI().use("json", "io", "node", "ys/core", "test", "console", {$testsmodules}, function(Y) {
 				var yconsole = new Y.Console({
 					newestOnTop: false,
 					logSource: Y.Global,
@@ -92,6 +92,15 @@
 						n.one('.resume').append(resume);
 
 						b.append(n);
+						
+						// Sending results to server
+						Y.io(
+							'/__unittests/report/',
+							{
+								method: 'post',
+								data: Y.JSON.stringify(e.results)
+							}
+						);
 					}
 				);
 				Y.Test.Runner.run();
