@@ -68,7 +68,7 @@ Json2Clover.prototype = {
 		}
 
 		xml +=
-'	</coverage>'+
+'	</project>'+
 '</coverage>';
 
 		return xml;
