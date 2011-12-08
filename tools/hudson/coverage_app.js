@@ -57,7 +57,24 @@ Server.prototype._getCoverageReport = function(guid)
 		j2c.toClover()
 	);
 	
-	process.exit(0);
+	// Move guid folder content into "last" folder
+	exec(
+		'rm -rf '+APP_PATH+'/build/logs/coverage/;'+
+		'mkdir -p '+APP_PATH+'/build/logs/coverage/;'+
+		'cp -r '+APP_PATH+'/coverage/'+guid+'/* '+APP_PATH+'/build/logs/coverage/',
+		function(err, stderr, stdout)
+		{
+			if (err)
+			{
+				console.log(err);
+				this.browser.kill('SIGSTOP');
+
+				process.exit(1);
+			}
+			
+			process.exit(0);
+		}
+	);
 };
 
 server = new Server();
