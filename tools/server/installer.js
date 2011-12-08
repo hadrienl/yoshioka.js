@@ -14,7 +14,7 @@ Fetcher = require('../fetcher').Fetcher,
 
 Installer = function(config)
 {
-	this.init(config);
+    this.init(config);
 };
 
 /**
@@ -24,8 +24,8 @@ Installer = function(config)
  * @constructor
  * @param {object} config Config with these parameters :
  * <dl>
- * 	<dt>namespace</dt>
- * 	<dd>Application namespace</dd>
+ *     <dt>namespace</dt>
+ *     <dd>Application namespace</dd>
  * </dl>
  */
 Installer.prototype = new Fetcher();
@@ -44,21 +44,21 @@ Installer.prototype._namespace = null;
  */
 Installer.prototype.init = function(config)
 {
-	Installer.superclass.init.apply(this, arguments);
-	
-	config || (config = {});
-	
-	this._namespace = config.namespace || 'yourapp';
-	
-	this.dirs = [YS_PATH+'dist'];
-	
-	this.on(
-		'parseEnd',
-		function()
-		{
-			this.emit('success');
-		}.bind(this)
-	);
+    Installer.superclass.init.apply(this, arguments);
+    
+    config || (config = {});
+    
+    this._namespace = config.namespace || 'yourapp';
+    
+    this.dirs = [YS_PATH+'dist'];
+    
+    this.on(
+        'parseEnd',
+        function()
+        {
+            this.emit('success');
+        }.bind(this)
+    );
 };
 /**
  * Run the installer process
@@ -67,14 +67,14 @@ Installer.prototype.init = function(config)
  */
 Installer.prototype.run = function()
 {
-	try
-	{
-		this._copyFiles();
-	}
-	catch (e)
-	{
-		this.emit('failure', e);
-	}
+    try
+    {
+        this._copyFiles();
+    }
+    catch (e)
+    {
+        this.emit('failure', e);
+    }
 };
 /**
  * Copy all files in the `dist` folder
@@ -83,7 +83,7 @@ Installer.prototype.run = function()
  */
 Installer.prototype._copyFiles = function()
 {
-	this.fetch();
+    this.fetch();
 };
 /**
  * Parse a file, create its pathname in the app dir, and write the compiled new
@@ -93,29 +93,29 @@ Installer.prototype._copyFiles = function()
  */
 Installer.prototype._parseFile = function(path)
 {
-	var newpath = APP_PATH+path.replace(YS_PATH+'dist/', '');
-	
-	this._mkdir(newpath);
-	
-	fs.readFile(
-		APP_PATH+path,
-		function(err, data)
-		{
-			if (err) throw err;
-			
-			fs.writeFile(
-				newpath,
-				this._compileFile(data.toString()),
-				function(err)
-				{
-					if (err) throw err;
-					
-					this._filecount--;
-					this._checkFileCount();
-				}.bind(this)
-			);
-		}.bind(this)
-	);
+    var newpath = APP_PATH+path.replace(YS_PATH+'dist/', '');
+    
+    this._mkdir(newpath);
+    
+    fs.readFile(
+        APP_PATH+path,
+        function(err, data)
+        {
+            if (err) throw err;
+            
+            fs.writeFile(
+                newpath,
+                this._compileFile(data.toString()),
+                function(err)
+                {
+                    if (err) throw err;
+                    
+                    this._filecount--;
+                    this._checkFileCount();
+                }.bind(this)
+            );
+        }.bind(this)
+    );
 };
 /**
  * Compile file
@@ -124,10 +124,10 @@ Installer.prototype._parseFile = function(path)
  */
 Installer.prototype._compileFile = function(content)
 {
-	return content.replace(
-		/yourapp/g,
-		this._namespace
-	);
+    return content.replace(
+        /yourapp/g,
+        this._namespace
+    );
 };
 
 exports.Installer = Installer;

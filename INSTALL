@@ -2,27 +2,27 @@ REQUIREMENTS
 
 - Node.js
 
-	wget http://nodejs.org/dist/node-v0.6.2.tar.gz
-	tar xvzf node-v0.6.2.tar.gz
-	cd node-v0.6.2
-	./configure
-	make
-	sudo make install
+    wget http://nodejs.org/dist/node-v0.6.2.tar.gz
+    tar xvzf node-v0.6.2.tar.gz
+    cd node-v0.6.2
+    ./configure
+    make
+    sudo make install
 
 - npm (optional, for Less)
 
-	git clone https://github.com/isaacs/npm.git
-	cd npm
-	./configure
-	make
-	sudo make install
+    git clone https://github.com/isaacs/npm.git
+    cd npm
+    ./configure
+    make
+    sudo make install
 
 - Less (http://lesscss.org/)
 
-	sudo npm install less -g
+    sudo npm install less -g
 
 - Java Runtime
-	sudo apt-get install default-jre (for a debian like distrib)
+    sudo apt-get install default-jre (for a debian like distrib)
 
 INSTALLATION
 
@@ -30,14 +30,14 @@ mkdir yourapp
 cd yourapp
 
 - With git
-	git init
-	git submodule add git://github.com/hadrienl/yoshioka.js.git
+    git init
+    git submodule add git://github.com/hadrienl/yoshioka.js.git
 
 - Without git
-	wget https://github.com/hadrienl/yoshioka.js/tarball/0.1
-	tar xvzf hadrienl-yoshioka.js-0.1-0-xxxxx.tar.gz
-	rm hadrienl-yoshioka.js-0.1-0-xxxxx.tar.gz
-	mv hadrienl-yoshioka.js-0.1-0-xxxxx.tar.gz yoshioka.js
+    wget https://github.com/hadrienl/yoshioka.js/tarball/0.1
+    tar xvzf hadrienl-yoshioka.js-0.1-0-xxxxx.tar.gz
+    rm hadrienl-yoshioka.js-0.1-0-xxxxx.tar.gz
+    mv hadrienl-yoshioka.js-0.1-0-xxxxx.tar.gz yoshioka.js
 
 node yoshioka.js
 install

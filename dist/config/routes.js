@@ -1,4 +1,4 @@
 [{
-	"path": "/",
-	"mainview": "home"
+    "path": "/",
+    "mainview": "home"
 }]

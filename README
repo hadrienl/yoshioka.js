@@ -3,12 +3,12 @@ some text
 
 REQUIREMENT
 
-	Development environment :
-	- node 0.6.2
-	- less (via npm)
-	- JRE (for yuicompressor)
-	Production environment :
-	- Quick static web server
+    Development environment :
+    - node 0.6.2
+    - less (via npm)
+    - JRE (for yuicompressor)
+    Production environment :
+    - Quick static web server
 
 USE
 

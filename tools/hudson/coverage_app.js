@@ -18,63 +18,63 @@ server;
 Server.prototype.__control = Server.prototype._control;
 Server.prototype._control = function(req, res)
 {
-	var m;
+    var m;
 
-	this.postData = '';
-	
-	if (m = req.url.match(/^\/__coverage\/report\/(.*?)$/))
-	{
-		req.on(
-			'data',
-			function (data)
-			{
-				this.postData += data;
-			}.bind(this)
-		);
-		req.on(
-			'end',
-			function()
-			{
-				return this._getCoverageReport(m[1]);
-			}.bind(this)
-		);
-	}
-	else
-	{
-		return Server.prototype.__control.apply(this, arguments);
-	}
+    this.postData = '';
+    
+    if (m = req.url.match(/^\/__coverage\/report\/(.*?)$/))
+    {
+        req.on(
+            'data',
+            function (data)
+            {
+                this.postData += data;
+            }.bind(this)
+        );
+        req.on(
+            'end',
+            function()
+            {
+                return this._getCoverageReport(m[1]);
+            }.bind(this)
+        );
+    }
+    else
+    {
+        return Server.prototype.__control.apply(this, arguments);
+    }
 };
 Server.prototype._getCoverageReport = function(guid)
 {
-	var j2c = new Json2Clover(this.postData);
-	
-	// Stop browser
-	this.browser.kill('SIGSTOP');
-	
-	// Write coverage json file
-	fs.writeFileSync(
-		APP_PATH+'coverage/'+guid+'/clover.xml',
-		j2c.toClover()
-	);
-	
-	// Move guid folder content into "last" folder
-	exec(
-		'rm -rf '+APP_PATH+'/build/logs/coverage/;'+
-		'mkdir -p '+APP_PATH+'/build/logs/coverage/;'+
-		'cp -r '+APP_PATH+'/coverage/'+guid+'/* '+APP_PATH+'/build/logs/coverage/',
-		function(err, stderr, stdout)
-		{
-			if (err)
-			{
-				console.log(err);
-				this.browser.kill('SIGSTOP');
+    var j2c = new Json2Clover(this.postData);
+    
+    // Stop browser
+    this.browser.kill('SIGSTOP');
+    
+    // Write coverage json file
+    fs.writeFileSync(
+        APP_PATH+'coverage/'+guid+'/clover.xml',
+        j2c.toClover()
+    );
+    
+    // Move guid folder content into "last" folder
+    exec(
+        'rm -rf '+APP_PATH+'/build/logs/coverage/;'+
+        'mkdir -p '+APP_PATH+'/build/logs/coverage/;'+
+        'cp -r '+APP_PATH+'/coverage/'+guid+'/* '+APP_PATH+'/build/logs/coverage/',
+        function(err, stderr, stdout)
+        {
+            if (err)
+            {
+                console.log(err);
+                this.browser.kill('SIGSTOP');
 
-				process.exit(1);
-			}
-			
-			process.exit(0);
-		}
-	);
+                process.exit(1);
+            }
+            
+            process.exit(0);
+        }
+    );
 };
 
 server = new Server();
@@ -83,27 +83,27 @@ server = new Server();
  * Launch browser on unit tests page
  */
 server.browser = exec(
-	browser+' localhost:'+port+'/__coverage/',
-	function(err)
-	{
-		if (err)
-		{
-			console.log(err);
-			this.browser.kill('SIGSTOP');
+    browser+' localhost:'+port+'/__coverage/',
+    function(err)
+    {
+        if (err)
+        {
+            console.log(err);
+            this.browser.kill('SIGSTOP');
 
-			process.exit(1);
-		}
-	}.bind(server)
+            process.exit(1);
+        }
+    }.bind(server)
 );
 // Set a timer to kill the browser if it doesn't respond after some time
 setTimeout(
-	function()
-	{
-		server.browser.kill('SIGSTOP');
-		process.exit(1);
-	},
-	10*60*1000,
-	server
+    function()
+    {
+        server.browser.kill('SIGSTOP');
+        process.exit(1);
+    },
+    10*60*1000,
+    server
 );
 
 

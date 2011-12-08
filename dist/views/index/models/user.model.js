@@ -8,16 +8,16 @@ NS = 'yourapp',
 
 User = function(config)
 {
-	User.superclass.constructor.apply(this, arguments);
+    User.superclass.constructor.apply(this, arguments);
 };
 
 Y.namespace(NS).User = Y.extend(User, Y.Model, {
-	
+    
 },
 {
-	ATTRS: {
-		name: {
-			value: 'Anonymous'
-		}
-	}
+    ATTRS: {
+        name: {
+            value: 'Anonymous'
+        }
+    }
 });
