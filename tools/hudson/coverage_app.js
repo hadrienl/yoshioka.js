@@ -10,8 +10,14 @@ exec = require('child_process').exec,
 Server = require('../server').Server,
 Json2Clover = require('../coverage/lib/json2clover').Json2Clover,
 
+getconfig = require('../make/getconfig'),
+
+config = getconfig.getConfig({
+    tests: true
+}),
+
 browser = 'chromium-browser',
-port = 1636,
+port = (config.port || 1636),
 
 server;
 

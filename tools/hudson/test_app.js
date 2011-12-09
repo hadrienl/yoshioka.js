@@ -6,8 +6,14 @@ exec = require('child_process').exec,
 
 Server = require('../server').Server,
 
+getconfig = require('../make/getconfig'),
+
+config = getconfig.getConfig({
+    tests: true
+}),
+
 browser = 'chromium-browser',
-port = 1636,
+port = (config.port || 1636),
 
 url = '/__unittests',
 
