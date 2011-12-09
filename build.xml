@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project    name="Yoshioka.js"
+            description="Yoshioka javascript MVC framework"
+            default="prepare">
+
+    <target name="prepare">
+        <delete dir="./tests" />
+        <mkdir dir="./tests" />
+        <mkdir dir="./tests/yoshioka.js" />
+        <copy todir="./tests/yoshioka.js">
+            <fileset dir=".">
+                <include name="**" />
+                <exclude name="./tests" />
+            </fileset>
+        </copy>
+        <copy todir="./tests">
+            <fileset dir="./tests/yoshioka.js/dist">
+                <include name="**" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="ut_chromium">
+        <echo msg="Unit tests with Chromium" />
+        <exec   command="node ./tests/yoshioka.js/tools/hudson/test_app.js --browser chromium --framework"
+                checkreturn="true"/>
+    </target>
+
+    <target name="ut_iceweasel">
+        <echo msg="Unit tests with Iceweasel" />
+        <exec   command="node ./tests/yoshioka.js/tools/hudson/test_app.js --browser iceweasel"
+                checkreturn="true"/>
+    </target>
+
+    <target name="doc">
+        <echo msg="Documentation" />
+        <delete dir="./tests" />
+        <mkdir dir="./build/docs/" />
+        <exec   command="yuidoc -c ./_yuidoc.json" />
+    </target>
+
+</project>
