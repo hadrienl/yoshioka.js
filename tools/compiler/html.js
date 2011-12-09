@@ -23,6 +23,7 @@ HTMLCompiler.prototype =
 {
     _file: null,
     _filecontent: '',
+    _configtype: null,
     
     init: function(config)
     {
@@ -37,6 +38,8 @@ HTMLCompiler.prototype =
                 .replace(/\/$/, ''));
         
         this._filecontent = config.filecontent;
+        
+        this._configtype = (config.type || 'dev');
     },
     
     /**
@@ -69,7 +72,8 @@ HTMLCompiler.prototype =
     _parse: function(callback)
     {
         var config = getconfig.getConfig({
-            dev: true
+            dev: (this._configtype === 'dev'),
+            tests: (this._configtype === 'tests')
         });
         /**
          * Replace some tags
