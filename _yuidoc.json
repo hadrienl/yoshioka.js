@@ -8,5 +8,6 @@
         "attributesEmit": "true",
         "paths": [ "./" ],
         "exclude": "tools/server/templates/"
-    }
+    },
+    "outdir": "./build/docs"
 }

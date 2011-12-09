@@ -9,6 +9,8 @@ Server = require('../server').Server,
 browser = 'chromium-browser',
 port = 1636,
 
+url = '/__unittests',
+
 server,
 
 argv = process.argv,
@@ -43,6 +45,11 @@ if (args['browser'])
         browser = 'iceweasel';
     }
 };
+
+if (args['framework'])
+{
+    url = '/yoshioka.js/unittests/';
+}
 
 Server.prototype.__control = Server.prototype._control;
 Server.prototype._control = function(req, res)
@@ -88,7 +95,7 @@ server = new Server();
  * Launch browser on unit tests page
  */
 server.browser = exec(
-    browser+' localhost:'+port+'/__unittests',
+    browser+' localhost:'+port+url,
     function(err)
     {
         if (err)
