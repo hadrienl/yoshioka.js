@@ -13,6 +13,8 @@ fs = require('fs'),
 events = require('events'),
 exec = require('child_process').exec,
 util = require('util'),
+rimraf = require('../../lib/rimraf'),
+
 compiler = require('../compiler'),
 Maker = require('../make').Maker,
 
@@ -68,6 +70,21 @@ Builder.prototype.build = function()
             }
             
             /**
+             * Clean all previous builds
+             */
+            fs.readdirSync(
+                APP_PATH+BUILD_DIR
+            ).forEach(function(f)
+            {
+                var path = APP_PATH+BUILD_DIR+f;
+                
+                if (f.match(/^[0-9]+$/))
+                {
+                    rimraf.sync(path);
+                }
+            });
+            
+            /**
              * Create build subdir
              */
             fs.stat(
@@ -82,6 +99,8 @@ Builder.prototype.build = function()
                     this.fetch();
                 }.bind(this)
             );
+            
+            
         }.bind(this)
     );
     
