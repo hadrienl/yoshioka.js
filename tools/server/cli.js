@@ -635,7 +635,7 @@ Cli.prototype = {
                 // Compress
                 var Compressor = require('../build/compressor').Compressor,
                     compressor = new Compressor({
-                        path: path
+                        path: APP_PATH+path
                     });
                 console.log("Compressing…");
                 compressor.compress(function()

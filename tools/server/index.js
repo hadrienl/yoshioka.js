@@ -103,7 +103,7 @@ Server.prototype = {
                     // Compress
                     var Compressor = require('../build/compressor').Compressor,
                         compressor = new Compressor({
-                            path: this._buildpath
+                            path: APP_PATH+this._buildpath
                         });
                     console.log("Compressing…");
                     compressor.compress(function()
