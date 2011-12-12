@@ -194,7 +194,7 @@ Y.extend(I18n, Y.Base, {
         node = '<span id="'+this.get('id')+'">'+
             this.get('translation')+
             '</span>';
-        
+
         /**
          * Create a node from the string
          */
@@ -207,7 +207,7 @@ Y.extend(I18n, Y.Base, {
          * A callback has been given. This callback will be called everytime the
          * translation change. The callback take the translation as first param.
          */
-        else if (typeof tostring === 'function')
+        if (typeof tostring === 'function')
         {
             tostring(this.get('translation'));
             this.after(
