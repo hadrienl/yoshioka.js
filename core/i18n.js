@@ -173,7 +173,9 @@ Y.extend(I18n, Y.Base, {
      * @method localize
      * @param {boolean} tostring Set to true if you want a node as a string
      * to set as innerHTML of a parent node. Default is Y.Node object to
-     * be append in a parent node.
+     * be append in a parent node. You can set a
+     * callback function to do whatever you want with the translation when it's
+     * loaded. The callback will be called everytime the translation change.
      * @return Y.Node|string
      * @public
      */
@@ -200,6 +202,23 @@ Y.extend(I18n, Y.Base, {
         {
             node = Y.Node.create(node);
             this.set('node', node);
+        }
+        /**
+         * A callback has been given. This callback will be called everytime the
+         * translation change. The callback take the translation as first param.
+         */
+        else if (typeof tostring === 'function')
+        {
+            tostring(this.get('translation'));
+            this.after(
+                'translationChange',
+                function(e, fn)
+                {
+                    fn(this.get('translation'));
+                },
+                this,
+                tostring
+            );
         }
         /**
          * If tostring is true, a string will returned instead of a Node
@@ -414,7 +433,21 @@ Y.extend(I18nManager, Y.Base, {
      * form `file~key`. `key` can have /[a-zA-Z0-9\.\-_]/ characters.
      * @param {object} params Parameters to give to the translation. The
      * translation must have some @@name@@ keyword to place the parameter.
-     * @param {boolean} tostring True if you want a string to insert in a innerHTML. Default if you want a Y.Node to append in DOM.
+     * @param {boolean|Function} tostring True if you want a string to insert in
+     * a innerHTML. Default if you want a Y.Node to append in DOM. You can set a
+     * callback function to do whatever you want with the translation when it's
+     * loaded. The callback will be called everytime the translation change.
+     * @example <pre>
+     * __('file~key', null, Y.bind(
+     *     function(text)
+     *     {
+     *         this.one('input').setAttribute('placeholder', text);
+     *     },
+     *     this
+     * ));
+     * // The placeholder attribute will be updated when the locale will be
+     * // loaded and everytime the use change the global locale.
+     * </pre>
      * @return string|Y.Node
      * @public
      */
