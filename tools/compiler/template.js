@@ -104,7 +104,7 @@ TemplateCompiler.prototype =
         if (!view)
         {
             console.error('template '+path+' not found');
-            return callback('"<!-- template '+path+' not found -->"');
+            return callback('alert("template '+path+' not found")');
         }
         
         view = view[1];
