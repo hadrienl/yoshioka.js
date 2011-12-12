@@ -8,6 +8,7 @@ var fs = require('fs'),
 
 APP_PATH = __dirname.replace(/yoshioka\.js.*$/, '')+'/',    
 VIEWS_PATH = 'views',
+PLUGINS_PATH = 'plugins',
 TEMPLATES_PATH = 'templates',
 HTMLCompiler = require('./html').HTMLCompiler;
     
@@ -96,7 +97,7 @@ TemplateCompiler.prototype =
     {
         var view = this._file.match(
                 new RegExp(
-                    '^(/?'+VIEWS_PATH+'/[^/]+)/'
+                    '^(/?('+VIEWS_PATH+'|'+PLUGINS_PATH+')/[^/]+)/'
                 )
             ),
             tplpath, tplcontent, locales, c;
