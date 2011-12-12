@@ -57,9 +57,13 @@ HTMLCompiler.prototype =
                 {
                     if (err)
                     {
-                        throw err;
+                        console.error(err);
+                        this._filecontent = '';
                     }
-                    this._filecontent = data.toString();
+                    else
+                    {
+                        this._filecontent = data.toString();
+                    }
                     this._parse(callback);
                 }.bind(this, callback)
             );
