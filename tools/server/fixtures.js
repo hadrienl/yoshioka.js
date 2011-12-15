@@ -122,7 +122,7 @@ Fixtures.prototype = {
         try
         {
             this.postData = JSON.parse(this.postData);
-            path = this.postData.method + '_' + path;
+            path = path+'/'+this.postData.method;
         }
         catch (e)
         {
@@ -132,7 +132,7 @@ Fixtures.prototype = {
         try
         {
             fixtures = fs.readFileSync(
-                APP_PATH+'/fixtures/'+path+'.js'
+                APP_PATH+'/fixtures/'+path+'.json'
             ).toString()
         }
         catch (e)
