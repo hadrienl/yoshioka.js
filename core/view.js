@@ -84,7 +84,12 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         this._currentview = {};
         this._loading = {};
         this._events = [];
-
+        
+        if (Y.version > "3.5")
+        {
+            this.container = this.get('container');
+        }
+        
         if (!requires)
         {
             return;
@@ -613,7 +618,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
     /**
      * Get current view instance in given place
      * @method getCurrentView
-     * @param {string} place Classname of the node's place where the view is appened
+     * @param {string} place Classname of the node's place where the view is
+     * appened
      * @public
      */
     getCurrentView: function(place)
