@@ -628,9 +628,21 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      * @return Y.Event
      * @public
      */
-    storeEvent: function(e)
+    storeEvent: function(events)
     {
-        return (this._events[this._events.length] = e);
+        if (!Y.Lang.isArray(events))
+        {
+            events = [events];
+        }
+        Y.Array.each(
+            events,
+            function(e)
+            {
+                this._events.push(e);
+            },
+            this
+        );
+        return events;
     }
 },
 {
