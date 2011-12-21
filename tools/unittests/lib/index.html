@@ -5,65 +5,51 @@
         <meta charset="utf-8"/>
         <script src="/config/tconfig.js"></script>
         <script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/yoshioka.js/tools/unittests/lib/unittests.view.js"></script>
         {$testssrc}
         <style type="text/css" media="screen">
-            .results {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
+            .running {
+                background: lightblue;
+            }
+            .passed .ctn {
                 background: green;
             }
-            .results.failed {
+            .passed .details {
+                display: none;
+            }
+            .failed .ctn {
                 background: red;
             }
-            .results .resume {
-                background: url('/yoshioka.js/tools/unittests/lib/successkid.jpg') no-repeat bottom right;
-                width: 696px;
-                height: 618px;
-                margin: 20px auto;
-                font-size: 20px;
-                font-family: 'helvetica neue', helvetica;
+            .ignored .ctn {
+                background: gray;
             }
-            .results.failed .resume {
-                background: url('/yoshioka.js/tools/unittests/lib/rageguy.jpg');
+
+            .pass {
+                background: green;
             }
-            .results .resume p {
-                margin: 10px;
-            }
-            .results .close {
+            .fail {
                 background: red;
-                width: 18px;
-                height: 18px;
-                position: absolute;
-                top: 5px;
-                right: 5px;
-                text-indent: -10000px;
-                background: url('/yoshioka.js/tools/unittests/lib/close.gif');
+            }
+            .ignore {
+                background: gray;
             }
         </style>
     </head>
     <body class="yui3-skin-sam">
-        <h1>Unit tests</h1>
-        <div id="logger"></div>
         <script type="text/javascript" charset="utf-8">
         //<![CDATA[
-            YUI().use("json", "io", "node", "ys/core", "test", "console", {$testsmodules}, function(Y) {
-                var yconsole = new Y.Console({
-                    newestOnTop: false,
-                    logSource: Y.Global,
-                    height: '800px',
-                    width: '100%',
-                    style: 'block'
-                });
+            YUI().use("json", "io", "node", "ys/core", "test", "ys/views/unittests", {$testsmodules}, function(Y) {
 
-                yconsole.render('#logger');
+                var view = new Y.ys.UnittestsView();
+                Y.one('body').append(view.render());
+
+
 
                 Y.Test.Runner.on(
                     'complete',
                     function(e)
                     {
+                        return;
                         var b = Y.one(document.body),
                             n = Y.Node.create(
 '<div class="results"><div class="resume"></div><div class="close">Close</div></div>'
@@ -92,7 +78,7 @@
                         n.one('.resume').append(resume);
 
                         b.append(n);
-                        
+
                         // Sending results to server
                         Y.io(
                             '/__unittests/report/',
@@ -103,13 +89,10 @@
                         );
                     }
                 );
-                Y.Test.Runner.run();
+
+                //Y.Test.Runner.run();
             });
         //]]>
         </script>
-        <p>
-            Individual files :
-        </p>
-        <ul>{$testslinks}</ul>
     </body>
 </html>
