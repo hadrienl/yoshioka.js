@@ -29,7 +29,9 @@ suite.add(
         
         setUp: function()
         {
-            this.prevpath = window.location.hash || window.location.pathname;
+            this.prevpath = (window.location.hash &&
+                    window.location.hash.replace('#', '')) ||
+                window.location.pathname;
             
             this.data = new Y.ys.Core();
             this.coord = this.data.loadRoutes([{
@@ -105,7 +107,9 @@ suite.add(
         
         setUp: function()
         {
-            this.prevpath = window.location.hash || window.location.pathname;
+            this.prevpath = (window.location.hash &&
+                    window.location.hash.replace('#', '')) ||
+                window.location.pathname;
             
             this.data = new Y.ys.Core();
             this.coord = this.data.loadRoutes([{

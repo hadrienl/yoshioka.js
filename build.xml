@@ -4,17 +4,17 @@
             default="prepare">
 
     <target name="prepare">
-        <delete dir="./tests" />
-        <mkdir dir="./tests" />
-        <mkdir dir="./tests/yoshioka.js" />
-        <copy todir="./tests/yoshioka.js">
+        <delete dir="./build/tests" />
+        <mkdir dir="./build/tests" />
+        <mkdir dir="./build/tests/yoshioka.js" />
+        <copy todir="./build/tests/yoshioka.js">
             <fileset dir=".">
                 <include name="**" />
-                <exclude name="./tests" />
+                <exclude name="./build/" />
             </fileset>
         </copy>
-        <copy todir="./tests">
-            <fileset dir="./tests/yoshioka.js/dist">
+        <copy todir="./build/tests">
+            <fileset dir="./build/tests/yoshioka.js/dist">
                 <include name="**" />
             </fileset>
         </copy>
@@ -22,19 +22,19 @@
 
     <target name="ut_chromium">
         <echo msg="Unit tests with Chromium" />
-        <exec   command="node ./tests/yoshioka.js/tools/hudson/test_app.js --browser chromium --framework"
+        <exec   command="node ./build/tests/yoshioka.js/tools/hudson/test_app.js --browser chromium --framework"
                 checkreturn="true"/>
     </target>
 
     <target name="ut_iceweasel">
         <echo msg="Unit tests with Iceweasel" />
-        <exec   command="node ./tests/yoshioka.js/tools/hudson/test_app.js --browser iceweasel"
+        <exec   command="node ./build/tests/yoshioka.js/tools/hudson/test_app.js --browser iceweasel --framework"
                 checkreturn="true"/>
     </target>
 
     <target name="doc">
         <echo msg="Documentation" />
-        <delete dir="./tests" />
+        <delete dir="./build/tests" />
         <mkdir dir="./build/docs/" />
         <exec   command="yuidoc -c ./yuidoc.json" />
     </target>
