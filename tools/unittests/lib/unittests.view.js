@@ -29,7 +29,8 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
     template: '<div>'+
 '   <h1>UnitTests</h1>'+
 '   <p>'+
-'       <button class="runall">Run all tests</button>'+
+'       <span class="summary"></span>'+
+'       <button class="runall">Run all the tests</button>'+
 '   </p>'+
 '   <ul class="tests_suites"></ul>'+
 '</div>',
@@ -54,6 +55,10 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
     
     syncUI: function()
     {
+        var nbsuites = 0,
+            nbcases = 0,
+            nbtests = 0;
+        
         Y.Array.each(
             YTR.masterSuite.items,
             function(suite)
@@ -67,9 +72,40 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
                 );
                 
                 this._suiteviews.push(v);
+                
+                // Count data
+                nbsuites++;
+                nbcases += suite.items.length;
+                
+                Y.Array.each(
+                    suite.items,
+                    function(item)
+                    {
+                        Y.Object.each(
+                            item,
+                            function(v, k)
+                            {
+                                if (k.match(/^test/))
+                                {
+                                    nbtests++;
+                                }
+                            }
+                        );
+                    }
+                );
             },
             this
         );
+        
+        console.debug(nbsuites);
+        console.debug(nbcases);
+        console.debug(nbtests);
+        
+        this.container.one('.summary').set(
+            'innerHTML',
+            nbtests+' tests in '+nbcases+' cases in '+nbsuites+' suites.'
+        );
+        
     },
     
     run: function()
