@@ -16,11 +16,42 @@ UnitTests.prototype = {
     
     _srcs: null,
     _modules: null,
+    _auto: false,
+    _framework: false,
     
     init: function(config)
     {
-        var test = config.test || null,
-            viewpaths = [], pluginpaths = [];
+        var test = config.test || null;
+        
+        this._auto = false;
+        this._framework = false;
+        if (test === 'auto')
+        {
+            this._auto = true;
+        }
+        if (test === 'framework')
+        {
+            this._framework = true;
+        }
+        if (test === 'framework/auto')
+        {
+            this._auto = true;
+            this._framework = true;
+        }
+        
+        if (this._framework)
+        {
+            return this._prepareFrameworkTests();
+        }
+        else
+        {
+            return this._prepareAppTests();
+        }
+    },
+    _prepareAppTests: function()
+    {
+        var viewpaths = [],
+            pluginpaths = []
         
         /**
          * Look for each tests files in views folder
@@ -82,18 +113,10 @@ UnitTests.prototype = {
                     testfolder.forEach(
                         function(f)
                         {
-                            var ctn = fs.readFileSync(
-                                    APP_PATH+testpath+f
-                                ),
-                                module = (module = ctn.toString().match(
-                                        /\@module ([a-zA-Z0-9\/\-\_]+)/
-                                    )) && module[1];
-                            if (test && module !== test)
-                            {
-                                return;
-                            }
-                            this._srcs[this._srcs.length] = '<script src="/'+testpath+f+'"></script>';
-                            this._modules[this._modules.length] = '"'+module+'"';
+                            this._readTestFileDetails(
+                                testpath,
+                                f
+                            );
                         }.bind(this)
                     );
                 }
@@ -104,7 +127,46 @@ UnitTests.prototype = {
                     )
                 }
             }.bind(this)
-        )
+        );
+    },
+    
+    _prepareFrameworkTests: function()
+    {
+        var fwk_path = 'yoshioka.js/tests/';
+        
+        this._srcs = [];
+        this._modules = [];
+        
+        tests = fs.readdirSync(
+            APP_PATH+fwk_path
+        );
+        
+        tests.forEach(
+            function(p)
+            {
+                this._readTestFileDetails(
+                    fwk_path,
+                    p
+                );
+            }.bind(this)
+        );
+    },
+    
+    _readTestFileDetails: function(testpath, file)
+    {
+        var ctn = fs.readFileSync(
+                APP_PATH+testpath+file
+            ),
+            module = (module = ctn.toString().match(
+                /\@module ([a-zA-Z0-9\/\-\_]+)/
+            )) && module[1];
+        
+        this._srcs.push(
+            '<script src="/'+testpath+file+'"></script>'
+        );
+        this._modules.push(
+            '"'+module+'"'
+        );
     },
     
     getHTML: function(callback)
@@ -126,6 +188,10 @@ UnitTests.prototype = {
                 .replace(
                     /\{\$testslinks\}/,
                     this._createTestsLinks()
+                )
+                .replace(
+                    /\{\$auto\}/,
+                    this._auto ? true : false
                 );
             
             callback(html);

@@ -97,10 +97,6 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
             this
         );
         
-        console.debug(nbsuites);
-        console.debug(nbcases);
-        console.debug(nbtests);
-        
         this.container.one('.summary').set(
             'innerHTML',
             nbtests+' tests in '+nbcases+' cases in '+nbsuites+' suites.'
@@ -157,8 +153,7 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
     },
     complete: function(results)
     {
-        console.debug('FINISHED !')
-        console.debug(results);
+        
     }
 },
 {
@@ -171,7 +166,8 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
  * @namespace Y.ys
  * @extend Y.ys.View
  */
-Y.namespace(NS).UnittestsSuiteSubview = Y.extend(UnittestsSuiteSubview, Y.ys.View, {
+Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
+    UnittestsSuiteSubview, Y.ys.View, {
     
     template: '<li>'+
 '   <div class="ctn">'+
@@ -182,6 +178,35 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(UnittestsSuiteSubview, Y.ys.Vie
 '</li>',
     
     _suiteviews: null,
+    _nbtests: 0,
+    _progress: 0,
+    
+    initializer: function()
+    {
+        var suite = this.get('suite'),
+            nbtests = 0;
+        
+        UnittestsSuiteSubview.superclass.initializer.apply(this, arguments);
+        
+        // Count nb tests
+        Y.Array.each(
+            suite.items,
+            function(item)
+            {
+                Y.Object.each(
+                    item,
+                    function(v, k)
+                    {
+                        if (k.match(/^test/))
+                        {
+                            nbtests++;
+                        }
+                    }
+                );
+            }
+        );
+        this._nbtests = nbtests;
+    },
     
     renderUI: function()
     {
@@ -263,11 +288,28 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(UnittestsSuiteSubview, Y.ys.Vie
         this.container.removeClass('ignored');
         this.container.removeClass('running');
         this.container.one('.run').set('innerHTML', '…');
+        
+        // progress bar
+        this._progress = 1;
+        this._setProgress();
+    },
+    _setProgress: function()
+    {
+        var width = 2000,// background image width
+            ctn = this.container.one('.ctn'),
+            reg = ctn.get('region'),
+            progress = this._progress / this._nbtests * 100,
+            position = -(width);
+        
+        position = width - reg.width * progress / 100;
+        
+        this.container.one('.ctn').setStyle(
+            'backgroundPosition',
+            '-'+position+'px 0'
+        );
     },
     _displayTest: function(test)
     {
-        console.debug(test);
-        
         var details = this.container.one('.details'),
             li = Y.Node.create(
                 Y.substitute(
@@ -303,8 +345,8 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(UnittestsSuiteSubview, Y.ys.Vie
                     {
                         name: test.error.name,
                         message: test.error.message,
-                        actual: test.error.actual,
-                        expected: test.error.expected
+                        actual: test.error.actual || 'null',
+                        expected: test.error.expected || 'null'
                     }
                 ))
             );
@@ -313,6 +355,10 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(UnittestsSuiteSubview, Y.ys.Vie
         li.addClass(test.type);
     
         details.append(li);
+        
+        // progress bar
+        this._progress++;
+        this._setProgress();
     },
     _displayResults: function(results)
     {

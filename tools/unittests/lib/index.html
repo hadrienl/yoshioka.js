@@ -8,8 +8,8 @@
         <script type="text/javascript" charset="utf-8" src="/yoshioka.js/tools/unittests/lib/unittests.view.js"></script>
         {$testssrc}
         <style type="text/css" media="screen">
-            .running {
-                background: lightblue;
+            .running .ctn {
+                background: url('/yoshioka.js/tools/unittests/lib/img/wait.png') repeat-y;
             }
             .passed .ctn {
                 background: green;
@@ -40,57 +40,26 @@
         //<![CDATA[
             YUI().use("json", "io", "node", "ys/core", "test", "ys/views/unittests", {$testsmodules}, function(Y) {
 
-                var view = new Y.ys.UnittestsView();
+                var view = new Y.ys.UnittestsView(),
+                    auto = {$auto};
                 Y.one('body').append(view.render());
 
-
-
-                Y.Test.Runner.on(
-                    'complete',
-                    function(e)
+                // If auto, run all the tests !!
+                if (auto)
+                {
+                    view.complete = function(results)
                     {
-                        return;
-                        var b = Y.one(document.body),
-                            n = Y.Node.create(
-'<div class="results"><div class="resume"></div><div class="close">Close</div></div>'
-                            ),
-                            resume = Y.Node.create(
-'<p>'+e.results.passed+" tests passed</p>"+
-'<p>'+e.results.ignored+" tests ignored</p>"+
-'<p>'+e.results.failed+" tests failed</p>"+
-'<p>in '+e.results.duration+" ms</p>"
-                            );
-
-                        n.on(
-                            'click',
-                            function(e)
-                            {
-                                e.preventDefault();
-                                this.hide();
-                            },
-                            n
-                        );
-
-                        if (e.results.failed > 0)
-                        {
-                            n.addClass('failed');
-                        }
-                        n.one('.resume').append(resume);
-
-                        b.append(n);
-
                         // Sending results to server
                         Y.io(
                             '/__unittests/report/',
                             {
                                 method: 'post',
-                                data: Y.JSON.stringify(e.results)
+                                data: Y.JSON.stringify(results)
                             }
                         );
-                    }
-                );
-
-                //Y.Test.Runner.run();
+                    };
+                    view.run();
+                }
             });
         //]]>
         </script>

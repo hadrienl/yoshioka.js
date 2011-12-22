@@ -15,7 +15,7 @@ config = getconfig.getConfig({
 browser = 'chromium-browser',
 port = (config.port || 1636),
 
-url = '/__unittests',
+url = '/__unittests/auto',
 
 server,
 
@@ -54,7 +54,7 @@ if (args['browser'])
 
 if (args['framework'])
 {
-    url = '/yoshioka.js/unittests/';
+    url = '/__unittests/framework/auto';
 }
 
 Server.prototype.__control = Server.prototype._control;
@@ -89,33 +89,6 @@ Server.prototype._getUTReport = function()
     var data = JSON.parse(this.postData);
     
     this.browser.kill('SIGSTOP');
-    
-    for (var i in data)
-    {
-        if (data[i].failed > 0)
-        {
-            for (var j in data[i])
-            {
-                if (typeof data[i][j] === 'object')
-                {
-                    for (var k in data[i][j])
-                    {
-                        for (var l in data[i][j][k])
-                        {
-                            if (data[i][j][k][l] === 'fail')
-                            {
-                                console.error(
-                                    " - Error on test `" + data[i][j][k].name +
-                                    "` in suite `" + i + "` :\n" +
-                                    data[i][j][k].message + "\n"
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
     
     process.exit(
         parseInt(data.failed) === 0 ? 0 : 1
