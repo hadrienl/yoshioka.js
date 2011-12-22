@@ -64,6 +64,12 @@ CSSCompiler.prototype = {
                 },
                 function (callback, e, css)
                 {
+                    if (e)
+                    {
+                        console.error("Less render error :");
+                        console.error(e);
+                        css = this._filecontent;
+                    }
                     if (callback)
                     {
                         return callback(css);
