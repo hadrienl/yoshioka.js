@@ -362,7 +362,24 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             );
             return;
         }
-        this._setView(name, place, params, callback);
+        
+        try
+        {
+            this._setView(name, place, params, callback);
+        }
+        catch (e)
+        {
+            /**
+             * On exception, set loading flag as false to tell the load is
+             * finished.
+             */
+            this._loading[place] = false;
+            
+            /**
+             * But throw the exception anyway.
+             */
+            throw e;
+        }
     },
     /**
      * The real view setter ! When queue is free, the hard work can begin.
