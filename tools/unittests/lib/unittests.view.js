@@ -55,9 +55,16 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
     
     syncUI: function()
     {
-        var nbsuites = 0,
+        var tests = null,
+            nbsuites = 0,
             nbcases = 0,
             nbtests = 0;
+        
+        YTR.masterSuite.items.sort(function(a, b)
+        {
+            return (a.name.toLowerCase() < b.name.toLowerCase()) ?
+                -1 : 1;
+        });
         
         Y.Array.each(
             YTR.masterSuite.items,
