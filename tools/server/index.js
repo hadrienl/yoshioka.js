@@ -154,11 +154,6 @@ Server.prototype = {
             url+='index.html';
         }
         
-        if (url.match(/^\/yoshioka.js\/unittests\/$/))
-        {
-            url+='index.html';
-        }
-        
         /**
          * If url is __unittests, then, display unit tests
          */

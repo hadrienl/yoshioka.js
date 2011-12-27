@@ -172,7 +172,8 @@ UnitTests.prototype = {
     getHTML: function(callback)
     {
         var c = new compiler.HTMLCompiler({
-            file: 'yoshioka.js/tools/unittests/lib/index.html'
+            file: 'yoshioka.js/tools/unittests/lib/index.html',
+            type: 'tests'
         });
         c.parse(function(callback, content)
         {
