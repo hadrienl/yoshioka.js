@@ -17,6 +17,7 @@ rimraf = require('../../lib/rimraf'),
 
 compiler = require('../compiler'),
 Maker = require('../make').Maker,
+getconfig = require('../make/getconfig'),
 
 Builder = function(config)
 {
@@ -36,6 +37,9 @@ Builder.prototype.init = function(config)
     var buildname = config && config.buildname || new Date().getTime(),
         buildpath = config && config.buildpath || BUILD_DIR+buildname+'/';
     
+    this._configtype = config && config.type
+    config || (config = {});
+    
     this._buildname = buildname;
     this._buildpath = buildpath;
     
@@ -49,11 +53,16 @@ Builder.prototype.init = function(config)
             APP_PATH+'yoshioka.js/core/core_config.js'
         ).toString()
     );
-    this._appconfig = JSON.parse(
-        fs.readFileSync(
-            APP_PATH+'config/app_config.js'
-        ).toString()
-    );
+    
+    if (config.type === 'tests')
+    {
+        configtype = 'tests_config';
+    }
+    
+    this._appconfig = getconfig.getConfig({
+        dev: (this._configtype === 'dev'),
+        tests: (this._configtype === 'tests')
+    });
 };
 Builder.prototype.build = function()
 {
@@ -121,7 +130,9 @@ Builder.prototype._makeConfig = function()
         maker = new Maker({
             dirs: ['locales', 'plugins', 'views'],
             apppath: this._buildpath,
-            basepath: '/'+this._buildname+'/'
+            basepath: '/'+this._buildname+'/',
+            dev: (this._configtype === 'dev'),
+            tests: (this._configtype === 'tests')
         });
     maker.on(
         'parseEnd',

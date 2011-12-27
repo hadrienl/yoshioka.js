@@ -94,7 +94,8 @@ Coverage.prototype = {
     {
         var guid = parseInt((new Date()).getTime()),
             compiler = new Compiler.HTMLCompiler({
-                file: 'yoshioka.js/tools/coverage/lib/index.html'
+                file: 'yoshioka.js/tools/coverage/lib/index.html',
+                type: 'tests'
             });
         
         this._processes.push({
@@ -119,7 +120,8 @@ Coverage.prototype = {
     {
         var builder = new Builder({
             buildpath: '/coverage/tmp/'+guid+'/',
-            buildname: guid
+            buildname: guid,
+            type: 'tests'
         });
         
         /**
@@ -227,7 +229,8 @@ Coverage.prototype = {
     _writeJSFile: function(guid, path, f)
     {
         var compiler = new Compiler.ModuleCompiler({
-                file: path.replace(APP_PATH, '')+'/'+f
+                file: path.replace(APP_PATH, '')+'/'+f,
+                type: 'tests'
             }),
             fpath = '/coverage/'+guid+'/tests/'+
                 (path+f).replace(APP_PATH, '').replace(/\//g, '-'),
@@ -252,7 +255,8 @@ Coverage.prototype = {
     {
         var process = this._getProcess(guid),
             compiler = new Compiler.HTMLCompiler({
-                file: 'yoshioka.js/tools/coverage/lib/tests.html'
+                file: 'yoshioka.js/tools/coverage/lib/tests.html',
+                type: 'tests'
             }),
             testssrc = '',
             testsmodules = '';
