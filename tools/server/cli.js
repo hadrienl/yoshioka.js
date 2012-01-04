@@ -139,6 +139,8 @@ Cli.prototype = {
 "    - create view <viewname> : create a new view javascript class file, html template and javascript unit test class file\n"+
 "    - create subview <subviewname> for <viewname> : create subview javascript class file and unit test class file\n" +
 "    - create model <modelname> for <viewname> : create model javascript class file and unit test class file\n"+
+"    - create model-list <modellistname> for <viewname> : create model-list javascript class file and unit test class file\n"+
+"    - create widget <widgetname> for <viewname> : create widget javascript class file and unit test class file\n"+
 " - build (b) : build your project\n"+
 " - set [OPTION] [PARAM]: Set a configuration :\n"+
 "    - fixtures (on|off) : Tell API to use fixtures files or real API proxyfied\n"+
@@ -252,6 +254,10 @@ Cli.prototype = {
             return this.initPrompt();
         }
         
+        /**
+         * create view `view`
+         */
+        
         if ('view' === args[0])
         {
             /**
@@ -308,6 +314,11 @@ Cli.prototype = {
             this.cli.write("View "+args[1]+" created !\n");
             return this.initPrompt();
         }
+        
+        /**
+         * create subview `subview` for `view`
+         */
+        
         else if ('subview' === args[0])
         {
             if ('for' !== args[2])
@@ -392,6 +403,11 @@ Cli.prototype = {
             this.cli.write("Subiew "+args[1]+" created in view "+args[3]+" !\n");
             return this.initPrompt();
         }
+        
+        /**
+         * create model `model` for `view`
+         */
+        
         else if ('model' === args[0])
         {
             if ('for' !== args[2])
@@ -468,6 +484,170 @@ Cli.prototype = {
             this.cli.write("Model "+args[1]+" created in view "+args[3]+" !\n");
             return this.initPrompt();
         }
+        
+        /**
+         * create model-list `modellist` for `view`
+         */
+         
+        else if ('model-list' === args[0])
+        {
+            if ('for' !== args[2])
+            {
+                this.cli.write("Correct syntax is `create model-list modelname for viewname`.\n");
+                return this.initPrompt();
+            }
+
+            /**
+             * Check view name validity
+             */
+            if (!args[1].match(/^[a-zA-Z0-9]+$/))
+            {
+                this.cli.write("View "+args[1]+" is invalid. Must contains only alphanuleric characters.\n");
+                return this.initPrompt();
+            }
+
+            /**
+             * Check if view already exists
+             */
+            try
+            {
+                fs.statSync(APP_PATH+'views/' + args[3].toLowerCase());
+            }
+            catch (e){
+                this.cli.write("View "+args[3]+" does not exist.\n");
+                return this.initPrompt();
+            }
+
+            /**
+             * Check if model already exists
+             */
+            try
+            {
+                fs.statSync(
+                    APP_PATH+'views/' + args[3].toLowerCase()+'/models/'+
+                    args[1].toLowerCase()+'.model.js'
+                );
+                this.cli.write("Model "+args[3]+" already exists.\n");
+                return this.initPrompt();
+            }
+            catch (e){}
+
+            /**
+             * Create subview dir if needed
+             */
+            try
+            {
+                fs.mkdirSync(
+                    APP_PATH+'views/' + args[3].toLowerCase() + '/models/'
+                );
+            }
+            catch (e){}
+
+            path+='views/'+args[3].toLowerCase()+'/';
+
+            /**
+             * Write view unit test file
+             */
+            fs.writeFileSync(
+                path+'/models/'+args[1].toLowerCase()+'.model.js',
+                this._createModelListFile(
+                    args[3].toLowerCase(),
+                    args[1].toLowerCase()
+                )
+            );
+            fs.writeFileSync(
+                path+'/tests/'+args[1].toLowerCase()+'.model.test.js',
+                this._createModelListUTFile(
+                    args[3].toLowerCase(),
+                    args[1].toLowerCase()
+                )
+            );
+            this.cli.write("Model List "+args[1]+" created in view "+args[3]+" !\n");
+            return this.initPrompt();
+        }
+        
+        /**
+         * create widget `widget` for `view`
+         */
+         
+        else if ('widget' === args[0])
+        {
+            if ('for' !== args[2])
+            {
+                this.cli.write("Correct syntax is `create widget widgetname for viewname`.\n");
+                return this.initPrompt();
+            }
+
+            /**
+             * Check view name validity
+             */
+            if (!args[1].match(/^[a-zA-Z0-9]+$/))
+            {
+                this.cli.write("View "+args[1]+" is invalid. Must contains only alphanuleric characters.\n");
+                return this.initPrompt();
+            }
+
+            /**
+             * Check if view already exists
+             */
+            try
+            {
+                fs.statSync(APP_PATH+'views/' + args[3].toLowerCase());
+            }
+            catch (e){
+                this.cli.write("View "+args[3]+" does not exist.\n");
+                return this.initPrompt();
+            }
+
+            /**
+             * Check if model already exists
+             */
+            try
+            {
+                fs.statSync(
+                    APP_PATH+'views/' + args[3].toLowerCase()+'/widgets/'+
+                    args[1].toLowerCase()+'.widget.js'
+                );
+                this.cli.write("Widget "+args[3]+" already exists.\n");
+                return this.initPrompt();
+            }
+            catch (e){}
+
+            /**
+             * Create subview dir if needed
+             */
+            try
+            {
+                fs.mkdirSync(
+                    APP_PATH+'views/' + args[3].toLowerCase() + '/widgets/'
+                );
+            }
+            catch (e){}
+
+            path+='views/'+args[3].toLowerCase()+'/';
+
+            /**
+             * Write view unit test file
+             */
+            fs.writeFileSync(
+                path+'/widgets/'+args[1].toLowerCase()+'.widget.js',
+                this._createWidgetFile(
+                    args[3].toLowerCase(),
+                    args[1].toLowerCase()
+                )
+            );
+            fs.writeFileSync(
+                path+'/tests/'+args[1].toLowerCase()+'.widget.test.js',
+                this._createWidgetUTFile(
+                    args[3].toLowerCase(),
+                    args[1].toLowerCase()
+                )
+            );
+            this.cli.write("Widget "+args[1]+" created in view "+args[3]+" !\n");
+            return this.initPrompt();
+        }
+        
+        
         this.initPrompt();
     },
     _createViewFile: function(view)
@@ -579,6 +759,80 @@ Cli.prototype = {
                 __dirname+'/templates/view.test.tpl.js'
             ).toString()
             .replace(/\{viewclass\}/g, viewclass)
+            .replace(/\{module\}/g, module)
+            .replace(/\{appname\}/g, appname)
+            .replace(/\{requires\}/g, requires)
+            .replace(/\{view\}/g, view.toLowerCase());
+    },
+    _createModelListFile: function(view, model)
+    {
+        var modelclass = model.substring(0,1).toUpperCase()+
+                model.substring(1).toLowerCase() + 'ModelList',
+            appconfig = getconfig.getConfig({
+                dev: this._dev
+            }),
+            appname = appconfig.app,
+            module = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase();
+        
+        return fs.readFileSync(__dirname+'/templates/view.model-list.tpl.js').toString()
+            .replace(/\{modelclass\}/g, modelclass)
+            .replace(/\{module\}/g, module)
+            .replace(/\{appname\}/g, appname);
+    },
+    _createModelListUTFile: function(view, model)
+    {
+        var viewclass = model.substring(0,1).toUpperCase()+
+                model.substring(1).toLowerCase() + 'ModelList',
+            appconfig = getconfig.getConfig({
+                dev: this._dev
+            }),
+            appname = appconfig.app,
+            requires = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase(),
+            module = appname+'/views/'+view.toLowerCase()+
+                '/tests/models/'+model.toLowerCase();
+        
+        return fs.readFileSync(
+                __dirname+'/templates/view.test.tpl.js'
+            ).toString()
+            .replace(/\{viewclass\}/g, viewclass)
+            .replace(/\{module\}/g, module)
+            .replace(/\{appname\}/g, appname)
+            .replace(/\{requires\}/g, requires)
+            .replace(/\{view\}/g, view.toLowerCase());
+    },
+    _createWidgetFile: function(view, widget)
+    {
+        var widgetclass = widget.substring(0,1).toUpperCase()+
+                widget.substring(1).toLowerCase() + 'Widget',
+            appconfig = getconfig.getConfig({
+                dev: this._dev
+            }),
+            appname = appconfig.app,
+            module = appname+'/views/'+view.toLowerCase()+'/widgets/'+widget.toLowerCase();
+        
+        return fs.readFileSync(
+                __dirname+'/templates/view.widget.tpl.js'
+            ).toString()
+            .replace(/\{widgetclass\}/g, widgetclass)
+            .replace(/\{module\}/g, module)
+            .replace(/\{appname\}/g, appname);
+    },
+    _createWidgetUTFile: function(view, widget)
+    {
+        var widgetclass = widget.substring(0,1).toUpperCase()+
+                widget.substring(1).toLowerCase() + 'Widget',
+            appconfig = getconfig.getConfig({
+                dev: this._dev
+            }),
+            appname = appconfig.app,
+            requires = appname+'/views/'+view.toLowerCase()+'/widgets/'+widget.toLowerCase(),
+            module = appname+'/views/'+view.toLowerCase()+
+                '/tests/widgets/'+widget.toLowerCase();
+        
+        return fs.readFileSync(
+                __dirname+'/templates/view.test.tpl.js'
+            ).toString()
+            .replace(/\{viewclass\}/g, widgetclass)
             .replace(/\{module\}/g, module)
             .replace(/\{appname\}/g, appname)
             .replace(/\{requires\}/g, requires)

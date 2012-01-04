@@ -3,12 +3,14 @@
  * @module {module}
  * @requires ys/view
  */
-var NS = '{appname}',
+var
+
+NS = '{appname}',
     
-    {viewclass} = function(config)
-    {
-        {viewclass}.superclass.constructor.apply(this, arguments);
-    };
+{viewclass} = function(config)
+{
+    {viewclass}.superclass.constructor.apply(this, arguments);
+};
 
 /**
  * {view} view
