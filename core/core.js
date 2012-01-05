@@ -187,14 +187,28 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
             'click',
             function(e, link)
             {
+                var path;
+                
                 if (e.button !== 1 || e.ctrlKey || e.metaKey) {
                     return;
                 }
 
                 e.preventDefault();
-
+                
+                path = this.removeRoot(link.get('href'));
+                /**
+                 * <p>
+                 * The path has changed. Fire everytime a link enhanced by
+                 * Y.ys.Controller.enhance method is clicked. The link's href is
+                 * passed in e param as e.path.
+                 * </p>
+                 * @event pathchange
+                 * @param {EventFacade} e Event object
+                 */
+                this.fire('pathchange', {path: path});
+                
                 this.save(
-                    this.removeRoot(link.get('href'))
+                    path
                 );
             },
             this,
