@@ -38,6 +38,19 @@
     <body class="yui3-skin-sam">
         <script type="text/javascript" charset="utf-8">
         //<![CDATA[
+        YUI().use('event', function(Y) {
+            Y.one(window).on(
+                'error',
+                function(e)
+                {
+                    Y.Global._hasError = true;
+                }
+            );
+        });
+        //]]>
+        </script>
+        <script type="text/javascript" charset="utf-8">
+        //<![CDATA[
             YUI().use("json", "io", "node", "ys/core", "test", "ys/views/unittests", {$testsmodules}, function(Y) {
 
                 var view = new Y.ys.UnittestsView(),
@@ -58,7 +71,18 @@
                             }
                         );
                     };
-                    view.run();
+                    if (Y.Global._hasError)
+                    {
+                        console.error('Syntax error on your app !');
+                        view.complete({
+                            failed: 1
+                        });
+                    }
+                    else
+                    {
+                        view.run();
+                    }
+                    
                 }
             });
         //]]>
