@@ -140,22 +140,28 @@ Maker.prototype._parseJSFile = function(path)
                 /**
                  * Get the requires array
                  */
-                requires = (requires = script.replace(/\n/g, '')
-                    .match(/\/\*.*?\*\//)[0]
-                    .match(
-                        /\@requires ([a-zA-Z0-9\/\-\_\,\.\s\*]+)\s\*(\/|\s@)/
-                    )) && requires[1]
+                requires = script.replace(/\n/g, '')
+                    .match(/\/\*.*?\*\//);
+            
+            if (!module)
+            {
+                console.log('WARNING : '+path+' does not have module name');
+                this._filecount--;
+                this._checkFileCount();
+                return;
+            }
+            
+            if (requires &&
+                (requires = requires[0].match(
+                    /\@requires ([a-zA-Z0-9\/\-\_\,\.\s\*]+)\s\*(\/|\s@)/
+                )))
+            {
+                requires = requires[1]
                     .replace(/\s\*/g, '')
                     .replace(/,$/, '')
                     .replace(/\s/g, '')
                     .replace(/\*/g, '')
                     .split(/,/);
-
-            if (!module)
-            {
-                this._filecount--;
-                this._checkFileCount();
-                return;
             }
             
             /**
