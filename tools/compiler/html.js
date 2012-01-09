@@ -94,6 +94,15 @@ HTMLCompiler.prototype =
                 config.yuipath || 'http://yui.yahooapis.com/3.4.1/build'
             );
         
+        // Read and replace config properties
+        for (var i in config)
+        {
+            this._filecontent = this._filecontent.replace(
+                new RegExp('\\{\\$'+i+'\\}'),
+                config[i]
+            );
+        }
+        
         /**
          * specials tags
          */
