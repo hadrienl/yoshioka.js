@@ -205,7 +205,13 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
                  * @event pathchange
                  * @param {EventFacade} e Event object
                  */
-                this.fire('pathchange', {path: path});
+                this.fire(
+                    'pathchange',
+                    {
+                        path: path,
+                        prevpath: this.getPath()
+                    }
+                );
                 
                 this.save(
                     path
