@@ -13,7 +13,8 @@ YUI().use(
             Y.config.mainview.slice(1)+
             'View',
         main = new Y[Y.config.app][viewclass](),
-        waitpanel = body.one('.ys_tmp_wait');
+        waitpanel = body.one('.ys_tmp_wait'),
+        c = Y[NS].Controller;
 
     waitpanel && waitpanel.remove();
     
@@ -23,5 +24,11 @@ YUI().use(
     
     html.addClass('ys_loaded');
     
-    Y[NS].Controller.dispatch();
+    if (!c.get('html5') &&
+        window.location.pathname !== '/')
+    {
+        window.location.href = '/#'+c.getPath();
+    }
+    
+    c.dispatch();
 });
