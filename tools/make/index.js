@@ -129,6 +129,10 @@ Maker.prototype._parseJSFile = function(path)
         APP_PATH+path,
         function(err, data)
         {
+            if (err)
+            {
+                throw err;
+            }
             var script = data.toString(),
                 /**
                  * get module name from

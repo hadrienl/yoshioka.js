@@ -29,3 +29,9 @@ $ node yoshioka.js
 - You can see all the available commands by typing `help` but the first thing to do is to create a new app. Type `install` !
 
 Then, point your browser to http://yourserverip:1636
+
+WORKAROUND
+
+- On Mac OS X, you can have a `Error: EMFILE, too many open files` error. Type this command to resolve the problem :
+
+$ ulimit -n 8192
