@@ -374,11 +374,6 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
              * finished.
              */
             this._loading[place] = false;
-            
-            /**
-             * But throw the exception anyway.
-             */
-            throw e;
         }
     },
     /**
