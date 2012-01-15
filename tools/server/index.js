@@ -93,7 +93,8 @@ Server.prototype = {
             // Build the app !!
             var Builder = require('../build').Builder,
                 builder = new Builder({
-                    path: this._config.build
+                    path: this._config.build,
+                    buildname: this._config.buildname
                 });
 
             builder.on(
