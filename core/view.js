@@ -379,6 +379,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             this._loading[place] = false;
             
             this.container.one('.'+place).removeClass(CLASS_YS_LOADING_VIEW);
+            
+            throw e;
         }
     },
     /**
@@ -420,6 +422,9 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
              * Don't instanciate new view, just give new params to it
              */
             this._currentview[place].setAttrs(params);
+            
+            this.container.one('.'+place)
+                .removeClass(CLASS_YS_LOADING_VIEW);
         }
         else
         {
