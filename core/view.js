@@ -8,6 +8,8 @@ var
 
 NS = 'ys',
 
+CLASS_YS_LOADING_VIEW = 'ys-loading-view',
+
 View = function(config)
 {
     View.superclass.constructor.apply(this, arguments);
@@ -365,6 +367,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         
         try
         {
+            this.container.one('.'+place).addClass(CLASS_YS_LOADING_VIEW);
             this._setView(name, place, params, callback);
         }
         catch (e)
@@ -374,6 +377,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
              * finished.
              */
             this._loading[place] = false;
+            
+            this.container.one('.'+place).removeClass(CLASS_YS_LOADING_VIEW);
         }
     },
     /**
@@ -509,6 +514,17 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         }
 
         this._loading[place] = false;
+        
+        view.after(
+            'render',
+            function(e, place)
+            {
+                this.container.one('.'+place)
+                    .removeClass(CLASS_YS_LOADING_VIEW);
+            },
+            this,
+            place
+        );
     },
     /**
      * Remove current view. Can be overrided to do something before
