@@ -130,7 +130,7 @@ Builder.prototype._makeConfig = function()
         maker = new Maker({
             dirs: ['locales', 'plugins', 'views'],
             apppath: this._buildpath,
-            basepath: '/'+this._buildname+'/',
+            basepath: this._appconfig.basepath+'/'+this._buildname+'/',
             dev: (this._configtype === 'dev'),
             tests: (this._configtype === 'tests')
         });
@@ -205,7 +205,8 @@ Builder.prototype._parseJSFile = function(path)
     else
     {
         c = new compiler.TemplateCompiler({
-            file: path
+            file: path,
+            basepath: this._appconfig.basepath+'/'+this._buildname,
         });
         c.parse(function(path, content)
         {
@@ -312,7 +313,7 @@ Builder.prototype._parseHTMLFile = function(path, writepath)
 {
     var c = new compiler.HTMLCompiler({
         file: path,
-        basepath: '/'+this._buildname,
+        basepath: this._appconfig.basepath+'/'+this._buildname,
         type: 'app'
     });
     c.parse(function(path, content)

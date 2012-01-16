@@ -36,6 +36,8 @@ TemplateCompiler.prototype =
         }
         this._filecontent = config.filecontent;
         this._filecount = 0;
+        
+        this._basepath = config.basepath || '/';
     },
     parse: function(callback)
     {
@@ -114,7 +116,7 @@ TemplateCompiler.prototype =
         
         c = new HTMLCompiler({
             file: tplpath,
-            basepath: '/'
+            basepath: this._basepath
         });
         c.parse(
             function(callback, content)
