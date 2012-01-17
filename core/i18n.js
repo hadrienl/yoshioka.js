@@ -367,7 +367,10 @@ Y.extend(I18n, Y.Base, {
          * @public
          */
         translation: {
-            value: '',
+            value: '&nbsp;', /* fix a bug with chrome when sometime an empty
+                              * span filled later doesn't change its content
+                              * size
+                              */
             /**
              * Fired when translated text has changed
              * @event translationChange
