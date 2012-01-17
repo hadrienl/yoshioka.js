@@ -315,7 +315,7 @@ Builder.prototype._parseHTMLFile = function(path, writepath)
 {
     var c = new compiler.HTMLCompiler({
         file: path,
-        basepath: this._appconfig.basepath+'/'+this._buildname,
+        basepath: (this._appconfig.basepath || '')+'/'+this._buildname,
         type: 'app'
     });
     c.parse(function(path, content)

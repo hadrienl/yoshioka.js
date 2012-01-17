@@ -85,7 +85,7 @@ HTMLCompiler.prototype =
         this._filecontent = this._filecontent
             .replace(
                 /\{\$basepath\}/gi,
-                this._basepath)
+                this._basepath || '')
             .replace(
                 /\{\$core_config\}/gi,
                 this._getCoreConfig())
