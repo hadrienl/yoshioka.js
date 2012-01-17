@@ -38,14 +38,15 @@ Maker.prototype.init = function(config)
     
     config || (config = {});
     
-    this.basepath = config.basepath ? config.basepath : '/';
+    this.basepath = config.basepath || '/';
     this._modules = {};
     this._dev = config.dev;
     this._tests = config.tests;
     
     this._appConfig = getconfig.getConfig({
         dev: this._dev,
-        tests: this._tests
+        tests: this._tests,
+        buildname: config.buildname || ''
     });
 };
 /**

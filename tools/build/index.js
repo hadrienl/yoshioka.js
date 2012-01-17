@@ -131,6 +131,7 @@ Builder.prototype._makeConfig = function()
             dirs: ['locales', 'plugins', 'views'],
             apppath: this._buildpath,
             basepath: (this._appconfig.basepath || '')+'/'+this._buildname+'/',
+            buildname: this._buildname,
             dev: (this._configtype === 'dev'),
             tests: (this._configtype === 'tests')
         });
@@ -206,7 +207,7 @@ Builder.prototype._parseJSFile = function(path)
     {
         c = new compiler.TemplateCompiler({
             file: path,
-            basepath: (this._appconfig.basepath || '')+'/'+this._buildname,
+            basepath: (this._appconfig.basepath || '')+'/'+this._buildname
         });
         
         c.parse(function(path, content)

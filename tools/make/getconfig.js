@@ -28,6 +28,11 @@ exports.getConfig = function(config)
     try
     {
         app_config = fs.readFileSync(app_config_path).toString();
+        app_config = app_config
+            .replace(
+                /\{\$buildname\}/,
+                config.buildname
+            );
     }
     catch (e)
     {
