@@ -37,6 +37,11 @@ HTMLCompiler.prototype =
                 .replace(/\/+/gi, '/')
                 .replace(/\/$/, ''));
         
+        if (this._basepath === '/')
+        {
+            this._basepath = '';
+        }
+        
         this._filecontent = config.filecontent;
         
         this._configtype = (config.type || 'dev');
