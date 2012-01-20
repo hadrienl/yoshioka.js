@@ -53,7 +53,7 @@ Cli.prototype = {
         appconfig = getconfig.getConfig({
             dev: this._dev
         });
-        this._port = appconfig.port || 80;
+        this._port = appconfig.port || 1636;
         
         /**
          * Write MOTD
