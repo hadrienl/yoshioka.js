@@ -133,7 +133,7 @@ Fixtures.prototype = {
         {
             fixtures = fs.readFileSync(
                 APP_PATH+'/fixtures/'+path+'.json'
-            ).toString()
+            ).toString();
         }
         catch (e)
         {

@@ -32,6 +32,10 @@ exports.getConfig = function(config)
             .replace(
                 /\{\$buildname\}/,
                 config.buildname
+            )
+            .replace( // Remove comments
+                /\/\*.*?\*\//,
+                ''
             );
     }
     catch (e)
@@ -59,7 +63,17 @@ exports.getConfig = function(config)
         try
         {
             dev_config = fs.readFileSync(dev_config_path).toString();
-
+            
+            dev_config = dev_config
+                .replace( // Remove comments
+                    /\/\*.*?\*\//g,
+                    ''
+                )
+                .replace( // Remove comments
+                    /^|\s\/\/.*?\n/g,
+                    ''
+                );
+            
             dev_config || (dev_config = '{}');
             dev_config = JSON.parse(dev_config);
             dev_config || (dev_config = {});
@@ -75,7 +89,7 @@ exports.getConfig = function(config)
         }
         catch (e)
         {
-            
+            console.log(e)
         }
     }
     if (true === config.tests)
@@ -86,7 +100,12 @@ exports.getConfig = function(config)
         try
         {
             tests_config = fs.readFileSync(tests_config_path).toString();
-
+            tests_config = tests_config
+                .replace( // Remove comments
+                    /\/\*.*?\*\//,
+                    ''
+                );
+            
             tests_config || (tests_config = '{}');
             tests_config = JSON.parse(tests_config);
             tests_config || (tests_config = {});
