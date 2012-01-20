@@ -138,7 +138,7 @@ Fixtures.prototype = {
         catch (e)
         {
             throw new Error(
-                "File "+APP_PATH+'/fixtures/'+path+'.js'+" does not exist"
+                "File "+APP_PATH+'/fixtures/'+path+'.json'+" does not exist"
             );
         }
         try
@@ -150,7 +150,7 @@ Fixtures.prototype = {
         catch (e)
         {
             throw new Error(
-                "Syntax error in file "+APP_PATH+'/fixtures/'+path+'.js'
+                "Syntax error in file "+APP_PATH+'/fixtures/'+path+'.json'
             );
         }
         
