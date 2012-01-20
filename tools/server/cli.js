@@ -43,14 +43,17 @@ Cli.prototype = {
     {
         config || (config = {});
         
-        this._port = config.port || 80;
-        
         this._fixtures = true;
         
         this._dev = config.dev;
         
         this.cli = rl.createInterface(
             process.stdin, process.stdout, null);
+        
+        appconfig = getconfig.getConfig({
+            dev: this._dev
+        });
+        this._port = appconfig.port || 80;
         
         /**
          * Write MOTD
