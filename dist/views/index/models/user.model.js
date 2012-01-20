@@ -18,19 +18,22 @@ Y.namespace(NS).User = Y.extend(User, Y.Model, {
         {
             case 'read':
                 Y.io(
-                    Y.config.api,
+                    Y.config.api+'user',
                     {
                         method: 'post',
                         data: JSON.stringify({
                             method: 'read',
-                            id: 1
+                            params: {
+                                id: 1
+                            },
+                            id: Y.guid()
                         }),
                         on: {
                             success: function(id, data, callback)
                             {
                                 var json = Y.JSON.parse(data.responseText);
 
-                                args.callback(json.error, json.results);
+                                callback(json.error, json.results);
                             }
                         },
                         context: this,

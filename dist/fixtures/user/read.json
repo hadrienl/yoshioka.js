@@ -4,8 +4,21 @@
             "id": 1
         },
         "data": {
-            "id": 1,
-            "name": "Hadrien"
+            "results": {
+                "id": 1,
+                "name": "Hadrien"
+            }
+        }
+    },
+    {
+        "match": {
+            "id": "*"
+        },
+        "data": {
+            "error": {
+                "code": 1,
+                "message": "user {id} does not exists"
+            }
         }
     }
 ]
