@@ -1,12 +1,15 @@
 {
+    "api": "/fakeapi/",
     "fixtures": [
         {
-            "path": "^\/api",
+            "path": "^\\/api\\/",
             "proxy": {
-                "host": "api.over-blog.dev",
-                "port": 80,
-                "replace_url": "^\/api(/.*?)$"
+                "host": "yourhost.com",
+                "port": 80
             }
+        },
+        {
+            "path": "^\\/fakeapi\\/"
         }
     ],
     "port": 1636
