@@ -344,6 +344,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     setView: function(name, place, params, callback)
     {
+        var el;
+        
         if (this._loading[place])
         {
             /**
@@ -367,7 +369,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         
         try
         {
-            this.container.one('.'+place).addClass(CLASS_YS_LOADING_VIEW);
+            el = this.container.one('.'+place);
+            el && el.addClass(CLASS_YS_LOADING_VIEW);
             this._setView(name, place, params, callback);
         }
         catch (e)
@@ -378,7 +381,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
              */
             this._loading[place] = false;
             
-            this.container.one('.'+place).removeClass(CLASS_YS_LOADING_VIEW);
+            el = this.container.one('.'+place);
+            el && el.removeClass(CLASS_YS_LOADING_VIEW);
             
             throw e;
         }
@@ -407,7 +411,9 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             /**
              * Put this in a variable to use it in the new sandbox
              */
-            self = this;
+            self = this,
+            
+            el;
 
         params || (params = {});
 
@@ -423,8 +429,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
              */
             this._currentview[place].setAttrs(params);
             
-            this.container.one('.'+place)
-                .removeClass(CLASS_YS_LOADING_VIEW);
+            el = this.container.one('.'+place);
+            el && el.removeClass(CLASS_YS_LOADING_VIEW);
         }
         else
         {
@@ -524,8 +530,9 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             'render',
             function(e, place)
             {
-                this.container.one('.'+place)
-                    .removeClass(CLASS_YS_LOADING_VIEW);
+                var el;
+                el = this.container.one('.'+place);
+                el && el.removeClass(CLASS_YS_LOADING_VIEW);
             },
             this,
             place
