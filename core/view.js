@@ -40,13 +40,6 @@ View = function(config)
 Y.namespace(NS).View = Y.extend(View, Y.View, {
     
     /**
-     * List of loaded css modules
-     * @property _css_modules
-     * @private
-     */
-    _css_modules: null,
-
-    /**
      * Current view in place
      * @property _currentview
      * @private
@@ -75,8 +68,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     initializer: function()
     {
-        var modulename = Y.config.app+'_'+
-            this.constructor.NAME.toLowerCase().replace('view', '_view'),
+        var modulename = Y.config.app+'/views/'+
+                this.constructor.NAME.toLowerCase().replace('view', ''),
             module = Y.config.groups[Y.config.app].modules[modulename],
             requires = module ? module.requires : null;
 
@@ -91,28 +84,6 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         {
             this.container = this.get('container');
         }
-        
-        if (!requires)
-        {
-            return;
-        }
-
-        this._css_modules = [];
-
-        Y.Array.each(
-            requires,
-            function(r)
-            {
-                if (r.match(/^css_/))
-                {
-                    this._loadCssModule(
-                        [r]
-                    );
-                    this._css_modules[this._css_modules.length] = r;
-                }
-            },
-            this
-        );
     },
     
     /**
@@ -180,20 +151,6 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         View.superclass.destructor.apply(this);
         
         Y.Array.each(
-            this._css_modules,
-            function(r)
-            {
-                if (r.match(/^css_/))
-                {
-                    this._unloadCssModule(
-                        [r]
-                    );
-                }
-            },
-            this
-        );
-        
-        Y.Array.each(
             this._events,
             function(e)
             {
@@ -201,51 +158,6 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             }
         );
         this._events = null;
-    },
-    /**
-     * Load a css link by its path
-     * @method _loadCssModule
-     * @param {string} modulename Name of the CSS module
-     * @param {boolean} unload True if you want to unload the module
-     * @protected
-     */
-    _loadCssModule: function(modulename, unload)
-    {
-        var path;
-        
-        if (!Y.config.groups[YUI_config.app].modules[modulename])
-        {
-            throw new Error("Module "+modulename+" does not exist.")
-        }
-        path = Y.config.groups[YUI_config.app].base+
-            Y.config.groups[YUI_config.app].modules[modulename].path,
-            style = Y.one('link[href="'+path+'"]');
-
-        if (unload)
-        {
-            style && style.remove();
-
-            Y.Env._used[modulename] = null;
-        }
-        else
-        {
-            if (!style)
-            {
-                Y.Get.css(path);
-
-                Y.Env._used[modulename] = true;
-            }
-        }
-    },
-    /**
-     * Unload a css link by its path
-     * @method _unloadCssModule
-     * @param {string} modulename Name of the CSS module
-     * @protected
-     */
-    _unloadCssModule: function(modulename)
-    {
-        this._loadCssModule(modulename, true);
     },
     
     /**
