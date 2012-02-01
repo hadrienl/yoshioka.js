@@ -46,7 +46,7 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
     
     bindUI: function()
     {
-        this.container.one('.runall').on(
+        this.get('container').one('.runall').on(
             'click',
             this.run,
             this
@@ -74,7 +74,7 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
                     suite: suite
                 });
                 
-                this.container.one('.tests_suites').append(
+                this.get('container').one('.tests_suites').append(
                     v.render()
                 );
                 
@@ -104,7 +104,7 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
             this
         );
         
-        this.container.one('.summary').set(
+        this.get('container').one('.summary').set(
             'innerHTML',
             nbtests+' tests in '+nbcases+' cases in '+nbsuites+' suites.'
         );
@@ -219,7 +219,7 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     {
         var suite = this.get('suite');
         
-        this.container.append(
+        this.get('container').append(
             this.compileTpl({
                 name: suite.name
             })
@@ -228,7 +228,7 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     
     bindUI: function()
     {
-        this.container.one('.run').on(
+        this.get('container').one('.run').on(
             'click',
             this.run,
             this
@@ -270,7 +270,7 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
             )
         );
         this._clearResults();
-        this.container.addClass('running');
+        this.get('container').addClass('running');
         
         YTR.run();
     },
@@ -289,12 +289,14 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     
     _clearResults: function()
     {
-        this.container.one('.details').set('innerHTML', '');
-        this.container.removeClass('passed');
-        this.container.removeClass('failed');
-        this.container.removeClass('ignored');
-        this.container.removeClass('running');
-        this.container.one('.run').set('innerHTML', '…');
+        var container = this.get('container');
+        
+        container.one('.details').set('innerHTML', '');
+        container.removeClass('passed');
+        container.removeClass('failed');
+        container.removeClass('ignored');
+        container.removeClass('running');
+        container.one('.run').set('innerHTML', '…');
         
         // progress bar
         this._progress = 1;
@@ -302,22 +304,23 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     },
     _setProgress: function()
     {
-        var width = 2000,// background image width
-            ctn = this.container.one('.ctn'),
+        var container = this.get('container'),
+            width = 2000,// background image width
+            ctn = container.one('.ctn'),
             reg = ctn.get('region'),
             progress = this._progress / this._nbtests * 100,
             position = -(width);
         
         position = width - reg.width * progress / 100;
         
-        this.container.one('.ctn').setStyle(
+        container.one('.ctn').setStyle(
             'backgroundPosition',
             '-'+position+'px 0'
         );
     },
     _displayTest: function(test)
     {
-        var details = this.container.one('.details'),
+        var details = this.get('container').one('.details'),
             li = Y.Node.create(
                 Y.substitute(
                     '<li>'+
@@ -369,28 +372,29 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     },
     _displayResults: function(results)
     {
-        var suite = this.get('suite'),
-            details = this.container.one('.details');
+        var container = this.get('container'),
+            suite = this.get('suite'),
+            details = container.one('.details');
         
         this._detachEvents();
         
-        this.container.one('.run').set('innerHTML', 'Run');
+        container.one('.run').set('innerHTML', 'Run');
         
         if (results.failed === 0 &&
             results.ignored === 0)
         {
-            this.container.addClass('passed');
+            container.addClass('passed');
             return;
         }
         
         if (results.failed > 0)
         {
-            this.container.addClass('failed');
+            container.addClass('failed');
         }
         
         if (results.ignored > 0)
         {
-            this.container.addClass('ignored');
+            container.addClass('ignored');
         }
     }
 },

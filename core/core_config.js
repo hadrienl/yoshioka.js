@@ -6,7 +6,7 @@
         },
         "ys/core": {
             "path": "yoshioka.js/core/core.js",
-            "requires": ["controller", "model", "ys/routes", "substitute", "ys/i18n", "ys/view"]
+            "requires": ["router", "model", "ys/routes", "substitute", "ys/i18n", "ys/view"]
         },
         "ys/i18n": {
             "path": "yoshioka.js/core/i18n.js",

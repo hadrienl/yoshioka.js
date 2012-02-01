@@ -660,7 +660,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             module = appname+'/views/'+view.toLowerCase();
         
         return fs.readFileSync(__dirname+'/templates/view.tpl.js').toString()
@@ -676,7 +676,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             requires = appname+'/views/'+view.toLowerCase();
             module = appname+'/views/'+view.toLowerCase()+
                 '/tests/'+view.toLowerCase();
@@ -702,7 +702,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             module = appname+'/views/'+view.toLowerCase()+'/subviews/'+subview.toLowerCase();
         
         return fs.readFileSync(__dirname+'/templates/view.tpl.js').toString()
@@ -718,7 +718,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             requires = appname+'/views/'+view.toLowerCase()+'/subviews/'+subview.toLowerCase(),
             module = appname+'/views/'+view.toLowerCase()+
                 '/tests/subviews/'+subview.toLowerCase();
@@ -738,7 +738,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             module = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase();
         
         return fs.readFileSync(__dirname+'/templates/view.model.tpl.js').toString()
@@ -753,7 +753,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             requires = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase(),
             module = appname+'/views/'+view.toLowerCase()+
                 '/tests/models/'+model.toLowerCase();
@@ -774,7 +774,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             module = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase();
         
         return fs.readFileSync(__dirname+'/templates/view.model-list.tpl.js').toString()
@@ -789,7 +789,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             requires = appname+'/views/'+view.toLowerCase()+'/models/'+model.toLowerCase(),
             module = appname+'/views/'+view.toLowerCase()+
                 '/tests/models/'+model.toLowerCase();
@@ -810,7 +810,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             module = appname+'/views/'+view.toLowerCase()+'/widgets/'+widget.toLowerCase();
         
         return fs.readFileSync(
@@ -827,7 +827,7 @@ Cli.prototype = {
             appconfig = getconfig.getConfig({
                 dev: this._dev
             }),
-            appname = appconfig.app,
+            appname = appconfig.ys_app,
             requires = appname+'/views/'+view.toLowerCase()+'/widgets/'+widget.toLowerCase(),
             module = appname+'/views/'+view.toLowerCase()+
                 '/tests/widgets/'+widget.toLowerCase();

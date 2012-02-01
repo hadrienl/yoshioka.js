@@ -13,7 +13,7 @@ suite.add(
         testCoreGlobalInstances: function()
         {
             Y.assert(
-                Y.ys.Controller
+                Y.ys.Router
             );
             Y.assert(
                 Y.ys.Coord
@@ -25,7 +25,7 @@ suite.add(
 suite.add(
     new Y.Test.Case({
 
-        name: "Core Controller",
+        name: "Core Router",
         
         setUp: function()
         {

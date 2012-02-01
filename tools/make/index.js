@@ -205,7 +205,7 @@ Maker.prototype._parseCSSFile = function(path)
         throw 'CSS file unknown path : ' + path;
     }
     
-    module = this._appConfig.app +
+    module = this._appConfig.ys_app +
         (isplugin ? '/plugins/' : '/views/')+module+'/assets/'+file;
     
     /**
@@ -272,8 +272,8 @@ Maker.prototype.writeConfig = function(config)
      * Set YUI_config default values
      */
     YUI_config = this._appConfig;
-    YUI_config.app || (YUI_config.app = 'ys');
-    YUI_config.appmainview || (YUI_config.appmainview = 'main');
+    YUI_config.ys_app || (YUI_config.ys_app = 'ys');
+    YUI_config.ys_mainview || (YUI_config.ys_mainview = 'main');
     YUI_config.groups || (YUI_config.groups = {});
     YUI_config.groups.core = JSON.parse(coreConfig);
     YUI_config.groups.core.base = this.basepath;
@@ -281,10 +281,10 @@ Maker.prototype.writeConfig = function(config)
     /**
      * App group config
      */
-    YUI_config.groups[YUI_config.app] ||
-        (YUI_config.groups[YUI_config.app] = {});
-    YUI_config.groups[YUI_config.app].modules = this._modules;
-    YUI_config.groups[YUI_config.app].base = this.basepath;
+    YUI_config.groups[YUI_config.ys_app] ||
+        (YUI_config.groups[YUI_config.ys_app] = {});
+    YUI_config.groups[YUI_config.ys_app].modules = this._modules;
+    YUI_config.groups[YUI_config.ys_app].base = this.basepath;
     
     fs.writeFile(
         config.path+'config/'+filename,

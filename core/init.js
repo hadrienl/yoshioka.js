@@ -2,19 +2,19 @@ YUI().use(
     'errors',
     'ys/core',
     'node',
-    YUI_config.app+'/views/'+YUI_config.mainview,
+    YUI_config.ys_app+'/views/'+YUI_config.ys_mainview,
     function(Y)
 {
     var NS = 'ys',
-        html = Y.one(document).one('html'),
-        body = Y.one(document.body),
+        html = Y.one('html'),
+        body = Y.one('body'),
         viewclass =
-            Y.config.mainview.charAt(0).toUpperCase()+
-            Y.config.mainview.slice(1)+
+            Y.config.ys_mainview.charAt(0).toUpperCase()+
+            Y.config.ys_mainview.slice(1)+
             'View',
-        main = new Y[Y.config.app][viewclass](),
+        main = new Y[Y.config.ys_app][viewclass](),
         waitpanel = body.one('.ys_tmp_wait'),
-        c = Y[NS].Controller;
+        c = Y[NS].Router;
 
     waitpanel && waitpanel.remove();
     
@@ -24,7 +24,7 @@ YUI().use(
     
     html.addClass('ys_loaded');
     
-    if (!c.html5 &&
+    if (!c.get('html5') &&
         window.location.pathname !== '/')
     {
         window.location.href = '/#'+c.getPath();

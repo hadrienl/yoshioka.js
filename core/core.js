@@ -1,7 +1,7 @@
 /**
  * The framework core that made the dream become true
  * @module ys/core
- * @requires controller, model, ys/routes, substitute, ys/i18n
+ * @requires router, model, ys/routes, substitute, ys/i18n
  */
 
 var
@@ -14,14 +14,14 @@ Core = function()
 };
     
 /**
- * Core object. It extends Y.Controller and manage routes
+ * Core object. It extends Y.Router and manage routes
  * by updating a Coord
  * @class Core
  * @namespace Y.ys
- * @extends Y.Controller
+ * @extends Y.Router
  * @constructor
  */
-Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
+Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
     /**
      * Callback for path changes which update coord object
      * @method _updateAttrs
@@ -151,7 +151,7 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
     },
     /**
      * Replace click event of a link (`a` tag) to make it call the
-     * Y.Controller.save() method in place of loading its href and update
+     * Y.Router.save() method in place of loading its href and update
      * Y.ys.Coord object
      * @method enhance
      * @param {Node|NodeList} links Node or nodeList of `a` elements
@@ -199,7 +199,7 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
                 /**
                  * <p>
                  * The path has changed. Fire everytime a link enhanced by
-                 * Y.ys.Controller.enhance method is clicked. The link's href is
+                 * Y.ys.Router.enhance method is clicked. The link's href is
                  * passed in e param as e.path.
                  * </p>
                  * @event pathchange
@@ -265,11 +265,11 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Controller, {
 });
 
 /**
- * @class Controller
+ * @class Router
  * @namespace Y.ys
  * @extends Y.ys.Core
  */
-Y.namespace(NS).Controller = new (Y.namespace(NS).Core)();
+Y.namespace(NS).Router = new (Y.namespace(NS).Core)();
 
 /**
  * Coord object. Listen to its `change` event to know if a route has changed.
@@ -297,6 +297,6 @@ Y.namespace(NS).Controller = new (Y.namespace(NS).Core)();
  * @extends Y.Model
  * @event change event
  */
-Y.namespace(NS).Coord = Y.namespace(NS).Controller.loadRoutes(Y[NS].routes);
+Y.namespace(NS).Coord = Y.namespace(NS).Router.loadRoutes(Y[NS].routes);
 
-Y.namespace(NS).use = Y.namespace(NS).Controller.use;
+Y.namespace(NS).use = Y.namespace(NS).Router.use;

@@ -23,7 +23,7 @@ Y.namespace(NS).IndexView = Y.extend(IndexView, Y.ys.View, {
     
     renderUI: function()
     {
-        this.container.append(
+        this.get('container').append(
             this.compileTpl({
                 class_user: CLASS_USER
             })
@@ -41,7 +41,7 @@ Y.namespace(NS).IndexView = Y.extend(IndexView, Y.ys.View, {
     {
         var user = this.get('user');
         
-        this.container.one('.'+CLASS_USER).set(
+        this.get('container').one('.'+CLASS_USER).set(
             'innerHTML',
             user.get('name')
         );

@@ -5,7 +5,7 @@
  */
 var suite = new Y.Test.Suite("View");
 
-Y.config.app = 'core';
+Y.config.ys_app = 'core';
 
 suite.add(
     new Y.Test.Case({
@@ -41,11 +41,11 @@ suite.add(
             
             Y.Assert.areEqual(
                 1,
-                this.data.container.all('p').size()
+                this.data.get('container').all('p').size()
             );
             Y.Assert.areEqual(
                 'Test',
-                this.data.container.all('p').get('innerHTML')
+                this.data.get('container').all('p').get('innerHTML')
             );
         },
         
@@ -54,7 +54,7 @@ suite.add(
             this.data.template = '<p>Test</p>';
             this.data.renderUI = function()
             {
-                this.container.append(this.compileTpl({
+                this.get('container').append(this.compileTpl({
                     tpl: '<p>Test</p><p>yoshioka</p>'
                 }));
             };
@@ -63,11 +63,11 @@ suite.add(
             
             Y.Assert.areEqual(
                 2,
-                this.data.container.all('p').size()
+                this.data.get('container').all('p').size()
             );
             Y.Assert.areEqual(
                 'yoshioka',
-                this.data.container.all('p').item(1).get('innerHTML')
+                this.data.get('container').all('p').item(1).get('innerHTML')
             );
         },
         
@@ -152,7 +152,7 @@ suite.add(
                 Y.Assert.areEqual(
                     "Hello World",
                     this.data.getCurrentView('main')
-                        .container.one('div').get('innerHTML')
+                        .get('container').one('div').get('innerHTML')
                 );
                 
                 Y.Assert.isNull(

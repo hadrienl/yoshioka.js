@@ -28,7 +28,7 @@ View = function(config)
  * );
  * </pre>
  * <p>Will append the node in page body.</p>
- * <p>The render() method will call renderUI(), bindUI() and syncUI() methods, then, will return this.container. So when you write a view, you just have to write this three methods.</p>
+ * <p>The render() method will call renderUI(), bindUI() and syncUI() methods, then, will return `container` attribute. So when you write a view, you just have to write this three methods.</p>
  * <ul><li>renderUI() will generate all the DOM from template(s) or javascript</li>
  * <li>bindUI() will listen to events relative to the view</li>
  * <li>syncUI() will update variables in view's DOM from it's attributes and models. You'll have to call it anytime an attribute used in the view has changed.</li></ul>
@@ -68,9 +68,9 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     initializer: function()
     {
-        var modulename = Y.config.app+'/views/'+
+        var modulename = Y.config.ys_app+'/views/'+
                 this.constructor.NAME.toLowerCase().replace('view', ''),
-            module = Y.config.groups[Y.config.app].modules[modulename],
+            module = Y.config.groups[Y.config.ys_app].modules[modulename],
             requires = module ? module.requires : null;
 
         /**
@@ -79,11 +79,6 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         this._currentview = {};
         this._loading = {};
         this._events = [];
-        
-        if (Y.version > "3.5")
-        {
-            this.container = this.get('container');
-        }
     },
     
     /**
@@ -111,19 +106,19 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             }
         );
         
-        return this.container;
+        return this.get('container');
     },
     /**
-     * Render the template and append nodes in this.container node
+     * Render the template and append nodes in `container` attribute node
      * @method renderUI
      * @protected
      */
     renderUI: function()
     {
-        this.container.append(this.compileTpl());
+        this.get('container').append(this.compileTpl());
     },
     /**
-     * Bind event listener to this.container DOM
+     * Bind event listener to `container` attribute DOM
      * @method bindUI
      * @protected
      */
@@ -132,7 +127,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         
     },
     /**
-     * Update this.container DOM nodes
+     * Update `container` attribute DOM nodes
      * @method syncUI
      * @protected
      */
@@ -148,7 +143,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     destructor: function()
     {
-        View.superclass.destructor.apply(this);
+        View.superclass.destroy.apply(this);
         
         Y.Array.each(
             this._events,
@@ -218,7 +213,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         
         if (!params.enhance || params.enhance !== false)
         {
-            Y.ys.Controller.enhance(node.all('a'));
+            Y.ys.Router.enhance(node.all('a'));
         }
         
         return node;
@@ -256,7 +251,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     setView: function(name, place, params, callback)
     {
-        var el;
+        var container = this.get('container'),
+            el;
         
         if (this._loading[place])
         {
@@ -281,7 +277,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         
         try
         {
-            el = this.container.one('.'+place);
+            el = container.one('.'+place);
             el && el.addClass(CLASS_YS_LOADING_VIEW);
             this._setView(name, place, params, callback);
         }
@@ -293,7 +289,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
              */
             this._loading[place] = false;
             
-            el = this.container.one('.'+place);
+            el = container.one('.'+place);
             el && el.removeClass(CLASS_YS_LOADING_VIEW);
             
             throw e;
@@ -306,10 +302,11 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     _setView: function(name, place, params, callback)
     {
+        var container = this.get('container'),
             /**
              * Get the node corresponding to the place given
              */
-        var node = this.container.one('.'+place),
+            node = container.one('.'+place),
             /**
              * Construct the object classname from the name param
              * will get 'NameView' for 'name' param, so the view must be
@@ -319,7 +316,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             /**
              * Module name
              */
-            module = Y.config.app+'/views/'+name,
+            module = Y.config.ys_app+'/views/'+name,
             /**
              * Put this in a variable to use it in the new sandbox
              */
@@ -341,7 +338,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
              */
             this._currentview[place].setAttrs(params);
             
-            el = this.container.one('.'+place);
+            el = container.one('.'+place);
             el && el.removeClass(CLASS_YS_LOADING_VIEW);
         }
         else
@@ -397,7 +394,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
     _setViewCallback: function(classname, params, node, place, callback)
     {
         var viewclass =
-            Y[Y.config.app][classname],
+            Y[Y.config.ys_app][classname],
             /**
              * Instanciate view
              */
@@ -411,8 +408,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         {
             throw new Error(
                 "This view does not exist. You must declare a "+
-                "`Y."+Y.config.app+"."+classname+"` class in a "+
-                "`"+Y.config.app+"_"+
+                "`Y."+Y.config.ys_app+"."+classname+"` class in a "+
+                "`"+Y.config.ys_app+"_"+
                 classname.toLowerCase().replace('view', '_view')+"` module"
             );
         }
@@ -443,7 +440,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             function(e, place)
             {
                 var el;
-                el = this.container.one('.'+place);
+                el = this.get('container').one('.'+place);
                 el && el.removeClass(CLASS_YS_LOADING_VIEW);
             },
             this,
