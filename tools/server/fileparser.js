@@ -482,13 +482,13 @@ FileParser.prototype = {
                                     function (match, operator, key)
                                     {
                                         keys.push(key);
-                                        return operator === '*' ? '(.*?)' : '([a-zA-Z0-9]*)';
+                                        return operator === '*' ? '(.*?)' : '([^\/]*)';
                                     }
                                 );
                                 
                                 return new RegExp('^' + path + '$');
                             })(p.path);
-                        
+
                         if (regexp.exec(this._getFilePath()))
                         {
                             isValid = true;
