@@ -96,7 +96,7 @@ HTMLCompiler.prototype =
                 this._getCoreConfig())
             .replace(
                 /\{\$yuipath\}/gi,
-                config.yuipath || 'http://yui.yahooapis.com/3.4.1/build'
+                config.yuipath || 'http://yui.yahooapis.com/3.5.0pr2/build'
             );
         
         // Read and replace config properties
