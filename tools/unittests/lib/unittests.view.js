@@ -1,7 +1,7 @@
 /**
  * Unit tests View
  * @module ys/views/unittests
- * @requires ys/view
+ * @requires ys/view, anim
  */
 var
 
@@ -111,7 +111,52 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
         
     },
     
-    run: function()
+    run: function(one)
+    {
+        if (!one || !Y.Lang.isString(one))
+        {
+            this.runAll();
+        }
+        else
+        {
+            this.runOne(one);
+        }
+    },
+    
+    runOne: function(one)
+    {
+        var suites = this._suiteviews,
+            suite = null;
+        
+        Y.some(
+            suites,
+            function(s)
+            {
+                if (s.get('suite').name === one)
+                {
+                    return (suite = s);
+                }
+            }
+        );
+        
+        if (Y.Lang.isNull(suite))
+        {
+            return;
+        }
+        
+        (new Y.Anim({
+            node: Y.one(window),
+            to: {
+                scroll: [0, suite.get('container').get('region').top]
+            },
+            duration: 0.2,
+            easing: Y.Easing.easeOut
+        })).run();
+        
+        suite.run();
+    },
+    
+    runAll: function()
     {
         var i = 0,
             suites = this._suiteviews,
@@ -178,7 +223,7 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     
     template: '<li>'+
 '   <div class="ctn">'+
-'       <span class="name">{name}</span>'+
+'       <a href="#{name}" class="name">{name}</a>'+
 '       <span class="btn"><button class="run">Run</button></span>'+
 '   </div>'+
 '   <ol class="details"></ol>'+
@@ -232,6 +277,21 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
             'click',
             this.run,
             this
+        );
+        
+        this.get('container').all('a').on(
+            'click',
+            function()
+            {
+                Y.later(
+                    1,
+                    window,
+                    function()
+                    {
+                        this.location.reload();
+                    }
+                );
+            }
         );
     },
     

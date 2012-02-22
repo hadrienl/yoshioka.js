@@ -82,7 +82,10 @@
                     {
                         view.run();
                     }
-                    
+                }
+                else if (window.location.hash)
+                {
+                    view.run(window.location.hash.replace(/#/, ''));
                 }
             });
         //]]>
