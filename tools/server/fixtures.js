@@ -49,7 +49,7 @@ Fixtures.prototype = {
      * @private
      */
     postData: '',
-    
+
     /**
      * Compile Javascript content
      * @attribute request
@@ -60,7 +60,7 @@ Fixtures.prototype = {
         this.req = req;
         this.res = res;
         this.config = config;
-        
+
         if (req.method == 'POST')
         {
             req.on(
@@ -118,7 +118,7 @@ Fixtures.prototype = {
     {
         var path = this.req.url.replace(new RegExp(this.config.path), ''),
             method, fixtures, data;
-        
+
         try
         {
             this.postData = JSON.parse(this.postData);
@@ -128,7 +128,7 @@ Fixtures.prototype = {
         {
             this.postData = {};
         }
-        
+
         try
         {
             fixtures = fs.readFileSync(
@@ -153,57 +153,77 @@ Fixtures.prototype = {
                 "Syntax error in file "+APP_PATH+'/fixtures/'+path+'.json'
             );
         }
-        
+
         if (!this.postData.params)
         {
             throw new Error("No data found");
         }
-        
+
         fixtures.forEach(
             function(f)
             {
                 var matchall = true,
                     i;
-                
+
                 if (data)
                 {
                     return;
                 }
-                
+
                 for (i in this.postData.params)
                 {
                     if (i === 'method')
                     {
                         continue;
                     }
-                    if (f['match'][i] !== '*' &&
-                        f['match'][i] != this.postData.params[i])
+                    if (f['match'][i] !== '*')
                     {
-                        matchall = false;
+                        if (typeof this.postData.params[i] === 'object')
+                        {
+                            if (JSON.stringify(this.postData.params[i]) != JSON.stringify(f['match'][i])
+                            )
+                            {
+                                matchall = false;
+                            }
+                        }
+                        else if (f['match'][i] != this.postData.params[i])
+                        {
+                            matchall = false;
+                        }
                     }
                 }
-                
+
                 for (i in f['match'])
                 {
-                    if (f['match'][i] !== '*' &&
-                        f['match'][i] != this.postData.params[i])
+                    if (f['match'][i] !== '*')
                     {
-                        matchall = false;
+                        if (typeof this.postData.params[i] === 'object')
+                        {
+                            if (JSON.stringify(this.postData.params[i]) != JSON.stringify(f['match'][i])
+                            )
+                            {
+                                matchall = false;
+                            }
+                        }
+                        else if (f['match'][i] != this.postData.params[i])
+                        {
+                            matchall = false;
+                        }
                     }
                 }
-                
+
                 if (matchall)
                 {
                     data = f.data;
                 }
             }.bind(this)
         );
-        
+
         if (data === undefined)
         {
             throw new Error("No data found");
         }
-        
+
         return JSON.stringify(data);
     }
 };
