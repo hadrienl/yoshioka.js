@@ -57,7 +57,7 @@ Y.mix(Y.Node.DOM_EVENTS, {
  * </dl>
  */
 Y.extend(I18n, Y.Base, {
-    
+
     /**
      * Initialize a i18n object
      * @method initializer
@@ -87,10 +87,10 @@ Y.extend(I18n, Y.Base, {
                 },
                 this
             );
-            
+
             this.setAttrs(config.params);
         }
-        
+
         /**
          * After locale change, call the changeLanguage method to update the
          * node
@@ -102,7 +102,7 @@ Y.extend(I18n, Y.Base, {
                 this.getLocalizedString();
             }
         );
-        
+
         /**
          * Set translation in node asynchronously
          */
@@ -114,7 +114,7 @@ Y.extend(I18n, Y.Base, {
             }
         );
     },
-    
+
     /**
      * Load the translations file, and get the localized string from the key
      * Call is asynchronized, so it will update `translation` attr when
@@ -130,17 +130,17 @@ Y.extend(I18n, Y.Base, {
             locale = this.get('locale'),
             name = 'i18n/'+locale+'/'+module,
             self = this;
-        
+
         if (!module)
         {
             throw new Error('module~key invalid');
         }
-        
+
         /**
          * Load the translation file module
          */
         YUI().use(name, function(Y2) {
-            
+
             try
             {
                 Y[NS] = Y2.merge(
@@ -151,7 +151,7 @@ Y.extend(I18n, Y.Base, {
                  * Copy the module class in the main Y object
                  */
                 var t = Y[NS].I18n[locale][module][key];
-                
+
                 /**
                  * Update `translation` attr
                  */
@@ -166,7 +166,7 @@ Y.extend(I18n, Y.Base, {
             }
         });
     },
-    
+
     /**
      * Get a localized string from key
      * key has the form : 'module~key'
@@ -181,18 +181,20 @@ Y.extend(I18n, Y.Base, {
      */
     localize: function(tostring)
     {
-        var node;
-        
+        var node, t;
+
         /**
          * Load the locale
          */
-        this.getLocalizedString()
-        
+        this.getLocalizedString();
+
+        t = this._insertTranslation();
+
         /**
          * Create the string node
          */
         node = '<span id="'+this.get('id')+'">'+
-            this.get('translation')+
+            t+
             '</span>';
 
         /**
@@ -209,12 +211,12 @@ Y.extend(I18n, Y.Base, {
          */
         if (typeof tostring === 'function')
         {
-            tostring(this.get('translation'));
+            tostring(t);
             this.after(
                 'translationChange',
                 function(e, fn)
                 {
-                    fn(this.get('translation'));
+                    fn(this._insertTranslation());
                 },
                 this,
                 tostring
@@ -224,11 +226,11 @@ Y.extend(I18n, Y.Base, {
          * If tostring is true, a string will returned instead of a Node
          * object. It's usefull for templates not already instancied.
          */
-        
+
         return node;
     },
-    
-    
+
+
     /**
      * Get node from attr or from dom
      * @method getNode
@@ -238,7 +240,7 @@ Y.extend(I18n, Y.Base, {
     getNode: function()
     {
         var node = this.get('node');
-        
+
         if (!node)
         {
             /**
@@ -248,7 +250,7 @@ Y.extend(I18n, Y.Base, {
             node = Y.one('#'+this.get('id'));
             this.set('node', node);
         }
-        
+
         return node;
     },
     /**
@@ -262,9 +264,9 @@ Y.extend(I18n, Y.Base, {
     {
         var node = this.getNode()
             t = this.get('translation');
-        
+
         t = t.replace(
-            /@@(.*?)@@/gi,
+            /@@(.[^(@@)]*?)@@/gi,
             Y.bind(
                 function(a, b)
                 {
@@ -275,17 +277,17 @@ Y.extend(I18n, Y.Base, {
             ),
             t
         );
-        
+
         if (node)
         {
             node.set(
                 'innerHTML',
                 t
             );
-            
+
             node.fire('i18n:change', {translation: t});
         }
-        
+
         return t;
     },
     /**
@@ -403,7 +405,7 @@ Y.extend(I18nManager, Y.Base, {
             'locale',
             navigator.language || navigator.userLanguage || DEFAULT_LOCALE
         );
-        
+
         /**
          * Bind locale change event to set all the instancied I18n locale
          */
@@ -413,7 +415,7 @@ Y.extend(I18nManager, Y.Base, {
             {
                 var keys = this.get('keys'),
                     locale = this.get('locale');
-                
+
                 Y.Object.each(
                     keys,
                     function(I18n)
@@ -427,7 +429,7 @@ Y.extend(I18nManager, Y.Base, {
             }
         );
     },
-    
+
     /**
      * Get a localized string from key
      * key has the form : 'module~key'
@@ -458,12 +460,12 @@ Y.extend(I18nManager, Y.Base, {
     {
         var keys = this.get('keys'),
             el = this.createKey(key, params);
-        
+
         params || (params = {});
 
         return el.localize(tostring);
     },
-    
+
     /**
      * Create a new key
      * @method createKey
@@ -482,11 +484,11 @@ Y.extend(I18nManager, Y.Base, {
                 params: params
             }),
             keys = this.get('keys');
-        
+
         keys[i.get('id')] = i;
-        
+
         this.set('keys', keys);
-        
+
         return i;
     }
 },
@@ -504,7 +506,7 @@ Y.extend(I18nManager, Y.Base, {
             {
                 var found = false,
                     dft = DEFAULT_LOCALE;
-                
+
                 /**
                  * Look into config if asked locale is available
                  */
@@ -537,12 +539,12 @@ Y.extend(I18nManager, Y.Base, {
                         }
                     );
                 }
-                
+
                 if (!found)
                 {
                     locale = dft;
                 }
-                
+
                 return locale;
             },
             /**

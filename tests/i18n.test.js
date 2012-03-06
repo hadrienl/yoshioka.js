@@ -1,14 +1,16 @@
 YUI().add('i18n/en_US/hello', function(Y) {
     Y.namespace('ys.I18n.en_US').hello =
     {
-        "world": 'Hello World!'
+        "world": 'Hello World!',
+        "world.params": "Hello World @@param1@@ @@param2@@ !"
     };
 });
 
 YUI().add('i18n/fr_FR/hello', function(Y) {
     Y.namespace('ys.I18n.fr_FR').hello =
     {
-        "world": 'Bonjour Monde !'
+        "world": 'Bonjour Monde !',
+        "world.params": "Bonjour Monde @@param1@@ @@param2@@ !"
     };
 });
 
@@ -36,13 +38,13 @@ suite.add(
     new Y.Test.Case({
 
         name: "I18nManager",
-    
+
         setUp: function()
         {
             this.data = Y.ys.I18nManager.localize(
                 'hello~world'
             );
-            
+
             Y.one(document.body).append(this.data);
         },
         tearDown: function()
@@ -59,31 +61,31 @@ suite.add(
         testChangeLocale: function()
         {
             Y.ys.I18nManager.set('locale', 'en');
-            
+
             Y.Assert.areEqual(
                 'en_US',
                 Y.ys.I18nManager.get('locale'),
                 'Locale would be en_US'
             );
-            
+
             Y.ys.I18nManager.set('locale', 'fr');
-            
+
             Y.Assert.areEqual(
                 'fr_FR',
                 Y.ys.I18nManager.get('locale'),
                 'Locale would be fr_FR'
             );
-            
+
             Y.ys.I18nManager.set('locale', 'en_UK');
-            
+
             Y.Assert.areEqual(
                 'en_US',
                 Y.ys.I18nManager.get('locale'),
                 'Locale would be en_US'
             );
-            
+
             Y.ys.I18nManager.set('locale', 'it');
-            
+
             Y.Assert.areEqual(
                 'en_US',
                 Y.ys.I18nManager.get('locale'),
@@ -93,7 +95,7 @@ suite.add(
         testSpanInnerHTML : function ()
         {
             Y.ys.I18nManager.set('locale', 'en');
-            
+
             Y.Assert.areEqual(
                 'Hello World!',
                 this.data.get('innerHTML')
@@ -102,7 +104,7 @@ suite.add(
         testSpanInnerHTMLAfterLocaleChange : function ()
         {
             Y.ys.I18nManager.set('locale', 'fr');
-            
+
             Y.Assert.areEqual(
                 'Bonjour Monde !',
                 this.data.get('innerHTML')
@@ -118,19 +120,19 @@ suite.add(
     new Y.Test.Case({
 
         name: "I18nManager string mode",
-    
+
         setUp: function()
         {
             var span;
-            
+
             Y.ys.I18nManager.set('locale', 'en');
-            
+
             span = Y.ys.I18nManager.localize(
                 'hello~world',
                 null,
                 true
             );
-            
+
             this._node = Y.Node.create(
                 '<div id="test_locale">'+span+'</div>'
             );
@@ -143,7 +145,7 @@ suite.add(
         {
             this._node.remove();
         },
-    
+
         testSpanInnerHTML : function ()
         {
             Y.Assert.areEqual(
@@ -169,21 +171,21 @@ suite.add(
     new Y.Test.Case({
 
         name: "I18n",
-    
+
         setUp: function()
         {
             this.data = new Y.ys.I18nManager.I18n({
                     key: 'hello~world',
                     locale: 'en_US'
                 });
-            
+
             Y.one(document.body).append(this.data.localize());
         },
         tearDown: function()
         {
             this.data.destroy();
         },
-    
+
         testSpanInnerHTML : function ()
         {
             Y.Assert.areEqual(
@@ -201,5 +203,47 @@ suite.add(
         }
     })
 );
+
+/**
+ * Test I18n with params
+ */
+suite.add(
+    new Y.Test.Case({
+
+        name: "I18n",
+
+        setUp: function()
+        {
+            this.data = new Y.ys.I18nManager.I18n({
+                    key: 'hello~world.params',
+                    locale: 'en_US',
+                    params: {param1:"p1",param2:"p2"}
+                });
+
+            Y.one(document.body).append(this.data.localize());
+        },
+        tearDown: function()
+        {
+            this.data.destroy();
+        },
+
+        testSpanInnerHTML : function ()
+        {
+            Y.Assert.areEqual(
+                'Hello World p1 p2 !',
+                this.data._insertTranslation()
+            );
+        },
+        testSpanInnerHTMLAfterLocaleChange : function ()
+        {
+            this.data.set('locale', 'fr_FR');
+            Y.Assert.areEqual(
+                'Bonjour Monde p1 p2 !',
+                this.data._insertTranslation()
+            );
+        }
+    })
+);
+
 
 Y.Test.Runner.add(suite);
