@@ -163,7 +163,8 @@ Server.prototype = {
             try
             {
                 f = new UnitTests({
-                    test: url.match(/^\/__unittests(\/(.*?)$)?/)[2]
+                    test: url.match(/^\/__unittests(\/(.*?)$)?/)[2],
+                    plugins: config.plugins
                 });
             }
             catch (e)

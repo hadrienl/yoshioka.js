@@ -45,10 +45,10 @@ UnitTests.prototype = {
         }
         else
         {
-            return this._prepareAppTests();
+            return this._prepareAppTests(config);
         }
     },
-    _prepareAppTests: function()
+    _prepareAppTests: function(config)
     {
         var viewpaths = [],
             pluginpaths = []
@@ -81,9 +81,22 @@ UnitTests.prototype = {
         
         try
         {
-            pluginpaths = fs.readdirSync(
-                APP_PATH+PLUGINS_DIR
-            );
+            if(config.plugins)
+            {
+                pluginpaths = config.plugins;
+            }
+            else
+            {
+                pluginpaths = fs.readdirSync(
+                    APP_PATH+PLUGINS_DIR
+                );
+            }
+            
+            
+            //tmp
+            pluginpaths = [ 'plugins/placeholder',
+                            'plugins/forms',
+                            'plugins/utils'];
             
             pluginpaths.forEach(
                 function(p, k)
