@@ -43,6 +43,12 @@ I18nCompiler.prototype =
                 APP_PATH+'/'+this._file,
                 function(callback, err, data)
                 {
+                    if (err)
+                    {
+                        console.error(err);
+                        return;
+                    }
+                    
                     this._filecontent = data.toString();
                     this._parse(callback);
                 }.bind(this, callback)

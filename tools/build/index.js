@@ -45,7 +45,14 @@ Builder.prototype.init = function(config)
     
     events.EventEmitter.call(this);
     
-    this.dirs = ['yoshioka.js/core', 'locales', 'plugins', 'views', 'config'];
+    this._appconfig = getconfig.getConfig({
+        dev: (this._configtype === 'dev'),
+        tests: (this._configtype === 'tests')
+    });
+    
+    this.dirs = ['yoshioka.js/core', 'locales', 'views', 'config'].concat(
+        this._appconfig && this._appconfig.plugins
+    );
     this._filecount = 0;
     
     this._coreconfig = JSON.parse(
@@ -58,11 +65,6 @@ Builder.prototype.init = function(config)
     {
         configtype = 'tests_config';
     }
-    
-    this._appconfig = getconfig.getConfig({
-        dev: (this._configtype === 'dev'),
-        tests: (this._configtype === 'tests')
-    });
 };
 Builder.prototype.build = function()
 {

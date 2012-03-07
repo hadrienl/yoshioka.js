@@ -11,6 +11,7 @@ DEFAULT_INDEX = '/index.html',
 fs = require('fs'),
 Maker = require('../make').Maker,
 compiler = require('../compiler'),
+getconfig = require('../make/getconfig'),
 
 FileParser = function(config)
 {
@@ -359,13 +360,14 @@ FileParser.prototype = {
      */
     makeConfig: function(config)
     {
-        var maker = new Maker({
-            dirs: ['locales', 'plugins', 'views'],
-            files: ['config/errors.js'],
-            basepath: '/',
-            dev: true,
-            tests: config && config.tests
-        });
+        var appconfig = getconfig.getConfig(config),
+            maker = new Maker({
+                dirs: ['locales', 'views'].concat(appconfig && appconfig.plugins),
+                files: ['config/errors.js'],
+                basepath: '/',
+                dev: true,
+                tests: config && config.tests
+            });
 
         maker.on(
             'writeEnd',
