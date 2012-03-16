@@ -96,23 +96,26 @@ Server.prototype = {
                     path: this._config.build,
                     buildname: this._config.buildname
                 });
-
-            builder.on(
-                'parseEnd',
-                function()
-                {
-                    // Compress
-                    var Compressor = require('../build/compressor').Compressor,
-                        compressor = new Compressor({
-                            path: APP_PATH+this._buildpath
-                        });
-                    console.log("Compressing…");
-                    compressor.compress(function()
+            
+            if (!this._config.dontcompress)
+            {
+                builder.on(
+                    'parseEnd',
+                    function()
                     {
-                        console.log('Done !');
-                    });
-                }
-            );
+                        // Compress
+                        var Compressor = require('../build/compressor').Compressor,
+                            compressor = new Compressor({
+                                path: APP_PATH+this._buildpath
+                            });
+                        console.log("Compressing…");
+                        compressor.compress(function()
+                        {
+                            console.log('Done !');
+                        });
+                    }
+                );
+            }
             console.log("Building…");
             builder.build();
             return;
