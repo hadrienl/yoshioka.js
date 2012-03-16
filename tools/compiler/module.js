@@ -110,7 +110,7 @@ ModuleCompiler.prototype = {
         if (module)
         {
             this._filecontent =
-"YUI().add('"+module+"', function(Y) {\n"+
+"YUI.add('"+module+"', function(Y) {\n"+
 this._filecontent+"\n"+
 "}, '1.234', {requires: "+JSON.stringify(requires)+"})";
         }
