@@ -81,7 +81,8 @@ UnitTests.prototype = {
         
         try
         {
-            if(config.plugins)
+            if(config.plugins &&
+                config.plugins+'/' !== PLUGINS_DIR)
             {
                 pluginpaths = config.plugins;
             }
@@ -91,12 +92,6 @@ UnitTests.prototype = {
                     APP_PATH+PLUGINS_DIR
                 );
             }
-            
-            
-            //tmp
-            pluginpaths = [ 'plugins/placeholder',
-                            'plugins/forms',
-                            'plugins/utils'];
             
             pluginpaths.forEach(
                 function(p, k)
