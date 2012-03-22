@@ -113,6 +113,26 @@ Y.extend(I18n, Y.Base, {
                 this._insertTranslation();
             }
         );
+        
+        this._checklife = Y.later(
+            5000,
+            this,
+            function()
+            {
+                if (!Y.one('#'+this.get('id')))
+                {
+                    this.destroy();
+                    delete this;
+                }
+            },
+            null,
+            true
+        );
+    },
+    
+    destructor: function()
+    {
+        this._checklife.cancel();
     },
 
     /**
@@ -203,6 +223,7 @@ Y.extend(I18n, Y.Base, {
         if (tostring !== true)
         {
             node = Y.Node.create(node);
+            node.i18n = this;
             this.set('node', node);
         }
         /**
