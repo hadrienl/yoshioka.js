@@ -1,7 +1,7 @@
 /**
  * View
  * @module ys/view
- * @requires view, node, get, substitute
+ * @requires view, node, get, substitute, json
  */
 
 var
@@ -190,6 +190,20 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
                         toreplace = l[0],
                         key = l[1],
                         params = (params = l[2]) ? params.replace(/'/,"\\\'") : 'null';
+
+                    if (params)
+                    {
+                        try
+                        {
+                            params = Y.JSON.parse(params);
+                        }
+                        catch(e)
+                        {
+                            throw new Error(
+                                "Your paramaters in locale `"+key+"` is not a valid JSON."
+                            );
+                        }
+                    }
 
                     tpl = tpl.replace(
                         toreplace,
