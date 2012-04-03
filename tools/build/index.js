@@ -130,7 +130,7 @@ Builder.prototype._makeConfig = function()
 {
     var Maker = require('../make/').Maker,
         maker = new Maker({
-            dirs: ['locales', 'plugins', 'views'],
+            dirs: ['locales', 'plugins', 'views', 'config'],
             apppath: this._buildpath,
             basepath: (this._appconfig.basepath || '')+'/'+this._buildname+'/',
             buildname: this._buildname,

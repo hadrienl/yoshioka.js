@@ -150,7 +150,6 @@ Maker.prototype._parseJSFile = function(path)
             
             if (!module)
             {
-                console.log('WARNING : '+path+' does not have module name');
                 this._filecount--;
                 this._checkFileCount();
                 return;
