@@ -29,6 +29,14 @@ exports.getConfig = function(config)
     {
         app_config = fs.readFileSync(app_config_path).toString();
         app_config = app_config
+            .replace( // Remove comments
+                /\/\*.*?\*\//g,
+                ''
+            )
+            .replace( // Remove comments
+                /^|\s\/\/.*?\n/g,
+                ''
+            )
             .replace(
                 /\{\$buildname\}/,
                 config.buildname
