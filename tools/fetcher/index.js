@@ -78,6 +78,11 @@ Fetcher.prototype._parseDir = function(path)
                 dir.forEach(
                     function(d)
                     {
+                        if (d.match(/^\./))
+                        {
+                            // Ignoring .files
+                            return;
+                        }
                         this._filecount++;
                         /**
                          * Stat on the path
