@@ -436,6 +436,8 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
         );
         container.one('iframe').remove(true);
         
+        window.location.hash = container.getAttribute('id');
+        
         this.syncUI();
         
         this.fire('complete', {state: state, data: data});

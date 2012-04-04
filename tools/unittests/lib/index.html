@@ -177,7 +177,8 @@
                 var view = new Y.ys.UnittestsView({
                         modules: [{$modules}]
                     }),
-                    auto = {$auto};
+                    auto = {$auto},
+                    hash = window.location.hash;
                 
                 Y.one('body').append(view.render());
                 
@@ -196,6 +197,12 @@
                         );
                     };
                     view.runAll();
+                }
+                
+                if (window.location.hash)
+                {
+                    window.location.hash = '';
+                    window.location.hash = hash;
                 }
             });
         //]]>
