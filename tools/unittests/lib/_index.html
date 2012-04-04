@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Unit tests</title>
+        <meta charset="utf-8"/>
+        <script src="/config/tconfig.js"></script>
+        <script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/yoshioka.js/tools/unittests/lib/unittests.view.js"></script>
+        {$testssrc}
+        <style type="text/css" media="screen">
+            .running .ctn {
+                background: url('/yoshioka.js/tools/unittests/lib/img/wait.png') repeat-y;
+            }
+            .passed .ctn {
+                background: green;
+            }
+            .passed .details {
+                display: none;
+            }
+            .failed .ctn {
+                background: red;
+            }
+            .ignored .ctn {
+                background: gray;
+            }
+
+            .pass {
+                background: green;
+            }
+            .fail {
+                background: red;
+            }
+            .ignore {
+                background: gray;
+            }
+        </style>
+    </head>
+    <body class="yui3-skin-sam">
+        <script type="text/javascript" charset="utf-8">
+        //<![CDATA[
+        YUI().use('event', function(Y) {
+            Y.one(window).on(
+                'error',
+                function(e)
+                {
+                    Y.Global._hasError = true;
+                }
+            );
+        });
+        //]]>
+        </script>
+        <script type="text/javascript" charset="utf-8">
+        //<![CDATA[
+            YUI().use("json", "io", "node", "ys/core", "test", "ys/views/unittests", {$testsmodules}, function(Y) {
+
+                var view = new Y.ys.UnittestsView(),
+                    auto = {$auto};
+                Y.one('body').append(view.render());
+
+                // If auto, run all the tests !!
+                if (auto)
+                {
+                    view.complete = function(results)
+                    {
+                        // Sending results to server
+                        Y.io(
+                            '/__unittests/report/',
+                            {
+                                method: 'post',
+                                data: Y.JSON.stringify(results)
+                            }
+                        );
+                    };
+                    if (Y.Global._hasError)
+                    {
+                        console.error('Syntax error on your app !');
+                        view.complete({
+                            failed: 1
+                        });
+                    }
+                    else
+                    {
+                        view.run();
+                    }
+                }
+                else if (window.location.hash)
+                {
+                    view.run(window.location.hash.replace(/#/, ''));
+                }
+            });
+        //]]>
+        </script>
+    </body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Unit tests</title>
+        <meta charset="utf-8"/>
+        <script src="/config/tconfig.js"></script>
+        <script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/yoshioka.js/tools/unittests/lib/unittests.view.js"></script>
+        {$scripts}
+    </head>
+    <body class="yui3-skin-sam">
+        <script type="text/javascript" charset="utf-8">
+        //<![CDATA[
+        YUI().use('json', 'event', function(Y) {
+            Y.one(window).on(
+                'error',
+                function(e)
+                {
+                    window.parent && window.parent.postMessage(
+                        Y.JSON.stringify({
+                            'message': 'error',
+                            'from': window.location.href
+                        }),
+                        '*'
+                    );
+                }
+            );
+        });
+        //]]>
+        </script>
+        <script type="text/javascript" charset="utf-8">
+        //<![CDATA[
+            YUI().use("json", "ys/core", "test", {$modules}, function(Y) {
+                
+                var sendStats = function()
+                {
+                    var data = [],
+                        suites = Y.Test.Runner.masterSuite.items;
+                    
+                    Y.each(
+                        suites,
+                        function(s)
+                        {
+                            var cases = s.items,
+                                suite = {
+                                    name: s.name,
+                                    nbcases: cases.length,
+                                    nbtests: 0
+                                };
+                            
+                            Y.each(
+                                cases,
+                                function(c)
+                                {
+                                    for (var method in c)
+                                    {
+                                        if (method.match(/^test/))
+                                        {
+                                            suite.nbtests++;
+                                        }
+                                    };
+                                }
+                            );
+                            
+                            data.push(suite);
+                        }
+                    );
+                    
+                    /**
+                     * Send numbers of tests
+                     */
+                    window.parent && window.parent.postMessage(
+                        Y.JSON.stringify({
+                            'message': 'stats',
+                            'from': window.location.href,
+                            'data': data
+                        }),
+                        '*'
+                    );
+                }
+                
+                Y.Test.Runner.on(
+                    'complete',
+                    function(results)
+                    {
+                        window.parent && window.parent.postMessage(
+                            Y.JSON.stringify({
+                                'message': 'complete',
+                                'from': window.location.href,
+                                'data': results
+                            }),
+                            '*'
+                        );
+                    }
+                );
+                
+                Y.Test.Runner.on(
+                    ['fail', 'pass'],
+                    function(results)
+                    {
+                        window.parent && window.parent.postMessage(
+                            Y.JSON.stringify({
+                                'message': 'test',
+                                'from': window.location.href
+                            }),
+                            '*'
+                        );
+                    }
+                );
+                
+                Y.one(window).on(
+                    'message',
+                    function(e)
+                    {
+                        var data = e._event.data;
+                        
+                        try
+                        {
+                            data = Y.JSON.parse(data);
+                        }
+                        catch(e) { return; }
+                        
+                        if (data.message === 'run')
+                        {
+                            Y.Test.Runner.run();
+                        }
+                    }
+                );
+                
+                sendStats();
+                
+            });
+        //]]>
+        </script>
+    </body>
+</html>

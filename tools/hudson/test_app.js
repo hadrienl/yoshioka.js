@@ -26,16 +26,12 @@ args = {};
 argv.forEach(
     function(a, k)
     {
-        var arg = (arg = a.match(/^\-{2}(.*)$/)) && arg[1],
-            next = argv[k+1];
+        console.log(a)
+        var arg = (arg = a.match(/^\-{2}([^=]*)=(.*)$/));
         
         if (arg)
         {
-            args[arg] =
-                (next &&
-                (next = next.match(/^[^\-]+/)) && next[0])
-                ||
-                true;
+            args[arg[1]] = arg[2];
         }
     }
 );
@@ -45,6 +41,10 @@ if (args['browser'])
     if (args['browser'] === 'chromium')
     {
         browser = 'chromium-browser';
+    }
+    else if (args['browser'] === 'chrome')
+    {
+        browser = 'google-chrome';
     }
     else if (args['browser'] === 'iceweasel')
     {

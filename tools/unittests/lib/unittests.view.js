@@ -1,13 +1,17 @@
 /**
  * Unit tests View
  * @module ys/views/unittests
- * @requires ys/view, anim
+ * @requires ys/view, json
  */
 var
 
 NS = 'ys',
 
 YTR = Y.Test.Runner,
+
+STATUS_NONE = '',
+STATUS_SUCCESS = 'success',
+STATUS_FAIL = 'fail',
 
 UnittestsView = function(config)
 {
@@ -27,189 +31,206 @@ UnittestsSuiteSubview = function(config)
 Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
     
     template: '<div>'+
-'   <h1>UnitTests</h1>'+
-'   <p>'+
-'       <span class="summary"></span>'+
-'       <button class="runall">Run all the tests</button>'+
-'   </p>'+
-'   <ul class="tests_suites"></ul>'+
+'   <div class="header">'+
+'      <h1>UnitTests</h1>'+
+'       <p>'+
+'           <span class="summary"></span>'+
+'           <button class="runall">Run all the tests</button>'+
+'       </p>'+
+'   </div>'+
+'   <div class="tests_suites"></div>'+
 '</div>',
     
-    _suiteviews: null,
-
-    initializer: function()
+    _tests: null,
+    _running: false,
+    
+    renderUI: function()
     {
-        UnittestsView.superclass.initializer.apply(this, arguments);
+        var modules = this.get('modules'),
+            container = this.get('container'),
+            tests_suites;
         
-        this._suiteviews = [];
+        UnittestsView.superclass.renderUI.apply(this, arguments);
+        
+        tests_suites = container.one('.tests_suites');
+        
+        this._tests = [];
+        
+        Y.each(
+            modules,
+            function(m)
+            {
+                var test = new UnittestsSuiteSubview({
+                    module: m.module
+                });
+                tests_suites.append(test.render());
+                
+                this._tests.push(test);
+            },
+            this
+        );
     },
     
     bindUI: function()
     {
-        this.get('container').one('.runall').on(
-            'click',
-            this.run,
+        Y.each(
+            this._tests,
+            function(t)
+            {
+                t.after(
+                    ['statsChange', 'complete'],
+                    this.syncUI,
+                    this
+                );
+            },
             this
         );
+        
+        this.get('container').one('.runall').on(
+            'click',
+            this.runAll,
+            this
+        )
     },
     
     syncUI: function()
     {
-        var tests = null,
-            nbsuites = 0,
+        var container = this.get('container'),
+            header = container.one('.header'),
+            nbtests = 0,
             nbcases = 0,
-            nbtests = 0;
+            nbsuites = 0,
+            status = STATUS_NONE;
         
-        YTR.masterSuite.items.sort(function(a, b)
-        {
-            return (a.name.toLowerCase() < b.name.toLowerCase()) ?
-                -1 : 1;
-        });
-        
-        Y.Array.each(
-            YTR.masterSuite.items,
-            function(suite)
+        Y.each(
+            this._tests,
+            function(t)
             {
-                var v = new Y.ys.UnittestsSuiteSubview({
-                    suite: suite
-                });
+                nbsuites += t.get('nbsuites');
+                nbcases += t.get('nbcases');
+                nbtests += t.get('nbtests');
                 
-                this.get('container').one('.tests_suites').append(
-                    v.render()
-                );
-                
-                this._suiteviews.push(v);
-                
-                // Count data
-                nbsuites++;
-                nbcases += suite.items.length;
-                
-                Y.Array.each(
-                    suite.items,
-                    function(item)
-                    {
-                        Y.Object.each(
-                            item,
-                            function(v, k)
-                            {
-                                if (k.match(/^test/))
-                                {
-                                    nbtests++;
-                                }
-                            }
-                        );
-                    }
-                );
-            },
-            this
-        );
-        
-        this.get('container').one('.summary').set(
-            'innerHTML',
-            nbtests+' tests in '+nbcases+' cases in '+nbsuites+' suites.'
-        );
-        
-    },
-    
-    run: function(one)
-    {
-        if (!one || !Y.Lang.isString(one))
-        {
-            this.runAll();
-        }
-        else
-        {
-            this.runOne(one);
-        }
-    },
-    
-    runOne: function(one)
-    {
-        var suites = this._suiteviews,
-            suite = null;
-        
-        Y.some(
-            suites,
-            function(s)
-            {
-                if (s.get('suite').name === one)
+                if (t.get('status') === STATUS_FAIL)
                 {
-                    return (suite = s);
+                    status = STATUS_FAIL;
+                }
+                if (status !== STATUS_FAIL &&
+                    t.get('status') === STATUS_SUCCESS)
+                {
+                    status = STATUS_SUCCESS;
                 }
             }
         );
         
-        if (Y.Lang.isNull(suite))
-        {
-            return;
-        }
+        header.one('.summary').set(
+            'innerHTML',
+            nbtests+' tests in '+nbcases+' cases in '+nbsuites+' suites.'
+        );
         
-        (new Y.Anim({
-            node: Y.one(window),
-            to: {
-                scroll: [0, suite.get('container').get('region').top]
-            },
-            duration: 0.2,
-            easing: Y.Easing.easeOut
-        })).run();
-        
-        suite.run();
+        header.removeClass(STATUS_FAIL);
+        header.removeClass(STATUS_SUCCESS);
+        header.addClass(status);
     },
     
     runAll: function()
     {
-        var i = 0,
-            suites = this._suiteviews,
-            results = {
-                duration: 0,
-                failed: 0,
-                ignored: 0,
-                passed: 0,
-                total: 0
-            },
-            next = Y.bind(
-                function()
-                {
-                    if (YTR._lastResults)
-                    {
-                        results.duration += YTR._lastResults.duration;
-                        results.failed += YTR._lastResults.failed;
-                        results.ignored += YTR._lastResults.ignored;
-                        results.passed += YTR._lastResults.passed;
-                        results.total += YTR._lastResults.total;
-                    }
-                    if (suites[i])
-                    {
-                        YTR.once(
-                            'testsuitecomplete',
-                            function()
-                            {
-                                next();
-                            }
-                        );
-                        Y.later(1, suites[i], function()
-                        {
-                            this.run();
-                        });
-                    }
-                    else
-                    {
-                        this.complete(results);
-                    }
-                    i++;
-                },
-                this
-            );
-        
-        next();
+        if (this._running !== false)
+        {
+            return;
+        }
+        this.get('container').one('.runall').setAttribute('disabled', true);
+        this._running = 0;
+        this._next();
     },
-    complete: function(results)
+    
+    _next: function()
     {
+        var test = this._tests[this._running];
+        if (!test)
+        {
+            return this._stop();
+        }
         
+        test.once(
+            'complete',
+            function(result)
+            {
+                this._readResult(result);
+                this._running++;
+                this._next();
+            },
+            this
+        );
+        test.run();
+    },
+    
+    _stop: function()
+    {
+        var report = {
+            failed: 0
+        };
+        
+        this._running = false;
+        this.get('container').one('.runall').removeAttribute('disabled');
+        
+        /**
+         * Send the report
+         */
+        Y.each(
+            this._tests,
+            function(t)
+            {
+                if (t.get('status') === STATUS_FAIL)
+                {
+                    report.failed = 1;
+                }
+            }
+        );
+        this.complete(report);
+        
+    },
+    
+    _readResult: function(result)
+    {
+        //console.debug('result', result);
+        
+    },
+    
+    complete: function()
+    {
+        // do nothing
     }
 },
 {
-    NAME: 'UnittestsView'
+    NAME: 'UnittestsView',
+    ATTRS: {
+        modules: {
+            valueFn: Array,
+            validator: function(v)
+            {
+                return Y.Lang.isArray(v);
+            },
+            setter: function(v)
+            {
+                var o = {};
+                
+                Y.each(
+                    v,
+                    function(val, k)
+                    {
+                        o[val] = {
+                            module: val,
+                            nbsuites: 0,
+                            nbcases: 0,
+                            nbtests: 0
+                        };
+                    }
+                );
+                
+                return o;
+            }
+        }
+    }
 });
 
 /**
@@ -221,248 +242,340 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
 Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     UnittestsSuiteSubview, Y.ys.View, {
     
-    template: '<li>'+
+    _ready: false,
+    _testsstarted: 0,
+    
+    template: '<div class="test">'+
+'   <div class="progress"></div>'+
 '   <div class="ctn">'+
-'       <a href="#{name}" class="name">{name}</a>'+
 '       <span class="btn"><button class="run">Run</button></span>'+
+'       <a href="#" class="name"></a>'+
 '   </div>'+
 '   <ol class="details"></ol>'+
-'</li>',
-    
-    _suiteviews: null,
-    _nbtests: 0,
-    _progress: 0,
-    
-    initializer: function()
-    {
-        var suite = this.get('suite'),
-            nbtests = 0;
-        
-        UnittestsSuiteSubview.superclass.initializer.apply(this, arguments);
-        
-        // Count nb tests
-        Y.Array.each(
-            suite.items,
-            function(item)
-            {
-                Y.Object.each(
-                    item,
-                    function(v, k)
-                    {
-                        if (k.match(/^test/))
-                        {
-                            nbtests++;
-                        }
-                    }
-                );
-            }
-        );
-        this._nbtests = nbtests;
-    },
+'   <iframe class="test"></iframe>'+
+'</div>',
     
     renderUI: function()
     {
-        var suite = this.get('suite');
+        var container = this.get('container');
         
-        this.get('container').append(
-            this.compileTpl({
-                name: suite.name
-            })
+        UnittestsSuiteSubview.superclass.renderUI.apply(this, arguments);
+        
+        container.setAttribute(
+            'id',
+            this.get('module').replace(/[^a-zA-Z0-9]/g, '-')
         );
     },
     
     bindUI: function()
     {
-        this.get('container').one('.run').on(
+        var container = this.get('container'),
+            iframe = container.one('iframe'),
+            module = this.get('module');
+        
+        container.one('.run').on(
             'click',
             this.run,
             this
         );
         
-        this.get('container').all('a').on(
-            'click',
-            function()
-            {
-                Y.later(
-                    1,
-                    window,
-                    function()
-                    {
-                        this.location.reload();
-                    }
-                );
-            }
-        );
-    },
-    
-    _events: null,
-    run: function()
-    {
-        if (YTR.isRunning())
-        {
-            return;
-        }
+        container.one('a').purge();
         
-        YTR.clear();
-        YTR.add(this.get('suite'));
-        
-        this._detachEvents();
-        
-        this._events.push(
-            YTR.on(
-                ['fail', 'pass', 'ignore'],
-                function(e)
-                {
-                    this._displayTest(e);
-                },
-                this
-            )
-        );
-        
-        this._events.push(
-            YTR.once(
-                'complete',
-                function(e)
-                {
-                    this._displayResults(e.results);
-                },
-                this
-            )
-        );
-        this._clearResults();
-        this.get('container').addClass('running');
-        
-        YTR.run();
-    },
-    
-    _detachEvents: function()
-    {
-        Y.Array.each(
-            this._events,
+        Y.one(window).on(
+            'message',
             function(e)
             {
-                e.detach();
-            }
+                var container = this.get('container'),
+                    iframe = container.one('iframe'),
+                    data = e._event.data;
+                
+                try
+                {
+                    data = Y.JSON.parse(data);
+                }
+                catch (e)
+                {
+                    console && console.error(e);
+                    return;
+                }
+                
+                if (!data.from ||
+                    data.from !==
+                        window.location.protocol+'//'+
+                        window.location.host+this.get('location'))
+                {
+                    return;
+                }
+                
+                if (data.message === 'stats')
+                {
+                    return this._testIsReady(data.data);
+                }
+                else if (data.message === 'error')
+                {
+                    return this._testIsComplete('error');
+                }
+                else if (data.message === 'complete')
+                {
+                    return this._testIsComplete('complete', data.data);
+                }
+                else if (data.message === 'test')
+                {
+                    this._testsstarted++;
+                    return this.syncUI();
+                }
+            },
+            this
         );
-        this._events = [];
     },
     
-    _clearResults: function()
+    syncUI: function()
+    {
+        var container = this.get('container');
+            aname = container.one('.name'),
+            module = this.get('module'),
+            name = this.get('name') || module,
+            run = container.one('.run'),
+            status = this.get('status'),
+            nbtests = this.get('nbtests'),
+            progress = container.one('.progress');
+        
+        aname.setAttribute('href', '#'+container.getAttribute('id'));
+        aname.set('innerHTML', name);
+        
+        container.removeClass(STATUS_FAIL);
+        container.removeClass(STATUS_SUCCESS);
+        status && container.addClass(status);
+        
+        if (nbtests)
+        {
+            progress.setStyle(
+                'width', (this._testsstarted / nbtests * 100)+'%'
+            )
+        }
+    },
+    
+    run: function()
+    {
+        var container = this.get('container'),
+            iframe = container.one('iframe');
+        
+        container.one('.run').setAttribute('disabled', true);
+        this._testsstarted = 0;
+        this.syncUI();
+        
+        iframe.setAttribute('src', this.get('location'));
+    },
+    _testIsReady: function(data)
+    {
+        var container = this.get('container'),
+            iframe = container.one('iframe'),
+            nbsuites = 0,
+            nbcases = 0,
+            nbtests = 0;
+        
+        Y.Array.each(
+            data,
+            function(suite)
+            {
+                nbsuites++;
+                
+                nbcases+=suite.nbcases;
+                nbtests+=suite.nbtests;
+            }
+        );
+        
+        this.set('nbsuites', nbsuites);
+        this.set('nbcases', nbcases);
+        this.set('nbtests', nbtests);
+        
+        this.fire('statsChange');
+        
+        this.set('status', STATUS_NONE);
+        
+        iframe._node.contentWindow.postMessage(
+            Y.JSON.stringify({
+                message: 'run'
+            }),
+            '*'
+        );
+    },
+    
+    _testIsComplete: function(state, data)
     {
         var container = this.get('container');
         
-        container.one('.details').set('innerHTML', '');
-        container.removeClass('passed');
-        container.removeClass('failed');
-        container.removeClass('ignored');
-        container.removeClass('running');
-        container.one('.run').set('innerHTML', '…');
-        
-        // progress bar
-        this._progress = 1;
-        this._setProgress();
-    },
-    _setProgress: function()
-    {
-        var container = this.get('container'),
-            width = 2000,// background image width
-            ctn = container.one('.ctn'),
-            reg = ctn.get('region'),
-            progress = this._progress / this._nbtests * 100,
-            position = -(width);
-        
-        position = width - reg.width * progress / 100;
-        
-        container.one('.ctn').setStyle(
-            'backgroundPosition',
-            '-'+position+'px 0'
-        );
-    },
-    _displayTest: function(test)
-    {
-        var details = this.get('container').one('.details'),
-            li = Y.Node.create(
-                Y.substitute(
-                    '<li>'+
-                    '   <p class="name">'+
-                    '       <span class="testcase">{testcase}</span>'+
-                    '       <span class="testname">{testname}</span>'+
-                    '       <span class="result">{result}</span>'+
-                    '   </p>'+
-                    '</li>',
-                    {
-                        testcase: test.testCase.name,
-                        testname: test.testName,
-                        result: test.type
-                    }
-                )
-            );
-        
-        if (test.type === 'fail')
+        if (state === 'error' ||
+            data.failed)
         {
-            li.append(
-                Y.Node.create(Y.substitute(
-                    '<div><p>'+
-                    '   <span class="name">{name}</span> :'+
-                    '   <span class="message">{message}</span>'+
-                    '</p>'+
-                    '<p>'+
-                    '   <span class="actual">actual :{actual}</span>'+
-                    '</p>'+
-                    '<p>'+
-                    '   <span class="expected">expected :{expected}</span>'+
-                    '</p></div>',
-                    {
-                        name: test.error.name,
-                        message: test.error.message,
-                        actual: test.error.actual || 'null',
-                        expected: test.error.expected || 'null'
-                    }
-                ))
-            );
+            this.set('status', STATUS_FAIL);
         }
+        else
+        {
+            if (data.results.failed)
+            {
+                this.set('status', STATUS_FAIL);
+            }
+            else if (data.results.ignored)
+            {
+                this.set('status', STATUS_NONE);
+            }
+            else
+            {
+                this.set('status', STATUS_SUCCESS);
+            }
+        }
+        container.one('.run').removeAttribute('disabled');
+        this._testsstarted = 0;
         
-        li.addClass(test.type);
-    
-        details.append(li);
+        this._displayResults(data && data.results);
         
-        // progress bar
-        this._progress++;
-        this._setProgress();
+        this.syncUI();
+        
+        this.fire('complete', {state: state, data: data});
     },
+    
     _displayResults: function(results)
     {
         var container = this.get('container'),
-            suite = this.get('suite'),
             details = container.one('.details');
         
-        this._detachEvents();
+        details.set('innerHTML', '');
         
-        container.one('.run').set('innerHTML', 'Run');
-        
-        if (results.failed === 0 &&
-            results.ignored === 0)
+        if (!results)
         {
-            container.addClass('passed');
-            return;
+            details.set('innerHTML', '<li>Syntax Error. Watch your console.</li>')
         }
         
-        if (results.failed > 0)
-        {
-            container.addClass('failed');
-        }
-        
-        if (results.ignored > 0)
-        {
-            container.addClass('ignored');
-        }
+        Y.each(
+            results,
+            function(r)
+            {
+                var node, ol;
+                
+                if (Y.Lang.isObject(r))
+                {
+                    node = Y.Node.create(
+                        '<li class="case"><span class="name">'+
+                        r.name +
+                        '</span>'+
+                        '<span class="count">'+
+                        r.total + ' test' + (r.total > 1 ? 's' : '') +
+                        '</span>'+
+                        '<span class="duration">' + r.duration + 'ms</span>'+
+                        '<ol></ol></li>'
+                    );
+                    
+                    if (r.failed)
+                    {
+                        node.addClass('failed');
+                    }
+                    if (r.ignored)
+                    {
+                        node.addClass('ignored');
+                    }
+                    if (r.passed)
+                    {
+                        node.addClass('passed');
+                    }
+                    
+                    ol = node.one('ol');
+                    
+                    /**
+                     * Reading each assertions
+                     */
+                    Y.Object.each(
+                        r,
+                        function(v, k)
+                        {
+                            var li;
+                            
+                            if (k.match(/^test/))
+                            {
+                                li = Y.Node.create(
+                                    '<li class="unic"><span class="name">'+
+                                    v.name +
+                                    '</span>'+
+                                    '<span class="message">'+
+                                    v.message +
+                                    '</span>'+
+                                    '<span class="duration">' + v.duration + 'ms</span>'
+                                );
+
+                                if (v.result === 'pass')
+                                {
+                                    li.addClass('passed');
+                                }
+                                else if (v.result === 'fail')
+                                {
+                                    li.addClass('failed');
+                                }
+                                else
+                                {
+                                    li.addClass('ignored');
+                                }
+                                
+                                ol.append(li);
+                            }
+                        }
+                    );
+                    details.append(node);
+                }
+            }
+        );
     }
 },
 {
     NAME: 'UnittestsSuiteSubview',
     ATTRS: {
-        suite: {
-            
+        module: {
+            validator: function(v)
+            {
+                return Y.Lang.isString(v);
+            }
+        },
+        name: {
+            value: '',
+            validator: function(v)
+            {
+                return Y.Lang.isString(v);
+            }
+        },
+        location: {
+            valueFn: function()
+            {
+                return '/__unittests/'+this.get('module');
+            }
+        },
+        nbsuites: {
+            value: 0,
+            validator: function(v)
+            {
+                return Y.Lang.isNumber(v);
+            }
+        },
+        nbcases: {
+            value: 0,
+            validator: function(v)
+            {
+                return Y.Lang.isNumber(v);
+            }
+        },
+        nbtests: {
+            value: 0,
+            validator: function(v)
+            {
+                return Y.Lang.isNumber(v);
+            }
+        },
+        status: {
+            value: STATUS_NONE,
+            validator: function(v)
+            {
+                return (STATUS_NONE === v ||
+                        STATUS_SUCCESS === v ||
+                        STATUS_FAIL === v);
+            }
         }
     }
 });
