@@ -430,6 +430,12 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
         
         this._displayResults(data && data.results);
         
+        container.one('iframe').insert(
+            Y.Node.create('<iframe></iframe>'),
+            'after'
+        );
+        container.one('iframe').remove(true);
+        
         this.syncUI();
         
         this.fire('complete', {state: state, data: data});
