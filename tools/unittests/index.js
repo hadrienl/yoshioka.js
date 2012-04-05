@@ -21,6 +21,8 @@ UnitTests.prototype = {
     _auto: false,
     _framework: false,
     
+    _plugins: null,
+    
     init: function(config)
     {
         var test = config.test || null;
@@ -45,6 +47,8 @@ UnitTests.prototype = {
                 test = null;
             }
         }
+        
+        this._plugins = config.plugins;
         
         if (!test)
         {
@@ -92,10 +96,10 @@ UnitTests.prototype = {
         
         try
         {
-            if (config.plugins &&
-                config.plugins+'/' !== PLUGINS_DIR)
+            if (this._plugins &&
+                this._plugins+'/' !== PLUGINS_DIR)
             {
-                pluginpaths = config.plugins;
+                pluginpaths = this._plugins;
             }
             else
             {
