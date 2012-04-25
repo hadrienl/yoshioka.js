@@ -412,11 +412,11 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
         }
         else
         {
-            if (data.results.failed)
+            if (data.failed)
             {
                 this.set('status', STATUS_FAIL);
             }
-            else if (data.results.ignored)
+            else if (data.ignored)
             {
                 this.set('status', STATUS_NONE);
             }
