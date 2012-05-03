@@ -537,6 +537,11 @@ Y.extend(I18nManager, Y.Base, {
                         Y.config.locales,
                         function(l)
                         {
+                            if (l.locale === locale)
+                            {
+                                locale = l.locale;
+                                return (found = true);
+                            }
                             if (l.sameas)
                             {
                                 Y.Array.some(
@@ -546,8 +551,7 @@ Y.extend(I18nManager, Y.Base, {
                                         if (s === locale)
                                         {
                                             locale = l.locale;
-                                            found = true;
-                                            return found;
+                                            return (found = true);
                                         }
                                     }
                                 );
