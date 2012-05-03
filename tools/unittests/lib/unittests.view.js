@@ -428,7 +428,7 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
         container.one('.run').removeAttribute('disabled');
         this._testsstarted = 0;
         
-        this._displayResults(data);
+        this._displayResults(data && data.results);
         
         container.one('iframe').insert(
             Y.Node.create('<iframe></iframe>'),
