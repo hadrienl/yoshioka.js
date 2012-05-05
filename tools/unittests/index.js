@@ -14,41 +14,56 @@ UnitTests = function(config)
 }
 UnitTests.prototype = {
     
-    _srcs: null,
+    _seed: false,
     _modules: null,
+    
+    _srcs: null,
     _auto: false,
     _framework: false,
+    
+    _plugins: null,
     
     init: function(config)
     {
         var test = config.test || null;
         
-        this._auto = false;
-        this._framework = false;
         if (test === 'auto')
         {
+            test = null;
             this._auto = true;
-        }
-        if (test === 'framework')
-        {
-            this._framework = true;
-        }
-        if (test === 'framework/auto')
-        {
-            this._auto = true;
-            this._framework = true;
         }
         
-        if (this._framework)
+        if (test && test.match(/^framework|ys\//))
         {
-            return this._prepareFrameworkTests();
+            this._framework = true;
+            
+            if (test.match(/^framework/))
+            {
+                if (test === 'framework/auto')
+                {
+                    this._auto = true;
+                }
+                
+                test = null;
+            }
+        }
+        
+        this._plugins = config.plugins;
+        
+        if (!test)
+        {
+            // Load the init page
+            this._seed = true;
+            return this._framework ?
+                this._getFrameworkModules() : this._getModules();
         }
         else
         {
-            return this._prepareAppTests(config);
+            // Load a unit test page
+            return this._getModule(test);
         }
     },
-    _prepareAppTests: function(config)
+    _getModules: function(config)
     {
         var viewpaths = [],
             pluginpaths = []
@@ -81,10 +96,10 @@ UnitTests.prototype = {
         
         try
         {
-            if(config.plugins &&
-                config.plugins+'/' !== PLUGINS_DIR)
+            if (this._plugins &&
+                this._plugins+'/' !== PLUGINS_DIR)
             {
-                pluginpaths = config.plugins;
+                pluginpaths = this._plugins;
             }
             else
             {
@@ -105,7 +120,6 @@ UnitTests.prototype = {
             
         }
         
-        this._srcs = [];
         this._modules = [];
         
         viewpaths.concat(pluginpaths).forEach(
@@ -128,17 +142,12 @@ UnitTests.prototype = {
                         }.bind(this)
                     );
                 }
-                catch (e)
-                {
-                    console.log(
-                        'No tests in '+testpath+' :('
-                    )
-                }
+                catch (e){}
             }.bind(this)
         );
     },
     
-    _prepareFrameworkTests: function()
+    _getFrameworkModules: function()
     {
         var fwk_path = 'yoshioka.js/tests/';
         
@@ -160,6 +169,37 @@ UnitTests.prototype = {
         );
     },
     
+    _getModule: function(module)
+    {
+        var found = false;
+        
+        if (this._framework)
+        {
+            this._getFrameworkModules();
+        }
+        else
+        {
+            this._getModules();
+        }
+        
+        this._modules.forEach(
+            function(m)
+            {
+                if (m.module === module)
+                {
+                    this._modules = [m];
+                    found = true;
+                    return;
+                }
+            }.bind(this)
+        );
+        
+        if (!found)
+        {
+            throw new Error(module+' not found');
+        }
+    },
+    
     _readTestFileDetails: function(testpath, file)
     {
         var ctn = fs.readFileSync(
@@ -169,56 +209,57 @@ UnitTests.prototype = {
                 /\@module ([a-zA-Z0-9\/\-\_]+)/
             )) && module[1];
         
-        this._srcs.push(
-            '<script src="/'+testpath+file+'"></script>'
-        );
-        this._modules.push(
-            '"'+module+'"'
-        );
+        this._modules.push({
+            module: module,
+            src: testpath+file
+        });
     },
     
     getHTML: function(callback)
     {
-        var c = new compiler.HTMLCompiler({
-            file: 'yoshioka.js/tools/unittests/lib/index.html',
+        var file = 'index.html',
+            c, modules = [], scripts = '';
+        
+        if (!this._seed)
+        {
+            file = 'test.html';
+        }
+        
+        c = new compiler.HTMLCompiler({
+            file: 'yoshioka.js/tools/unittests/lib/'+file,
             type: 'tests'
         });
-        c.parse(function(callback, content)
-        {
-            html = content
-                .replace(
-                    /\{\$testssrc\}/,
-                    this._srcs.join('')
-                )
-                .replace(
-                    /\{\$testsmodules\}/,
-                    this._modules.join(',')
-                )
-                .replace(
-                    /\{\$testslinks\}/,
-                    this._createTestsLinks()
-                )
-                .replace(
-                    /\{\$auto\}/,
-                    this._auto ? true : false
-                );
-            
-            callback(html);
-        }.bind(this, callback));
-    },
-    
-    _createTestsLinks: function()
-    {
-        var list = '';
         
         this._modules.forEach(
             function(m)
             {
-                list += '<li><a href="/__unittests/'+m.replace(/"/g, '')+'">'+m.replace(/"/g, '')+'</a></li>';
+                modules.push(m.module);
+                
+                if (!this._seed)
+                {
+                    scripts += '<script src="/'+m.src+'"></script>';
+                }
             }
         );
         
-        return list;
+        c.parse(function(callback, content)
+        {
+            html = content
+                .replace(
+                    /\{\$modules\}/,
+                    '"'+modules.join('","')+'"'
+                )
+                .replace(
+                    /\{\$auto\}/,
+                    this._auto ? true : false
+                )
+                .replace(
+                    /\{\$scripts\}/,
+                    scripts
+                );
+            
+            callback(html);
+        }.bind(this, callback));
     }
 };
 

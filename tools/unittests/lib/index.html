@@ -6,55 +6,187 @@
         <script src="/config/tconfig.js"></script>
         <script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
         <script type="text/javascript" charset="utf-8" src="/yoshioka.js/tools/unittests/lib/unittests.view.js"></script>
-        {$testssrc}
         <style type="text/css" media="screen">
-            .running .ctn {
-                background: url('/yoshioka.js/tools/unittests/lib/img/wait.png') repeat-y;
+            body {
+                font-family: 'helvetica neue', helvetica, arial, sans-serif;
+                margin: 0;
+                padding: 0;
             }
-            .passed .ctn {
-                background: green;
+            a {
+                color: #333;
+                text-decoration: none;
             }
-            .passed .details {
-                display: none;
-            }
-            .failed .ctn {
-                background: red;
-            }
-            .ignored .ctn {
-                background: gray;
-            }
+            .header {
+                padding: 0 1em;
+                position: fixed;
+                top: 0;
+                left: 50%;
+                right: 16px;
+                z-index: 2;
+                background: #888;
+                border: 4px solid #333;
+                border-top: none;
+                color: white;
 
-            .pass {
-                background: green;
+                -moz-border-radius-bottomleft: 10px; /* FF1+ */
+                -webkit-border-bottom-left-radius: 10px; /* Saf3+, Chrome */
+                -khtml-border-bottom-left-radius: 10px; /* Konqueror */
+                border-bottom-left-radius: 10px; /* Standard. IE9 */
+
+                -moz-border-radius-bottomright: 10px; /* FF1+ */
+                -webkit-border-bottom-right-radius: 10px; /* Saf3+, Chrome */
+                -khtml-border-bottom-right-radius: 10px; /* Konqueror */
+                border-bottom-right-radius: 10px; /* Standard. IE9 */
+
+                -moz-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                -ms-box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                box-shadow: 0 0 10px rgba(0,0,0,0.4);
             }
-            .fail {
-                background: red;
+            .header button {
+                font-size: 2em;
+                position: absolute;
+                top: 1em;
+                right: 1em;
+                background: white url('/{$basepath}/img/runallthetests.png') no-repeat bottom left;
+                padding-left: 70px;
+                font-family: impact;
+                -moz-border-radius: 10px; /* FF1+ */
+                -webkit-border-radius: 10px; /* Saf3+, Chrome */
+                -khtml-border-radius: 10px; /* Konqueror */
+                border-radius: 10px; /* Standard. IE9 */
             }
-            .ignore {
-                background: gray;
+            .tests_suites {
+                margin-top: 10em;
+            }
+            .test {
+                position: relative;
+                margin: 0 1em;
+                padding: 0.5em 1em;
+                background: #eee;
+                border-left: 4px solid;
+                border-right: 4px solid;
+                border-color: #bbb;
+            }
+            .tests_suites :first-child .test {
+                border-top-width: 4px;
+                border-top-style: solid;
+            }
+            .tests_suites :last-child .test {
+                border-bottom-width: 4px;
+                border-bottom-style: solid;
+                margin-bottom: 1em;
+            }
+            .header.success,
+            .success .test {
+                background: #96ff6c;
+                border-color: #7CD458;
+            }
+            .header.fail,
+            .fail .test {
+                background: #ff6c6c;
+                border-color: #D25757;
+            }
+            .tests_suites :first-child .test,
+            .tests_suites :first-child .test .progress {
+                -moz-border-radius-topright: 10px; /* FF1+ */
+                -webkit-border-top-right-radius: 10px; /* Saf3+, Chrome */
+                -khtml-border-top-right-radius: 10px; /* Konqueror */
+                border-top-right-radius: 10px; /* Standard. IE9 */
+
+                -moz-border-radius-topleft: 10px; /* FF1+ */
+                -webkit-border-top-left-radius: 10px; /* Saf3+, Chrome */
+                -khtml-border-top-left-radius: 10px; /* Konqueror */
+                border-top-left-radius: 10px; /* Standard. IE9 */
+            }
+            .tests_suites :last-child .test {
+                -moz-border-radius-bottomright: 10px; /* FF1+ */
+                -webkit-border-bottom-right-radius: 10px; /* Saf3+, Chrome */
+                -khtml-border-bottom-right-radius: 10px; /* Konqueror */
+                border-bottom-right-radius: 10px; /* Standard. IE9 */
+
+                -moz-border-radius-bottomleft: 10px; /* FF1+ */
+                -webkit-border-bottom-left-radius: 10px; /* Saf3+, Chrome */
+                -khtml-border-bottom-left-radius: 10px; /* Konqueror */
+                border-bottom-left-radius: 10px; /* Standard. IE9 */
+            }
+            .test .progress {
+                width: 0;
+                height: 0.7em;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 0;
+
+                background-image: linear-gradient(left , rgb(0,204,255) 0%, rgb(255,255,255) 72%, rgb(202,255,255) 100%);
+                background-image: -o-linear-gradient(left , rgb(0,204,255) 0%, rgb(255,255,255) 72%, rgb(202,255,255) 100%);
+                background-image: -moz-linear-gradient(left , rgb(0,204,255) 0%, rgb(255,255,255) 72%, rgb(202,255,255) 100%);
+                background-image: -webkit-linear-gradient(left , rgb(0,204,255) 0%, rgb(255,255,255) 72%, rgb(202,255,255) 100%);
+                background-image: -ms-linear-gradient(left , rgb(0,204,255) 0%, rgb(255,255,255) 72%, rgb(202,255,255) 100%);
+
+                background-image: -webkit-gradient(
+                    linear,
+                    left top,
+                    right top,
+                    color-stop(0, rgb(0,204,255)),
+                    color-stop(0.72, rgb(255,255,255)),
+                    color-stop(1, rgb(202,255,255))
+                );
+            }
+            .test button {
+                font-size: 1.2em;
+                font-weight: bold;
+            }
+            .test .ctn {
+                position: relative;
+                z-index: 1;
+            }
+            .test .details {
+                position: relative;
+                margin: 0;
+            }
+            .test .details span {
+                display: inline-block;
+            }
+            .test .details .name {
+                width: 20em;
+            }
+            .test .details .count {
+                width: 10em;
+            }
+            .test .details .name:after {
+                content: ' : ';
+            }
+            .test .details .duration:before {
+                content: ' in ';
+            }
+            .test .details ol {
+                margin-left: 3em;
+                padding: 0;
+            }
+            .test .details .unic .name {
+                width: 17em;
+            }
+            .test .details .unic .message {
+                width: 10em;
+            }
+            .test iframe {
+                display: none;
             }
         </style>
     </head>
     <body class="yui3-skin-sam">
         <script type="text/javascript" charset="utf-8">
         //<![CDATA[
-        YUI().use('event', function(Y) {
-            Y.one(window).on(
-                'error',
-                function(e)
-                {
-                    Y.Global._hasError = true;
-                }
-            );
-        });
-        //]]>
-        </script>
-        <script type="text/javascript" charset="utf-8">
-        //<![CDATA[
-            YUI().use("json", "io", "node", "ys/core", "test", "ys/views/unittests", {$testsmodules}, function(Y) {
+            YUI().use("json", "io", "node", "ys/core", "test", "ys/views/unittests", function(Y) {
 
-                var view = new Y.ys.UnittestsView(),
-                    auto = {$auto};
+                var view = new Y.ys.UnittestsView({
+                        modules: [{$modules}]
+                    }),
+                    auto = {$auto},
+                    hash = window.location.hash;
+
                 Y.one('body').append(view.render());
 
                 // If auto, run all the tests !!
@@ -71,21 +203,13 @@
                             }
                         );
                     };
-                    if (Y.Global._hasError)
-                    {
-                        console.error('Syntax error on your app !');
-                        view.complete({
-                            failed: 1
-                        });
-                    }
-                    else
-                    {
-                        view.run();
-                    }
+                    view.runAll();
                 }
-                else if (window.location.hash)
+
+                if (window.location.hash)
                 {
-                    view.run(window.location.hash.replace(/#/, ''));
+                    window.location.hash = '';
+                    window.location.hash = hash;
                 }
             });
         //]]>
