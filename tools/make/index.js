@@ -55,50 +55,41 @@ Maker.prototype.init = function(config)
 Maker.prototype._parseFile = function(path)
 {
     /**
-     * Read file content
+     * Check file type
      */
-    fs.readFile(
-        APP_PATH+path,
-        function(err, data)
-        {
-            /**
-             * Check file type
-             */
-            if (path.match(/\.i18n\.js$/))
-            {
-                /**
-                 * Locale file
-                 */
-                this._parseLocaleFile(path);
-            }
-            else if (path.match(/\.js$/) &&
-                    !path.match(/test\.js$/))
-            {
-                /**
-                 * Javascript file
-                 */
-                this._parseJSFile(path);
-            }
-            else if (path.match(/\.css$/))
-            {
-                /**
-                 * CSS file
-                 */
-                this._parseCSSFile(path);
-            }
-            else if (path.match(/\.html$/))
-            {
-                /**
-                 * CSS file
-                 */
-                this._parseHTMLFile(path);
-            }
-            else
-            {
-                this._parseStaticFile(path);
-            }
-        }.bind(this)
-    );
+    if (path.match(/\.i18n\.js$/))
+    {
+        /**
+         * Locale file
+         */
+        this._parseLocaleFile(path);
+    }
+    else if (path.match(/\.js$/) &&
+            !path.match(/test\.js$/))
+    {
+        /**
+         * Javascript file
+         */
+        this._parseJSFile(path);
+    }
+    else if (path.match(/\.css$/))
+    {
+        /**
+         * CSS file
+         */
+        this._parseCSSFile(path);
+    }
+    else if (path.match(/\.html$/))
+    {
+        /**
+         * CSS file
+         */
+        this._parseHTMLFile(path);
+    }
+    else
+    {
+        this._parseStaticFile(path);
+    }
 };
 Maker.prototype._parseLocaleFile = function(path)
 {
