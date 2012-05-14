@@ -16,16 +16,16 @@ ModuleCompiler = function(config)
 };
 
 ModuleCompiler.prototype = {
-    
+
     _file: null,
     _filecontent: '',
-    
+
     init: function(config)
     {
         config || (config = {});
-        
+
         this._file = config.file;
-        
+
         this._filecontent = config.filecontent;
     },
     parse: function(callback)
@@ -46,7 +46,7 @@ ModuleCompiler.prototype = {
                         {
                             console.log(err);
                         }
-                        
+
                         return this._parse(callback);
                     }
                     this._filecontent = data.toString();
@@ -59,7 +59,7 @@ ModuleCompiler.prototype = {
             this._parse(callback);
         }
     },
-    
+
     parseSync: function()
     {
         if (!this._filecontent)
@@ -68,7 +68,7 @@ ModuleCompiler.prototype = {
         }
         return this._compile();
     },
-    
+
     _parse: function(callback)
     {
         try
@@ -84,7 +84,7 @@ ModuleCompiler.prototype = {
             return this._filecontent;
         }
     },
-    
+
     _compile: function()
     {
             /**
@@ -96,7 +96,7 @@ ModuleCompiler.prototype = {
             /**
              * Get requires modules in the comment `@requires`
              */
-            requires = (requires = this._filecontent.replace(/\n/g, '')
+            requires = (requires = this._filecontent.replace(/\n|\r/g, '')
                 .match(/\/\*.*?\*\//)[0]
                 .match(
                     /\@requires ([a-zA-Z0-9\/\-\_\,\.\s\*]+)\s\*(\/|\s@)/
@@ -106,7 +106,7 @@ ModuleCompiler.prototype = {
                 .replace(/\s/g, '')
                 .replace(/\*/g, '')
                 .split(/,/);
-        
+
         if (module)
         {
             this._filecontent =
