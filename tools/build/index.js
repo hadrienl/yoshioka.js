@@ -35,7 +35,8 @@ Builder.prototype._ignore = ['config/config.js', 'config/app_config.js', 'config
 Builder.prototype.init = function(config)
 {
     var buildname = config && config.buildname || new Date().getTime(),
-        buildpath = config && config.buildpath || BUILD_DIR+buildname+'/';
+        buildpath = config && config.buildpath || BUILD_DIR+buildname+'/',
+        files;
     
     this._configtype = config && config.type
     config || (config = {});
@@ -65,6 +66,19 @@ Builder.prototype.init = function(config)
     {
         configtype = 'tests_config';
     }
+    
+    /**
+     * Add all html files in root
+     */
+    fs.readdirSync(APP_PATH).forEach(
+        function(f)
+        {
+            if (f.match(/\.html$/))
+            {
+                this.files.push(f);
+            }
+        }.bind(this)
+    );
 };
 Builder.prototype.build = function()
 {
@@ -89,10 +103,7 @@ Builder.prototype.build = function()
             {
                 var path = APP_PATH+BUILD_DIR+f;
                 
-                if (f.match(/^[0-9]+$/))
-                {
-                    rimraf.sync(path);
-                }
+                rimraf.sync(path);
             });
             
             /**
@@ -114,12 +125,6 @@ Builder.prototype.build = function()
             
         }.bind(this)
     );
-    
-    /**
-     * index.html
-     */
-    this._filecount++;
-    this._parseHTMLFile('index.html', '../index.html');
     
     /**
      * Make config
@@ -322,6 +327,14 @@ Builder.prototype._parseHTMLFile = function(path, writepath)
     });
     c.parse(function(path, content)
     {
+        /**
+         * If html file is on root level, move them
+         */
+        if (path.split(/\//).length === 1)
+        {
+            path = '../'+path;
+        }
+        
         fs.writeFile(
             APP_PATH+this._buildpath+path,
             content
