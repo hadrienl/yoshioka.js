@@ -103,8 +103,12 @@ Builder.prototype.build = function()
             {
                 var path = APP_PATH+BUILD_DIR+f;
                 
-                rimraf.sync(path);
-            });
+                if (this.files.indexOf(f) > -1 ||
+                    f.match(/^[0-9]+$/))
+                {
+                    rimraf.sync(path);
+                }
+            }.bind(this));
             
             /**
              * Create build subdir
