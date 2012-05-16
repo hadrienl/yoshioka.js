@@ -67,7 +67,6 @@ CSSCompiler.prototype = {
                     if (e)
                     {
                         console.log("Less render error in "+this._file);
-                        console.log(e);
                         css = this._filecontent;
                     }
                     if (callback)
