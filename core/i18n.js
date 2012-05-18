@@ -286,7 +286,7 @@ Y.extend(I18n, Y.Base, {
         var node = this.getNode()
             t = this.get('translation');
 
-        t = t.replace(
+        t = t && t.replace(
             /@@(.[^(@@)]*?)@@/gi,
             Y.bind(
                 function(a, b)
