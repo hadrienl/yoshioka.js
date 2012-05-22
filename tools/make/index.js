@@ -35,14 +35,14 @@ Maker.prototype._dev = null;
 Maker.prototype.init = function(config)
 {
     Maker.superclass.init.apply(this, arguments);
-    
+
     config || (config = {});
-    
+
     this.basepath = config.basepath || '/';
     this._modules = {};
     this._dev = config.dev;
     this._tests = config.tests;
-    
+
     this._appConfig = getconfig.getConfig({
         dev: this._dev,
         tests: this._tests,
@@ -97,15 +97,15 @@ Maker.prototype._parseLocaleFile = function(path)
             locale[1] : null,
         file = (file = path.split(/\//)) && file[file.length - 1],
         module = 'i18n/'+locale+'/'+file.replace(/.i18n\.js?/, '');
-    
+
     /**
      * Generate config object for
      * this module
      */
     this._modules[module] = {};
     this._modules[module].path = path;
-    
-    
+
+
     /**
      * Decrement file count and check
      */
@@ -136,16 +136,16 @@ Maker.prototype._parseJSFile = function(path)
                 /**
                  * Get the requires array
                  */
-                requires = script.replace(/\n/g, '')
+                requires = script.replace(/\n|\r/g, '')
                     .match(/\/\*.*?\*\//);
-            
+
             if (!module)
             {
                 this._filecount--;
                 this._checkFileCount();
                 return;
             }
-            
+
             if (requires &&
                 (requires = requires[0].match(
                     /\@requires ([a-zA-Z0-9\/\-\_\,\.\s\*]+)\s\*(\/|\s@)/
@@ -158,7 +158,7 @@ Maker.prototype._parseJSFile = function(path)
                     .replace(/\*/g, '')
                     .split(/,/);
             }
-            
+
             /**
              * Generate config object for
              * this module
@@ -169,13 +169,13 @@ Maker.prototype._parseJSFile = function(path)
             {
                 this._modules[module].requires = requires
             }
-            
+
             /**
              * Decrement file count and check
              */
             this._filecount--;
             this._checkFileCount();
-            
+
         }.bind(this)
     );
 };
@@ -185,19 +185,19 @@ Maker.prototype._parseCSSFile = function(path)
         (file = file[file.length - 1].split(/\./)) &&
         file.pop() &&
         file.join('.'),
-        
+
         module = (module = path.match(/([^\/]+)\/assets\//)) && module[1],
-        
+
         isplugin = path.match(/^plugins\//);
-    
+
     if (!module)
     {
         throw 'CSS file unknown path : ' + path;
     }
-    
+
     module = this._appConfig.ys_app +
         (isplugin ? '/plugins/' : '/views/')+module+'/assets/'+file;
-    
+
     /**
      * Generate config object for
      * this module
@@ -205,8 +205,8 @@ Maker.prototype._parseCSSFile = function(path)
     this._modules[module] = {};
     this._modules[module].path = path;
     this._modules[module].type = 'css';
-    
-    
+
+
     /**
      * Decrement file count and check
      */
@@ -240,13 +240,13 @@ Maker.prototype.writeConfig = function(config)
      * Get the default config file
      */
     var coreConfig, YUI_config, filename;
-    
+
     config || (config = {});
-    
+
     config.path || (config.path = APP_PATH);
-    
+
     filename = (true === config.tests) ? 'tconfig.js' : 'config.js'
-    
+
     try
     {
         coreConfig = fs.readFileSync(
@@ -257,7 +257,7 @@ Maker.prototype.writeConfig = function(config)
     {
         throw new Error("Core config is missing. Please restore the yoshioka.js/core/core_config.js file.\n");
     }
-    
+
     /**
      * Set YUI_config default values
      */
@@ -275,7 +275,7 @@ Maker.prototype.writeConfig = function(config)
         (YUI_config.groups[YUI_config.ys_app] = {});
     YUI_config.groups[YUI_config.ys_app].modules = this._modules;
     YUI_config.groups[YUI_config.ys_app].base = this.basepath;
-    
+
     fs.writeFile(
         config.path+'config/'+filename,
         'YUI_config=' + JSON.stringify(YUI_config) + ';',
