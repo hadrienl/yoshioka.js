@@ -57,7 +57,15 @@ Y.mix(Y.Node.DOM_EVENTS, {
  * </dl>
  */
 Y.extend(I18n, Y.Base, {
-
+    
+    /**
+     * Autokill flag. Set to false if you don't want your I18n object to be
+     * destroyed when Node is not present in DOM.
+     * @property _autokill
+     * @private
+     */
+    _autokill: true,
+    
     /**
      * Initialize a i18n object
      * @method initializer
@@ -119,7 +127,8 @@ Y.extend(I18n, Y.Base, {
             this,
             function()
             {
-                if (!Y.one('#'+this.get('id')))
+                if (this._autokill &&
+                    !Y.one('#'+this.get('id')))
                 {
                     this.destroy();
                     delete this;
@@ -232,7 +241,8 @@ Y.extend(I18n, Y.Base, {
          */
         if (typeof tostring === 'function')
         {
-            tostring(t);
+            this._autokill = false;
+            
             this.after(
                 'translationChange',
                 function(e, fn)
@@ -242,6 +252,7 @@ Y.extend(I18n, Y.Base, {
                 this,
                 tostring
             );
+            tostring(t);
         }
         /**
          * If tostring is true, a string will returned instead of a Node
