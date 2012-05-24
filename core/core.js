@@ -8,6 +8,8 @@ var
 
 NS = 'ys',
 
+EVT_PATH_CHANGE = 'pathchange',
+
 Core = function()
 {
     Core.superclass.constructor.apply(this, arguments);
@@ -22,6 +24,37 @@ Core = function()
  * @constructor
  */
 Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
+    
+    initializer: function()
+    {
+        Core.superclass.initializer.apply(this, arguments);
+        
+        /**
+         * <p>
+         * The path has changed. Fire everytime a link enhanced by
+         * Y.ys.Router.enhance method is clicked. The link's href is
+         * passed in e param as e.path.
+         * </p>
+         * @event pathchange
+         * @param {EventFacade} e Event object
+         */
+        this.publish(
+            EVT_PATH_CHANGE,
+            {
+                emitFacade: true,
+                defaultFn: Y.bind(
+                    function(e)
+                    {
+                        this.save(
+                            e.path
+                        );
+                    },
+                    this
+                )
+            }
+        );
+    },
+    
     /**
      * Callback for path changes which update coord object
      * @method _updateAttrs
@@ -196,26 +229,8 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
                 e.preventDefault();
                 
                 path = this.removeRoot(link.get('href'));
-                /**
-                 * <p>
-                 * The path has changed. Fire everytime a link enhanced by
-                 * Y.ys.Router.enhance method is clicked. The link's href is
-                 * passed in e param as e.path.
-                 * </p>
-                 * @event pathchange
-                 * @param {EventFacade} e Event object
-                 */
-                this.fire(
-                    'pathchange',
-                    {
-                        path: path,
-                        prevpath: this.getPath()
-                    }
-                );
                 
-                this.save(
-                    path
-                );
+                this.fire(EVT_PATH_CHANGE, {path: path});
             },
             this,
             link

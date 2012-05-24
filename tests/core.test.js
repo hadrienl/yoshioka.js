@@ -121,6 +121,8 @@ suite.add(
                 test: 2
             }]);
             this.data.dispatch();
+            
+            this._event = null;
         },
         tearDown: function()
         {
@@ -128,6 +130,8 @@ suite.add(
             
             this.data.destroy();
             this.coord.destroy();
+            
+            this._event && this._event.detach();
         },
         testEnhanceLink: function()
         {
@@ -162,6 +166,56 @@ suite.add(
                     this.data.getPath()
                 );
             }, 200);
+        },
+        testPreventPathChange: function()
+        {
+            var a = Y.Node.create('<a></a>');
+            this.data.enhance(a);
+            
+            this.data.save('/__unittests/framework');
+            
+            this.wait(function()
+            {
+                Y.Assert.areEqual(
+                    '/__unittests/framework',
+                    this.data.getPath()
+                );
+
+                a.setAttribute('href', '/__unittests/framework/testwithalink');
+
+                this._event = this.data.on(
+                    'pathchange',
+                    function(e)
+                    {
+                        e.preventDefault();
+                    }
+                );
+
+                a.simulate('click');
+                
+                this.wait(function()
+                {
+                    Y.Assert.areEqual(
+                        '/__unittests/framework',
+                        this.data.getPath()
+                    );
+
+                    this._event.detach();
+
+                    a.simulate('click');
+                    
+                    this.wait(function()
+                    {
+                        Y.Assert.areEqual(
+                            '/__unittests/framework/testwithalink',
+                            this.data.getPath()
+                        );
+                        
+                    }, 500);
+                    
+                }, 500);
+                
+            }, 500);
         }
     })
 );
