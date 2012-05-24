@@ -505,7 +505,7 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
                                     v.name +
                                     '</span>'+
                                     '<span class="message">'+
-                                    v.message +
+                                    v.message.replace(/\n/g, '<br />') +
                                     '</span>'+
                                     '<span class="duration">' + v.duration + 'ms</span>'
                                 );
