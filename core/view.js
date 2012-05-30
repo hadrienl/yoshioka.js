@@ -373,7 +373,14 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             Y.namespace(NS).use(
                 module,
                 Y.bind(
-                    this._setViewCallback,
+                    function()
+                    {
+                        this._setViewCallback.apply(this, arguments);
+                        /**
+                         * Remove wait class on body
+                         */
+                        Y.one('html').removeClass('_loading_view');
+                    },
                     this,
                     classname,
                     params,
@@ -382,11 +389,6 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
                     callback
                 )
             );
-
-            /**
-             * Remove wait class on body
-             */
-            Y.one('html').removeClass('_loading_view');
         }
     },
     /**
