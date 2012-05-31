@@ -1,7 +1,7 @@
 /**
  * Internationalisation tools
  * @module ys/i18n
- * @requires base
+ * @requires base, cache
  */
 
 var
@@ -9,6 +9,12 @@ var
 NS = 'ys',
 
 DEFAULT_LOCALE = 'en_US',
+
+CACHE_LOCALE = 'loc',
+
+locale_cache = new Y.CacheOffline({
+    sandbox: (Y.config.cacheprefix || '')+'locale'
+}),
 
 /**
  * I18n object for an unique translation
@@ -431,14 +437,6 @@ Y.extend(I18nManager, Y.Base, {
     initializer: function()
     {
         /**
-         * Set initial locale from browser environement
-         */
-        this.set(
-            'locale',
-            navigator.language || navigator.userLanguage || DEFAULT_LOCALE
-        );
-
-        /**
          * Bind locale change event to set all the instancied I18n locale
          */
         this.after(
@@ -533,11 +531,22 @@ Y.extend(I18nManager, Y.Base, {
          * @public
          */
         locale: {
-            value: DEFAULT_LOCALE,
+            valueFn: function()
+            {
+                var clocale = locale_cache.retrieve(CACHE_LOCALE);
+                
+                return clocale && clocale.response;
+            },
+            /**
+             * Function to set the locale after verifying its validity. Set the
+             * default if invalid
+             * @method set('locale')
+             * @public
+             */
             setter: function(locale)
             {
                 var found = false,
-                    dft = DEFAULT_LOCALE;
+                    dft = navigator.language || navigator.userLanguage || DEFAULT_LOCALE;
 
                 /**
                  * Look into config if asked locale is available
@@ -580,7 +589,9 @@ Y.extend(I18nManager, Y.Base, {
                 {
                     locale = dft;
                 }
-
+                
+                locale_cache.add(CACHE_LOCALE, locale);
+                
                 return locale;
             },
             /**

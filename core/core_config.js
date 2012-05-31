@@ -10,7 +10,7 @@
         },
         "ys/i18n": {
             "path": "yoshioka.js/core/i18n.js",
-            "requires": ["base"]
+            "requires": ["base", "cache"]
         },
         "ys/view": {
             "path": "yoshioka.js/core/view.js",
