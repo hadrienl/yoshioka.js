@@ -137,7 +137,15 @@ Y.extend(I18n, Y.Base, {
                     !Y.one('#'+this.get('id')))
                 {
                     this.destroy();
-                    delete this;
+                    
+                    // IE <= 8 seems to have problems with this delete
+                    try
+                    {
+                        delete this;
+                    }
+                    catch(e)
+                    {}
+                   
                 }
             },
             null,
