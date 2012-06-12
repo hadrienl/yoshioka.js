@@ -329,13 +329,15 @@ FileParser.prototype = {
      */
     readFile: function()
     {
-        switch (this.ext)
+        var type = this.ext;
+        switch (type)
         {
             case 'png':
             case 'jpg':
+                type = 'jpeg';
             case 'jpeg':
             case 'gif':
-                this.contenttype = 'image/'+this.ext;
+                this.contenttype = 'image/'+type;
                 break;
         }
         
