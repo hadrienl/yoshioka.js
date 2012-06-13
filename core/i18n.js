@@ -595,7 +595,7 @@ Y.extend(I18nManager, Y.Base, {
                     /**
                      * Looking for locale name in 2 caracters
                      */
-                    if (!found)
+                    if (!found && Y.Lang.isString(locale))
                     {
                         locale = locale.substring(0,2);
                         
