@@ -591,8 +591,29 @@ Y.extend(I18nManager, Y.Base, {
                             return found;
                         }
                     );
+                    
+                    /**
+                     * Looking for locale name in 2 caracters
+                     */
+                    if (!found)
+                    {
+                        locale = locale.substring(0,2);
+                        
+                        Y.Array.some(
+                            Y.config.locales,
+                            function(l)
+                            {
+                                if (l.locale.substring(0,2) === locale)
+                                {
+                                    locale = l.locale;
+                                    return (found = true);
+                                }
+                                return found;
+                            }
+                        );
+                    }
                 }
-
+                
                 if (!found)
                 {
                     locale = dft;

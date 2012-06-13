@@ -91,6 +91,14 @@ suite.add(
                 Y.ys.I18nManager.get('locale'),
                 'Locale would be en_US'
             );
+            
+            Y.ys.I18nManager.set('locale', 'fr_QC');
+
+            Y.Assert.areEqual(
+                'fr_FR',
+                Y.ys.I18nManager.get('locale'),
+                'Locale would be fr_FR'
+            );
         },
         testSpanInnerHTML : function ()
         {
