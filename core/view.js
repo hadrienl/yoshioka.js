@@ -62,17 +62,12 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
     _events: null,
 
     /**
-     * Scan all css modules in requires and load them if needed
+     * Init the view
      * @method initializer
      * @protected
      */
     initializer: function()
     {
-        var modulename = Y.config.ys_app+'/views/'+
-                this.constructor.NAME.toLowerCase().replace('view', ''),
-            module = Y.config.groups[Y.config.ys_app].modules[modulename],
-            requires = module ? module.requires : null;
-
         /**
          * Init collections
          */
@@ -93,9 +88,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     render: function()
     {
-        this.renderUI();
-        this.bindUI();
-        this.syncUI();
+        this._render && this._render();
         
         Y.later(
             1,
@@ -103,35 +96,94 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
             function()
             {
                 this.fire('render');
+                this.set('rendered', true);
             }
         );
         
         return this.get('container');
     },
+    
     /**
-     * Render the template and append nodes in `container` attribute node
-     * @method renderUI
+     * Protected render method. Change this in your custom views
+     * @method _render
      * @protected
+     */
+    _render: function()
+    {
+        this.renderUI();
+        this.bindUI();
+        this.syncUI();
+    },
+    
+    /**
+     * Render the view DOM
+     * @method renderUI
+     * @public
      */
     renderUI: function()
     {
-        this.get('container').append(this.compileTpl());
+        var container = this.get('container');
+        
+        container.set('innerHTML', '');
+        container.append(
+            this._compile(this.get('compile_params'))
+        );
+        
+        return this._renderUI && this._renderUI();
     },
+    
     /**
-     * Bind event listener to `container` attribute DOM
-     * @method bindUI
+     * Add some element into view container that wouldn't have been created into
+     * template : instanciate subview, widgets, etc
+     * @method _renderUI
      * @protected
      */
-    bindUI: function()
+    _renderUI: function()
     {
         
     },
+    
     /**
-     * Update `container` attribute DOM nodes
-     * @method syncUI
+     * Bind event listener to `container` attribute DOM
+     * @method bindUI
+     * @public
+     */
+    bindUI: function()
+    {
+        return this._bindUI && this._bindUI();
+    },
+    
+    /**
+     * Bind view elements'event
+     * @method _bindUI
      * @protected
      */
+    _bindUI: function()
+    {
+        
+    },
+    
+    /**
+     * Update view DOM with attributes values. If views is detroyed, just do
+     * nothing
+     * @method syncUI
+     * @public
+     */
     syncUI: function()
+    {
+        if (this.get('destroyed'))
+        {
+            return;
+        }
+        return this._syncUI && this._syncUI();
+    },
+    
+    /**
+     * Set view's own method to sync the view
+     * @method _syncUI
+     * @protected
+     */
+    _syncUI: function()
     {
         
     },
@@ -157,7 +209,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
     
     /**
      * Return a Node compiled template
-     * @method compileTpl
+     * @method _compile
      * @param {object} params Object of parameters :
      * <dl>
      *        <dt>tpl</dt>
@@ -166,17 +218,22 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      *        <dd>…are given to Y.substitute method to replace `{name}`
      *        keywords into template</dd>
      * </dl>
-     * @public
+     * @private
      * @return Y.Node
      * @throws {Error} when no template is given
      */
-    compileTpl: function(params)
+    _compile: function(params)
     {
-        var tpl = (params && params.tpl) || this.template,
+        var tpl = (params && params.tpl) || this.get('template'),
             node,
-            locales = tpl.match(
+            locales = tpl && tpl.match(
                 /\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
             );
+        
+        if (!tpl)
+        {
+            return;
+        }
         
         params || (params = {});
         
@@ -263,7 +320,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      *);</pre>
      * @public
      */
-    setView: function(name, place, params, callback)
+    setView: function(name, place, params, callback) // TODO : (name|Class, node, params, callback)
     {
         var container = this.get('container'),
             el;
@@ -524,7 +581,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         
         params ||(params = {});
         
-        params.tpl || (params.tpl = this.template);
+        params.tpl || (params.tpl = this.get('template'));
         
         if (!options ||
             !Y.Lang.isArray(options))
@@ -617,5 +674,27 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
     }
 },
 {
-    NAME: 'Y.'+NS+'.View'
+    NAME: 'Y.'+NS+'.View',
+    ATTRS: {
+        /**
+         * Set true when view has been rendered
+         * @attribute rendered
+         * @public
+         */
+        rendered: {
+            value: false,
+            validator: function(v)
+            {
+                return Y.Lang.isBoolean(v);
+            }
+        },
+        /**
+         * Parameters given to the container compilation process
+         * @attribute compile_params
+         * @public
+         */
+        compile_params: {
+            valueFn: Object
+        }
+    }
 });

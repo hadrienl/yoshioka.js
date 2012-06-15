@@ -35,7 +35,7 @@ suite.add(
         
         testRender_withTemplate : function ()
         {
-            this.data.template = '<p>Test</p>';
+            this.data.set('template', '<p>Test</p>');
             this._node = this.data.render();
             Y.one(document.body).append(this._node);
             
@@ -49,12 +49,12 @@ suite.add(
             );
         },
         
-        testRender_manualTemplate : function ()
+        testRender_templateWithParams_old: function ()
         {
-            this.data.template = '<p>Test</p>';
+            this.data.set('template', '<p>Test</p>');
             this.data.renderUI = function()
             {
-                this.get('container').append(this.compileTpl({
+                this.get('container').append(this._compile({
                     tpl: '<p>Test</p><p>yoshioka</p>'
                 }));
             };
@@ -71,20 +71,43 @@ suite.add(
             );
         },
         
+        testRender_templateWithParams: function ()
+        {
+            this.data.set('template', '<p>Test{foo}</p>');
+            this.data.set('compile_params.foo', 'bar');
+            
+            this._node = this.data.render();
+            Y.one(document.body).append(this._node);
+            
+            Y.Assert.areEqual(
+                'Testbar',
+                this.data.get('container').all('p').item(0).get('innerHTML')
+            );
+            
+            this.data.set('compile_params.foo', 'bie');
+            
+            this._node = this.data.render();
+            
+            Y.Assert.areEqual(
+                'Testbie',
+                this.data.get('container').all('p').item(0).get('innerHTML')
+            );
+        },
+        
         testExtractSubTemplate: function()
         {
             var extracts;
             
-            this.data.template = '<div><p>Global</p><div class="sub">Sub</div></div>';
+            this.data.set('template', '<div><p>Global</p><div class="sub">Sub</div></div>');
             
             Y.Assert.areEqual(
-                this.data.template,
+                this.data.get('template'),
                 this.data.extractSubTemplate()[0]
             );
             
             extracts = this.data.extractSubTemplate(
                 {
-                    tpl: this.data.template
+                    tpl: this.data.get('template')
                 },
                 [{
                     selector: '.sub',
@@ -103,14 +126,14 @@ suite.add(
             
             Y.Assert.areEqual(
                 0,
-                this.data.compileTpl({
+                this.data._compile({
                     tpl: extracts[0]
                 }).all('div').size()
             );
             
             Y.Assert.areEqual(
                 "Sub",
-                this.data.compileTpl({
+                this.data._compile({
                     tpl: extracts[1]
                 }).get('innerHTML')
             );
@@ -126,7 +149,7 @@ suite.add(
         setUp: function()
         {
             this.data = new Y.ys.View();
-            this.data.template = '<div class="main"></div>';
+            this.data.set('template', '<div class="main"></div>');
             Y.one(document.body).append(this.data.render());
         },
         tearDown: function()
@@ -136,9 +159,22 @@ suite.add(
     
         testGetCurrentView : function ()
         {
-            Y.namespace('core').TestView = Y.ys.View;
+            var TestView = function(config)
+            {
+                TestView.superclass.constructor.apply(this, arguments);
+            };
             
-            Y.namespace('core').TestView.prototype.template = '<div>Hello World</div>';
+            Y.namespace('core').TestView = Y.extend(TestView, Y.ys.View, {
+                
+            },
+            {
+                NAME: 'TestView',
+                ATTRS: {
+                    template: {
+                        value: '<div>Hello World</div>'
+                    }
+                }
+            });
             
             Y.Env._used['core/views/test'] = true;
             

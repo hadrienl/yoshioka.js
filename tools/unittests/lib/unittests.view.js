@@ -30,17 +30,6 @@ UnittestsSuiteSubview = function(config)
  */
 Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
     
-    template: '<div>'+
-'   <div class="header">'+
-'      <h1>UnitTests</h1>'+
-'       <p>'+
-'           <span class="summary"></span>'+
-'           <button class="runall">Run all the tests</button>'+
-'       </p>'+
-'   </div>'+
-'   <div class="tests_suites"></div>'+
-'</div>',
-    
     _tests: null,
     _running: false,
     
@@ -204,6 +193,18 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
 {
     NAME: 'UnittestsView',
     ATTRS: {
+        template: {
+            value: '<div>'+
+'   <div class="header">'+
+'      <h1>UnitTests</h1>'+
+'       <p>'+
+'           <span class="summary"></span>'+
+'           <button class="runall">Run all the tests</button>'+
+'       </p>'+
+'   </div>'+
+'   <div class="tests_suites"></div>'+
+'</div>'
+        },
         modules: {
             valueFn: Array,
             validator: function(v)
@@ -244,16 +245,6 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
     
     _ready: false,
     _testsstarted: 0,
-    
-    template: '<div class="test">'+
-'   <div class="progress"></div>'+
-'   <div class="ctn">'+
-'       <span class="btn"><button class="run">Run</button></span>'+
-'       <a href="#" class="name"></a>'+
-'   </div>'+
-'   <ol class="details"></ol>'+
-'   <iframe class="test"></iframe>'+
-'</div>',
     
     renderUI: function()
     {
@@ -536,6 +527,17 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
 {
     NAME: 'UnittestsSuiteSubview',
     ATTRS: {
+        template: {
+            value: '<div class="test">'+
+'   <div class="progress"></div>'+
+'   <div class="ctn">'+
+'       <span class="btn"><button class="run">Run</button></span>'+
+'       <a href="#" class="name"></a>'+
+'   </div>'+
+'   <ol class="details"></ol>'+
+'   <iframe class="test"></iframe>'+
+'</div>'
+        },
         module: {
             validator: function(v)
             {
