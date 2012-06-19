@@ -12,12 +12,6 @@ suite.add(
 
         name: "View",
         
-        _should: {
-            error: {
-                testRender_withoutTpl: "No template given."
-            }
-        },
-        
         setUp: function()
         {
             this.data = new Y.ys.View();
@@ -26,13 +20,7 @@ suite.add(
         {
             this.data.destroy();
         },
-    
-        testRender_withoutTpl : function ()
-        {
-            this._node = this.data.render();
-            Y.one(document.body).append(this._node);
-        },
-        
+
         testRender_withTemplate : function ()
         {
             this.data.set('template', '<p>Test</p>');
