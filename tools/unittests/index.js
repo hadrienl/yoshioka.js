@@ -6,6 +6,8 @@ TEST_DIR = 'tests/',
 
 fs = require('fs'),
 
+getconfig = require('../make/getconfig'),
+
 compiler = require('../compiler'),
 
 UnitTests = function(config)
@@ -47,6 +49,10 @@ UnitTests.prototype = {
                 test = null;
             }
         }
+        
+        this._appConfig = getconfig.getConfig({
+            tests: true
+        });
         
         this._plugins = config.plugins;
         
@@ -125,6 +131,36 @@ UnitTests.prototype = {
         viewpaths.concat(pluginpaths).forEach(
             function(v)
             {
+                var excluded = false;
+
+                /**
+                 * Check if file is not excluded
+                 */
+                if (this._appConfig.exclude)
+                {
+                    if (typeof this._appConfig.exclude === 'string')
+                    {
+                        this._appConfig.exclude = [this._appConfig.exclude];
+                    }
+
+                    this._appConfig.exclude.forEach(
+                        function(e)
+                        {
+                            var regexp = new RegExp(e.replace('*', '[^/]+'));
+
+                            if (v.match(regexp))
+                            {
+                                excluded = true;
+                            }
+                        }.bind(this)
+                    );
+                }
+
+                if (excluded)
+                {
+                    return;
+                }
+                
                 try
                 {
                     var testpath = v+'/'+TEST_DIR,

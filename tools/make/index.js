@@ -54,6 +54,38 @@ Maker.prototype.init = function(config)
  */
 Maker.prototype._parseFile = function(path)
 {
+    var excluded = false;
+    
+    /**
+     * Check if file is not excluded
+     */
+    if (this._appConfig.exclude)
+    {
+        if (typeof this._appConfig.exclude === 'string')
+        {
+            this._appConfig.exclude = [this._appConfig.exclude];
+        }
+        
+        this._appConfig.exclude.forEach(
+            function(e)
+            {
+                var regexp = new RegExp(e.replace('*', '[^/]+'));
+                
+                if (path.match(regexp))
+                {
+                    excluded = true;
+                }
+            }.bind(this)
+        );
+    }
+    
+    if (excluded)
+    {
+        this._filecount--;
+        this._checkFileCount();
+        return;
+    }
+    
     /**
      * Check file type
      */
