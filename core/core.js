@@ -220,12 +220,18 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
             'click',
             function(e, link)
             {
-                var path;
+                var href = link.getAttribute('href'),
+                    match = href.match(/^((https?:)?\/\/)([^\/]*)/),
+                    path;
                 
-                if (e.button !== 1 || e.ctrlKey || e.metaKey) {
+                if ((e.button !== 1 || e.ctrlKey || e.metaKey) // ability to open link in a new window/tab
+                    ||
+                    (match && match[3] !== window.location.hostname)) // don't change link behavior if it's not on same host
+                {
                     return;
                 }
-
+                
+                
                 e.preventDefault();
                 
                 path = this.removeRoot(link.get('href'));
