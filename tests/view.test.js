@@ -1,7 +1,7 @@
 /**
  * Yoshioka View
  * @module ys/view/test
- * @requires ys/view
+ * @requires ys/view, node-event-simulate
  */
 var suite = new Y.Test.Suite("View");
 
@@ -183,6 +183,109 @@ suite.add(
                     this.data.getCurrentView('kikoo')
                 );
             }, 200);
+        }
+    })
+);
+
+suite.add(
+    new Y.Test.Case({
+
+        name: "View Binding",
+        
+        setUp: function()
+        {
+            var TestView = Y.Base.create('TestView', Y.ys.View, [], {
+                test: 1,
+                _bindUI: function()
+                {
+                    var container = this.get('container');
+                    this.storeEvent(
+                        container.on(
+                            'click',
+                            function()
+                            {
+                                this.get('container').one('.main').set('innerHTML', this.test);
+                            },
+                            this
+                        )
+                    );
+                }
+            }, {
+                ATTRS: {
+                    template: {
+                        value: '<div class="main"></div>'
+                    }
+                }
+            });
+            this.data = new TestView();
+            Y.one(document.body).append(this.data.render());
+        },
+        tearDown: function()
+        {
+            this.data.destroy();
+        },
+    
+        testBindUI: function ()
+        {
+            var container = this.data.get('container');
+            
+            Y.Assert.areEqual(
+                '',
+                container.one('.main').get('innerHTML'),
+                'Must call the click callback'
+            );
+            
+            container.simulate('click');
+            
+            Y.Assert.areEqual(
+                '1',
+                container.one('.main').get('innerHTML'),
+                'Must call the click callback'
+            );
+            
+            this.data.test = 2;
+            container.simulate('click');
+            
+            Y.Assert.areEqual(
+                '2',
+                container.one('.main').get('innerHTML'),
+                'Must call the click callback'
+            );
+        },
+        
+        testUnbindUI: function ()
+        {
+            var container = this.data.get('container');
+            
+            container.simulate('click');
+            
+            Y.Assert.areEqual(
+                '1',
+                container.one('.main').get('innerHTML'),
+                'Must call the click callback'
+            );
+            
+            this.data.unbindUI();
+            
+            this.data.test = 2;
+            container.simulate('click');
+            
+            Y.Assert.areEqual(
+                '1',
+                container.one('.main').get('innerHTML'),
+                'Must do nothing'
+            );
+            
+            this.data.bindUI();
+            this.data.bindUI();
+            this.data.bindUI();
+            container.simulate('click');
+            
+            Y.Assert.areEqual(
+                '2',
+                container.one('.main').get('innerHTML'),
+                'Must call the click callback again'
+            );
         }
     })
 );

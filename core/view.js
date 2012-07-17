@@ -60,6 +60,13 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      * @private
      */
     _events: null,
+    
+    /**
+     * Flag to set if view has been binded
+     * @property _isBinded
+     * @protected
+     */
+    _isBinded: false,
 
     /**
      * Init the view
@@ -150,7 +157,16 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     bindUI: function()
     {
-        return this._bindUI && this._bindUI();
+        if (this._isBinded)
+        {
+            return;
+        }
+        
+        this._bindUI && this._bindUI();
+        
+        this._isBinded = true;
+        
+        return true;
     },
     
     /**
@@ -161,6 +177,20 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
     _bindUI: function()
     {
         
+    },
+    
+    unbindUI: function()
+    {
+        Y.each(
+            this._events,
+            function(e)
+            {
+                e.detach();
+            }
+        );
+        this._events = [];
+        
+        this._isBinded = false;
     },
     
     /**
@@ -195,16 +225,9 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
      */
     destructor: function()
     {
-        View.superclass.destroy.apply(this);
+        this.unbindUI();
         
-        Y.Array.each(
-            this._events,
-            function(e)
-            {
-                e.detach();
-            }
-        );
-        this._events = null;
+        View.superclass.destroy.apply(this);
     },
     
     /**
