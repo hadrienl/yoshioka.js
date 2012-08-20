@@ -27,6 +27,7 @@ Builder = function(config)
 
 Builder.prototype = new Maker();
 Builder.superclass = Maker.prototype;
+Builder.prototype.debug = false;
 Builder.prototype._buildname = null;
 Builder.prototype._buildpath = null;
 Builder.prototype._coreconfig = null;
@@ -37,6 +38,8 @@ Builder.prototype.init = function(config)
     var buildname = config && config.buildname || new Date().getTime(),
         buildpath = config && config.buildpath || BUILD_DIR+buildname+'/',
         files;
+    
+    this.debug = config.debug;
     
     this._configtype = config && config.type
     config || (config = {});
@@ -224,7 +227,8 @@ Builder.prototype._parseJSFile = function(path)
         c.parse(function(path, content)
         {
             var c = new compiler.ModuleCompiler({
-                filecontent: content
+                filecontent: content,
+                debug: this.debug
             });
             c.parse(function(path, content)
             {

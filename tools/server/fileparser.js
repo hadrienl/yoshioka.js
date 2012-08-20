@@ -202,7 +202,8 @@ FileParser.prototype = {
              * compile class view into yui module
              */
             c = new compiler.ModuleCompiler({
-                file: filepath
+                file: filepath,
+                debug: true
             });
             c.parse(function(content) {
                 this.filecontent = content;
@@ -273,7 +274,8 @@ FileParser.prototype = {
                          * compile class view into yui module
                          */
                         c = new compiler.ModuleCompiler({
-                            filecontent: content
+                            filecontent: content,
+                            debug: true
                         });
                         c.parse(function(content) {
                             this.filecontent = content;

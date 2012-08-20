@@ -19,6 +19,7 @@ ModuleCompiler.prototype = {
 
     _file: null,
     _filecontent: '',
+    _debug: false,
 
     init: function(config)
     {
@@ -27,6 +28,8 @@ ModuleCompiler.prototype = {
         this._file = config.file;
 
         this._filecontent = config.filecontent;
+        
+        this._debug = config.debug;
     },
     parse: function(callback)
     {
@@ -106,7 +109,12 @@ ModuleCompiler.prototype = {
                 .replace(/\s/g, '')
                 .replace(/\*/g, '')
                 .split(/,/);
-
+        
+        if (this._debug)
+        {
+            this._addDebugFunctionNames(module);
+        }
+        
         if (module)
         {
             this._filecontent =
@@ -116,6 +124,31 @@ this._filecontent+"\n"+
         }
 
         return this._filecontent;
+    },
+    
+    _addDebugFunctionNames: function(module)
+    {
+        var lines = this._filecontent.split(/\n/),
+            content = '';
+        
+        module = module.replace(/[^a-zA-Z0-9\_]/g, '_');
+        
+        lines.forEach(
+            function(l, i)
+            {
+                l = l.replace(
+                        /([a-zA-Z0-9\_]+)(\s?:\s?function)\(/,
+                            '$1$2 $1_'+module+'('
+                    ).replace(
+                        /function\s*\(/,
+                            'function _'+module+'_l_'+i+'('
+                    );
+                
+                content += l+'\n';
+            }
+        );
+        
+        this._filecontent = content;
     }
 }
 

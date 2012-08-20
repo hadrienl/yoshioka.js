@@ -94,7 +94,8 @@ Server.prototype = {
             var Builder = require('../build').Builder,
                 builder = new Builder({
                     path: this._config.build,
-                    buildname: this._config.buildname
+                    buildname: this._config.buildname,
+                    debug: this._config.debug
                 });
             
             if (!this._config.dontcompress)
