@@ -59,8 +59,8 @@ var fs = require('fs'),
                 fs.writeFileSync(
                     filepath,
                     content.replace(
-                        /<\/head>/gi,
-                        '<script src="'+basepath+'/'+YUIALL+'"></script>\n</head>'
+                        /(\/yui\/yui-min.js"><\/script>)/i,
+                        '$1\n<script src="'+basepath+'/'+YUIALL+'"></script>'
                     )
                 );
             }
