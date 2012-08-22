@@ -378,7 +378,17 @@ Builder.prototype.insertCopyright = function(path)
         APP_PATH+this._buildpath+path,
         filecontent
     );
-}
+};
+
+Maker.prototype._checkFileCount = function()
+{
+    if (this._filecount === 0)
+    {
+        this.emit('parseEnd', {
+            buildname: this._buildname
+        });
+    }
+};
 
 exports.Builder = Builder;
 

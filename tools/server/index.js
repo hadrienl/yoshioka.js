@@ -88,6 +88,14 @@ Server.prototype = {
             dev: true
         });
         
+        /**
+         * Available options
+         * --build : build app
+         * --dontcompress : don't compress files
+         * --buildname : specify a custom build name. Default is current timestamp
+         * --debug : Debug mode : will add some tools for debugging
+         */
+        
         if (this._config.build)
         {
             // Build the app !!
@@ -97,6 +105,21 @@ Server.prototype = {
                     buildname: this._config.buildname,
                     debug: this._config.debug
                 });
+            
+            if (this._config.buildyui)
+            {
+                builder.on(
+                    'parseEnd',
+                    function(rep)
+                    {
+                        var yb = require('../build/yui');
+
+                        yb.buildyui({
+                            buildname: rep.buildname
+                        });
+                    }
+                );
+            }
             
             if (!this._config.dontcompress)
             {
