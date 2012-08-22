@@ -520,7 +520,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
          */
         if (callback)
         {
-            callback(view);
+            callback(view, node);
         }
         else
         {
