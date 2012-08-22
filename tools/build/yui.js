@@ -4,6 +4,7 @@ var fs = require('fs'),
     vm = require('vm'),
     
     BASEPATH = __dirname+'/../../..',
+    YUIALL = 'yui-all.js',
     
     readAppConfig = function(buildname)
     {
@@ -59,7 +60,7 @@ var fs = require('fs'),
                     filepath,
                     content.replace(
                         /<\/head>/gi,
-                        '<script src="'+basepath+'/all-yui.js"></script>\n</head>'
+                        '<script src="'+basepath+'/'+YUIALL+'"></script>\n</head>'
                     )
                 );
             }
@@ -104,7 +105,7 @@ exports.buildyui = function(config)
 
     // Write file
     fs.writeFileSync(
-        BASEPATH+'/build/'+buildname+'/yui-all.js',
+        BASEPATH+'/build/'+buildname+'/'+YUIALL,
         allyui
     );
     
