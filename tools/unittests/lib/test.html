@@ -5,6 +5,7 @@
         <meta charset="utf-8"/>
         <script src="/config/tconfig.js"></script>
         <script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/yoshioka.js/build/yoshioka.js"></script>
         <script type="text/javascript" charset="utf-8" src="/yoshioka.js/tools/unittests/lib/unittests.view.js"></script>
         {$scripts}
     </head>
@@ -30,7 +31,7 @@
         </script>
         <script type="text/javascript" charset="utf-8">
         //<![CDATA[
-            YUI().use("json", "ys/core", "test", {$modules}, function(Y) {
+            YUI().use("json", "yoshioka", "test", {$modules}, function(Y) {
                 
                 var sendStats = function()
                 {

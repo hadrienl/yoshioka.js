@@ -54,7 +54,7 @@ Builder.prototype.init = function(config)
         tests: (this._configtype === 'tests')
     });
     
-    this.dirs = ['yoshioka.js/core', 'locales', 'views', 'config'].concat(
+    this.dirs = ['locales', 'views', 'config'].concat(
         this._appconfig && this._appconfig.plugins
     );
     this._filecount = 0;
@@ -137,6 +137,34 @@ Builder.prototype.build = function()
      * Make config
      */
     this._makeConfig();
+    
+    this.on(
+        'parseEnd',
+        function()
+        {
+            /**
+             * Copy yoshioka
+             */
+            fs.mkdirSync(
+                APP_PATH+this._buildpath+'yoshioka.js/'
+            );
+            fs.mkdirSync(
+                APP_PATH+this._buildpath+'yoshioka.js/build/'
+            );
+            fs.writeFileSync(
+                APP_PATH+this._buildpath+'yoshioka.js/build/yoshioka.js',
+                fs.readFileSync(
+                    APP_PATH+'yoshioka.js/build/yoshioka.js'
+                )
+            );
+            fs.writeFileSync(
+                APP_PATH+this._buildpath+'yoshioka.js/build/init.js',
+                fs.readFileSync(
+                    APP_PATH+'yoshioka.js/build/init.js'
+                )
+            );
+        }.bind(this)
+    );
 };
 Builder.prototype._makeConfig = function()
 {

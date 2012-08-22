@@ -1,6 +1,6 @@
 YUI().use(
     'errors',
-    'ys/core',
+    'yoshioka',
     'node',
     YUI_config.ys_app+'/views/'+YUI_config.ys_mainview,
     function(Y)

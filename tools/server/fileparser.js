@@ -195,6 +195,22 @@ FileParser.prototype = {
         {
             return this.makeRoutes();
         }
+        else if (filepath.match(/yoshioka.js$/))
+        {
+            fs.readFile(
+                APP_PATH+this._getFilePath(),
+                function(err, data)
+                {
+                    if (err)
+                    {
+                        return this._callbackError(err);
+                    }
+                    this.filecontent = data.toString();
+
+                    this._callback();
+                }.bind(this)
+            );
+        }
         else if ('/config/errors.js' === filepath ||
                 filepath.match(/yoshioka\.js/))
         {

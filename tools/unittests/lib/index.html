@@ -5,6 +5,7 @@
         <meta charset="utf-8"/>
         <script src="/config/tconfig.js"></script>
         <script type="text/javascript" charset="utf-8" src="{$yuipath}/yui/yui-min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="/yoshioka.js/build/yoshioka.js"></script>
         <script type="text/javascript" charset="utf-8" src="/yoshioka.js/tools/unittests/lib/unittests.view.js"></script>
         <style type="text/css" media="screen">
             body {
@@ -182,7 +183,7 @@
     <body class="yui3-skin-sam">
         <script type="text/javascript" charset="utf-8">
         //<![CDATA[
-            YUI().use("json", "io", "node", "ys/core", "test", "ys/views/unittests", function(Y) {
+            YUI().use("json", "io", "node", "yoshioka", "test", "ys/views/unittests", function(Y) {
 
                 var view = new Y.ys.UnittestsView({
                         modules: [{$modules}]
