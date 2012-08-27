@@ -178,7 +178,7 @@ FileParser.prototype = {
     compileJS: function()
     {
         var filepath = this._getFilePath();
-        
+
         this.contenttype = 'text/javascript';
         
         if ('/config/config.js' === filepath)
@@ -226,34 +226,17 @@ FileParser.prototype = {
                 this._callback();
             }.bind(this));
         }
-        else if (filepath.match(/locales/))
+        else if (filepath.match(/^\/locales\/([a-zA-Z_-]+)\.js$/))
         {
-            fs.readFile(
-                APP_PATH+filepath,
-                function(err, data)
+            c = new compiler.I18nCompiler({
+                locale: filepath.match(/^\/locales\/([a-zA-Z_-]+)\.js$/)[1]
+            });
+            c.parse(
+                function(content)
                 {
-                    var c;
-                
-                    if (err)
-                    {
-                        return this._callbackError(err);
-                    }
-                
-                    this.filecontent = data.toString();
-                
-                    c = new compiler.I18nCompiler({
-                        file: this._getFilePath(),
-                        filecontent: this.filecontent
-                    });
-                    
-                    c.parse(
-                        function(content)
-                        {
-                            this.filecontent = content;
+                    this.filecontent = content;
 
-                            this._callback();
-                        }.bind(this)
-                    );
+                    this._callback();
                 }.bind(this)
             );
         }

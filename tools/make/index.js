@@ -86,17 +86,7 @@ Maker.prototype._parseFile = function(path)
         return;
     }
     
-    /**
-     * Check file type
-     */
-    if (path.match(/\.i18n\.js$/))
-    {
-        /**
-         * Locale file
-         */
-        this._parseLocaleFile(path);
-    }
-    else if (path.match(/\.js$/) &&
+    if (path.match(/\.js$/) &&
             !path.match(/test\.js$/))
     {
         /**
@@ -122,27 +112,6 @@ Maker.prototype._parseFile = function(path)
     {
         this._parseStaticFile(path);
     }
-};
-Maker.prototype._parseLocaleFile = function(path)
-{
-    var locale = (locale = path.match(/locales\/([^\/]+)/)) ?
-            locale[1] : null,
-        file = (file = path.split(/\//)) && file[file.length - 1],
-        module = 'i18n/'+locale+'/'+file.replace(/.i18n\.js?/, '');
-
-    /**
-     * Generate config object for
-     * this module
-     */
-    this._modules[module] = {};
-    this._modules[module].path = path;
-
-
-    /**
-     * Decrement file count and check
-     */
-    this._filecount--;
-    this._checkFileCount();
 };
 Maker.prototype._parseJSFile = function(path)
 {

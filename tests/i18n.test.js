@@ -1,25 +1,21 @@
-YUI().add('i18n/en_US/hello', function(Y) {
-    Y.namespace('ys.I18n.en_US').hello =
-    {
-        "world": 'Hello World!',
-        "world.params": "Hello World @@param1@@ @@param2@@ !"
-    };
-});
-
-YUI().add('i18n/fr_FR/hello', function(Y) {
-    Y.namespace('ys.I18n.fr_FR').hello =
-    {
-        "world": 'Bonjour Monde !',
-        "world.params": "Bonjour Monde @@param1@@ @@param2@@ !"
-    };
-});
-
 /**
  * Yoshioka internationalization
  * @module ys/i18n/test
  * @requires ys/i18n
  */
 var suite = new Y.Test.Suite("I18nManager");
+
+Y.ys.I18nManager._locales = {
+    en_US: {
+        "hello.world": 'Hello World!',
+        "hello.world.params": "Hello World @@param1@@ @@param2@@ !"
+    },
+    fr_FR: {
+        "hello.world": 'Bonjour Monde !',
+        "hello.world.params": "Bonjour Monde @@param1@@ @@param2@@ !"
+    }
+};
+Y.ys.I18nManager.set('locale', 'en_US');
 
 Y.config.locales = [{
     "locale": "en_US",

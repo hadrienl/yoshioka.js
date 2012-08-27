@@ -1,7 +1,7 @@
 YUI.add("yoshioka", function(Y) {(function() {/**
  * Internationalisation tools
  * @module ys/i18n
- * @requires base, cache
+ * @requires base, cache, io, json
  */
 
 var
@@ -167,46 +167,20 @@ Y.extend(I18n, Y.Base, {
      */
     getLocalizedString: function()
     {
-        var raw_key = this.get('key').split(/~/),
-            module = raw_key ? raw_key[0] : null,
-            key = raw_key ? raw_key[1] : null,
-            locale = this.get('locale'),
-            name = 'i18n/'+locale+'/'+module,
-            self = this;
-
-        if (!module)
-        {
-            throw new Error('module~key invalid');
-        }
-
-        /**
-         * Load the translation file module
-         */
-        YUI().use(name, function(Y2) {
-
-            try
-            {
-                Y[NS] = Y2.merge(
-                    Y[NS],
-                    Y2[NS]
-                );
-                /**
-                 * Copy the module class in the main Y object
-                 */
-                var t = Y[NS].I18n[locale][module][key];
-
-                /**
-                 * Update `translation` attr
-                 */
-                self.set(
-                    'translation',
-                    t
-                );
-            }
-            catch (e)
-            {
-                Y.log('Locale '+key+' is not available in locale "'+locale+'"');
-            }
+        Y.namespace(NS).I18nManager.getLocalizedString({
+            key: this.get('key'),
+            locale: this.get('locale'),
+            callback: Y.bind(
+                function(text)
+                {
+                    this.set(
+                        'translation',
+                        text
+                    );
+                
+                },
+                this
+            )
         });
     },
 
@@ -404,7 +378,15 @@ Y.extend(I18n, Y.Base, {
                             this.destroy();
                         },
                         this
-                    )
+                    );
+                    
+                    n.destroy = Y.bind(
+                        function()
+                        {
+                            this.destroy();
+                        },
+                        this
+                    );
                 }
                 return n;
             }
@@ -436,6 +418,10 @@ Y.extend(I18n, Y.Base, {
  * @constructor
  */
 Y.extend(I18nManager, Y.Base, {
+    
+    _locales: null,
+    _loading: null,
+    
     /**
      * Initialize the manager and set the default locale code : from the
      * browser or from the app_config
@@ -444,6 +430,9 @@ Y.extend(I18nManager, Y.Base, {
      */
     initializer: function()
     {
+        this._locales = {};
+        this._loading = {};
+        
         /**
          * Bind locale change event to set all the instancied I18n locale
          */
@@ -528,6 +517,76 @@ Y.extend(I18nManager, Y.Base, {
         this.set('keys', keys);
 
         return i;
+    },
+    
+    _loadLocales: function(locale, callback)
+    {
+        if (this._loading[locale])
+        {
+            this._loading[locale].push(callback);
+            
+            return;
+        }
+        
+        this._loading[locale] = [callback];
+        
+        Y.io(
+            '/locales/'+locale+'.js',
+            {
+                on: {
+                    success: function(id, data, locale)
+                    {
+                        var locales = Y.JSON.parse(data.responseText);
+                        
+                        this._locales[locale] = locales;
+                        
+                        Y.each(
+                            this._loading[locale],
+                            function(fn)
+                            {
+                                fn();
+                            }
+                        );
+                        this._loading[locale] = [];
+                    }
+                },
+                context: this,
+                arguments: locale
+            }
+        );
+    },
+    
+    getLocalizedString: function(config)
+    {
+        config = config || {};
+        
+        var locale = config.locale || this.get('locale'),
+            locales = this._locales[locale],
+            key = config.key,
+            text;
+        
+        if (!key) return;
+        
+        if (!locales)
+        {
+            return this._loadLocales(
+                this.get('locale'),
+                Y.bind(
+                    this.getLocalizedString,
+                    this,
+                    {
+                        key: key,
+                        callback: config.callback
+                    }
+                )
+            );  
+        }
+        
+        text = locales[key.replace(/~/, '.')];
+        
+        config.callback && config.callback(text);
+        
+        return text;
     }
 },
 {

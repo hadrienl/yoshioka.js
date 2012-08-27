@@ -7,10 +7,7 @@
 var fs = require('fs'),
 
 APP_PATH = __dirname.replace(/yoshioka\.js.*$/, '')+'/',
-I18N_PATH = 'locales',
-JS_TEMPLATE = "YUI().add('{$module}', function(Y) {"+
-"    Y.namespace('ys.I18n.{$locale}').{$file} = {$content};"+
-"});\n",
+I18N_PATH = APP_PATH+'locales',
 
 I18nCompiler = function(config)
 {
@@ -22,50 +19,59 @@ I18nCompiler = function(config)
 };
 I18nCompiler.prototype =
 {
-    _file: null,
+    _locale: null,
     _filecontent: '',
 
     init: function(config)
     {
-        this._file = config.file;
-        if (!this._file)
+        this._locale = config.locale;
+        
+        if (!this._locale)
         {
-            throw 'file is invalid';
+            throw 'locale is invalid';
         }
 
-        this._filecontent = config.filecontent;
+        this._filecontent = '';
     },
     parse: function(callback)
     {
-        if (!this._filecontent)
+        var localespath = I18N_PATH+'/'+this._locale,
+            files, content;
+        
+        try
         {
-            this._filecontent = fs.readFile(
-                APP_PATH+'/'+this._file,
-                function(callback, err, data)
-                {
-                    if (err)
-                    {
-                        console.error(err);
-                        return;
-                    }
-                    
-                    this._filecontent = data.toString();
-                    this._parse(callback);
-                }.bind(this, callback)
+            files = fs.readdirSync(
+                localespath
             );
         }
-        else
+        catch(e)
         {
-            this._parse(callback);
+            console.log(this._locale+' is not a valid locale');
+            return callback();
         }
+        
+        files.forEach(
+            function(f)
+            {
+                var content = fs.readFileSync(
+                        localespath+'/'+f
+                    ).toString(),
+                    group = f.match(/(.*?)\.i18n\.js/)[1];
+                
+                content = content.replace(
+                    /(^|\n)(\w)/g,
+                    '$1'+group+'.$2'
+                );
+                
+                this._filecontent += content;
+            }.bind(this)
+        );
+        
+        this._parse(callback);
     },
     _parse: function(callback)
     {
-        var pathparts = this._file.match(/([^\/]+)\/([^\/]+)\.i18n/),
-            locale = pathparts[1],
-            file = pathparts[2],
-            module = 'i18n/'+locale+'/'+file,
-            lines = {};
+        var lines = {};
         
         /**
          * Remove \n in line ending with \
@@ -83,12 +89,8 @@ I18nCompiler.prototype =
                 lines[kv[1]] = kv[2];
             }
         );
-
-        this._filecontent = JS_TEMPLATE
-            .replace('{$module}', module)
-            .replace('{$locale}', locale)
-            .replace('{$file}', file)
-            .replace('{$content}', JSON.stringify(lines));
+        
+        this._filecontent = JSON.stringify(lines);
         
         if (callback)
         {

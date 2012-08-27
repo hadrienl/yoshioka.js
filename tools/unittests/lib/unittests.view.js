@@ -49,6 +49,7 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
             modules,
             function(m)
             {
+                if (!m.module) return;
                 var test = new UnittestsSuiteSubview({
                     module: m.module
                 });
