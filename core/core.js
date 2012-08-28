@@ -202,7 +202,10 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
             links.each(
                 function(link)
                 {
-                    this._enhance(link)
+                    if (this.hasRoute(link.getAttribute('href')))
+                    {
+                        this._enhance(link);
+                    }
                 },
                 this
             );
