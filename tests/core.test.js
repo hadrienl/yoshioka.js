@@ -181,7 +181,7 @@ suite.add(
                     this.data.getPath()
                 );
 
-                a.setAttribute('href', '/__unittests/framework/testwithalink');
+                a.setAttribute('href', '/__unittests/framework/test');
 
                 this._event = this.data.on(
                     'pathchange',
@@ -190,7 +190,7 @@ suite.add(
                         e.preventDefault();
                     }
                 );
-
+                
                 a.simulate('click');
                 
                 this.wait(function()
@@ -199,15 +199,15 @@ suite.add(
                         '/__unittests/framework',
                         this.data.getPath()
                     );
-
+                    
                     this._event.detach();
-
+                    
                     a.simulate('click');
                     
                     this.wait(function()
                     {
                         Y.Assert.areEqual(
-                            '/__unittests/framework/testwithalink',
+                            '/__unittests/framework/test',
                             this.data.getPath()
                         );
                         

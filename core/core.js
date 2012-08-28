@@ -202,10 +202,7 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
             links.each(
                 function(link)
                 {
-                    if (this.hasRoute(link.getAttribute('href')))
-                    {
-                        this._enhance(link);
-                    }
+                    this._enhance(link);
                 },
                 this
             );
@@ -226,8 +223,10 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
                 var href = link.getAttribute('href'),
                     match = href.match(/^((https?:)?\/\/)([^\/]*)/),
                     path;
-                
-                if ((e.button !== 1 || e.ctrlKey || e.metaKey) // ability to open link in a new window/tab
+
+                if (!this.hasRoute(href) // this link is not handle in a route
+                    ||
+                    (e.button !== 1 || e.ctrlKey || e.metaKey) // ability to open link in a new window/tab
                     ||
                     (match && match[3] !== window.location.hostname)) // don't change link behavior if it's not on same host
                 {
