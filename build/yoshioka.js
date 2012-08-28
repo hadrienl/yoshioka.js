@@ -531,7 +531,7 @@ Y.extend(I18nManager, Y.Base, {
         this._loading[locale] = [callback];
         
         Y.io(
-            (Y.config.localepath || '/locales/') + locale+'.js',
+            '/locales/'+locale+'.js',
             {
                 on: {
                     success: function(id, data, locale)
