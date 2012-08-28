@@ -54,7 +54,7 @@ Builder.prototype.init = function(config)
         tests: (this._configtype === 'tests')
     });
     
-    this.dirs = ['locales', 'views', 'config'].concat(
+    this.dirs = ['views', 'config'].concat(
         this._appconfig && this._appconfig.plugins
     );
     this._filecount = 0;
@@ -142,6 +142,11 @@ Builder.prototype.build = function()
         'parseEnd',
         function()
         {
+            /**
+             * Compile locales
+             */
+            this._compileLocales();
+            
             /**
              * Copy yoshioka
              */
@@ -275,29 +280,6 @@ Builder.prototype._parseJSFile = function(path)
         }.bind(this, path));
     }
 };
-Builder.prototype._parseLocaleFile = function(path)
-{
-    var c = new compiler.I18nCompiler({
-        file: path
-    });
-    
-    this._mkdir(path, APP_PATH+this._buildpath+'/');
-    
-    c.parse(function(path, content)
-    {
-        fs.writeFile(
-            APP_PATH+this._buildpath+path,
-            content,
-            'utf-8',
-            function(path, err, data)
-            {
-                this._filecount--;
-                this._checkFileCount();
-                return;
-            }.bind(this, path)
-        );
-    }.bind(this, path))
-};
 Builder.prototype._parseCSSFile = function(path)
 {
     var c = new compiler.CSSCompiler({
@@ -408,7 +390,39 @@ Builder.prototype.insertCopyright = function(path)
     );
 };
 
-Maker.prototype._checkFileCount = function()
+Builder.prototype._compileLocales = function()
+{
+    var lpath = APP_PATH+this._buildpath+'locales/',
+        c;
+    
+    try
+    {
+        fs.mkdirSync(
+            lpath
+        );
+    }
+    catch(e){}
+    
+    this._appconfig.locales.forEach(
+        function(l)
+        {
+            c = new compiler.I18nCompiler({
+                locale: l.locale
+            });
+            c.parse(
+                function(locale, content)
+                {
+                    fs.writeFileSync(
+                        lpath+locale+'.js',
+                        content
+                    );
+                }.bind(this, l.locale)
+            );
+        }.bind(this)
+    );
+};
+
+Builder.prototype._checkFileCount = function()
 {
     if (this._filecount === 0)
     {
