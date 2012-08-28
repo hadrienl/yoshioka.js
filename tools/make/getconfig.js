@@ -38,7 +38,7 @@ exports.getConfig = function(config)
                 ''
             )
             .replace(
-                /\{\$buildname\}/,
+                /\{\$buildname\}/g,
                 config.buildname
             )
             .replace( // Remove comments
