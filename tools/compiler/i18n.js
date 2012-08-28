@@ -63,7 +63,7 @@ I18nCompiler.prototype =
                     '$1'+group+'.$2'
                 );
                 
-                this._filecontent += content;
+                this._filecontent += content+'\n';
             }.bind(this)
         );
         
