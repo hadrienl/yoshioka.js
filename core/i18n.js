@@ -300,10 +300,21 @@ Y.extend(I18n, Y.Base, {
 
         if (node)
         {
-            node.set(
-                'innerHTML',
-                t
-            );
+            try
+            {
+                node.set(
+                    'innerHTML',
+                    t
+                );
+            }
+            catch(e)
+            {
+                node.set(
+                    'innerText',
+                    t
+                );
+            }
+            
 
             node.fire('i18n:change', {translation: t});
         }
@@ -540,7 +551,13 @@ Y.extend(I18nManager, Y.Base, {
 
                         this._locales[locale] = Y.clone(locales);
                         
-                        delete window['__ys_locales_'+locale];
+                        try{
+                            delete window['__ys_locales_'+locale];
+                        }
+                        catch(e)
+                        {
+                            window['__ys_locales_'+locale] = null;
+                        }
                         
                         Y.each(
                             this._loading[locale],
