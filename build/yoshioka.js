@@ -941,7 +941,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         {
             return;
         }
-        return this._syncUI && this._syncUI();
+        return this._syncUI && this._syncUI.apply(this, arguments);
     },
     
     /**
