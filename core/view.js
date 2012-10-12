@@ -10,6 +10,8 @@ NS = 'ys',
 
 CLASS_YS_LOADING_VIEW = 'ys-loading-view',
 
+EVT_SYNCUI = 'sync',
+
 View = function(config)
 {
     View.superclass.constructor.apply(this, arguments);
@@ -205,7 +207,8 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         {
             return;
         }
-        return this._syncUI && this._syncUI.apply(this, arguments);
+        this._syncUI && this._syncUI.apply(this, arguments);
+        this.fire(EVT_SYNCUI);
     },
     
     /**
