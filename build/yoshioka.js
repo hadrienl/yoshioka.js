@@ -988,16 +988,23 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
     {
         var tpl = (params && params.tpl) || this.get('template'),
             node,
-            locales = tpl && tpl.match(
-                /\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
-            );
-        
+            locales;
+
         if (!tpl)
         {
             return;
         }
         
         params || (params = {});
+        
+        tpl = Y.substitute(
+            tpl,
+            params
+        );
+        
+        locales = tpl.match(
+            /\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
+        );
         
         if (locales)
         {
@@ -1038,10 +1045,7 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         }
         
         node = Y.Node.create(
-            Y.substitute(
-                tpl,
-                params
-            )
+            tpl
         );
         
         if (!params.enhance || params.enhance !== false)
