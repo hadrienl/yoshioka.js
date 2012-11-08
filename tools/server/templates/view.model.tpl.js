@@ -6,18 +6,22 @@
 var
 
 NS = '{appname}',
+{modelclass}/*
 
-{modelclass} = function(config)
-{
-    {modelclass}.superclass.constructor.apply(this, arguments);
-};
+Place your constants here
+eg:
+
+MY_CONSTANT = 'foo',
+MY_OTHER_CONSTANT = 'bar
+
+*/;
 
 /**
  * {modelclass}
  * @class {modelclass}
  * @namespace Y.{appname}
  */
-Y.namespace(NS).{modelclass} = Y.extend({modelclass}, Y.Model, {
+Y.namespace(NS).{modelclass} = {modelclass} = Y.Base.create('{modelclass}', Y.Model, [], {
     /**
      * Load data from data storage of your choice. You can use ajax request,
      * localstorage, jsonp, or whatever you want to get a JSON of data that will
@@ -74,7 +78,6 @@ Y.namespace(NS).{modelclass} = Y.extend({modelclass}, Y.Model, {
     }
 },
 {
-    NAME: '{modelclass}',
     ATTRS: {
         /**
          * Set your model's attributes

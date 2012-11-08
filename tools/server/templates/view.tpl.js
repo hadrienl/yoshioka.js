@@ -6,11 +6,15 @@
 var
 
 NS = '{appname}',
-    
-{viewclass} = function(config)
-{
-    {viewclass}.superclass.constructor.apply(this, arguments);
-};
+{viewclass}/*
+
+Place your constants here
+eg:
+
+MY_CONSTANT = 'foo',
+MY_OTHER_CONSTANT = 'bar
+
+*/;
 
 /**
  * {view} view
@@ -18,18 +22,50 @@ NS = '{appname}',
  * @namespace Y.{appname}
  * @constructor
  */
-Y.namespace(NS).{viewclass} = Y.extend({viewclass}, Y.ys.View, {
-    /**
-     * View template defined in {view}.tpl.html file
-     * @property template
-     * @type string
-     * @protected
-     */
-    template: {${view}.tpl}
+Y.namespace(NS).{viewclass} = {viewclass} = Y.Base.create('{viewclass}', Y.ys.View, [], {
+    /*
+    
+    Place your prototype methods here
+    eg:
+    
+    initializer: function()
+    {
+        doSomething();
+    }
+    */
 },
 {
-    /**
-     * @attribute NAME
-     */
-    NAME: '{viewclass}'
+    ATTRS: {
+        template: {
+            value: {${view}.tpl}
+        },
+        compile_params: {
+            getter: function()
+            {
+                return {
+                    /*yourparam: "this param's value"*/
+                };
+            }
+        }
+        /*
+        
+        Place your attributes here
+        eg:
+        
+        ,
+        my_attribute: {
+            value: null
+        },
+        my_other_attribute: {
+            valueFn function()
+            {
+                return Y.guid();
+            },
+            getter: function(v)
+            {
+                return this.get('my_attribute')+v
+            }
+        }
+        */
+    }
 });

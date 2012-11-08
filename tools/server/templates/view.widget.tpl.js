@@ -6,11 +6,15 @@
 var
 
 NS = '{appname}',
-    
-{widgetclass} = function(config)
-{
-    {widgetclass}.superclass.constructor.apply(this, arguments);
-};
+{widgetclass}/*
+
+Place your constants here
+eg:
+
+MY_CONSTANT = 'foo',
+MY_OTHER_CONSTANT = 'bar
+
+*/;
 
 /**
  * {widgetclass} widget
@@ -19,7 +23,7 @@ NS = '{appname}',
  * @extend Y.Widget
  * @constructor
  */
-Y.namespace(NS).{widgetclass} = Y.extend({widgetclass}, Y.Widget, {
+Y.namespace(NS).{widgetclass} = {widgetclass} = Y.Base.create('{widgetclass}', Y.Widget, [], {
     
     renderUI: function()
     {
@@ -37,8 +41,25 @@ Y.namespace(NS).{widgetclass} = Y.extend({widgetclass}, Y.Widget, {
     }
 },
 {
-    /**
-     * @attribute NAME
-     */
-    NAME: '{widgetclass}'
+    ATTRS: {
+        /*
+        
+        Place your attributes here
+        eg:
+        
+        my_attribute: {
+            value: null
+        },
+        my_other_attribute: {
+            valueFn function()
+            {
+                return Y.guid();
+            },
+            getter: function(v)
+            {
+                return this.get('my_attribute')+v
+            }
+        }
+        */
+    }
 });
