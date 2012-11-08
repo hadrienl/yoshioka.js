@@ -7,15 +7,14 @@
 var
 
 NS = 'ys',
+View,
 
 CLASS_YS_LOADING_VIEW = 'ys-loading-view',
 
 EVT_SYNCUI = 'sync',
 
-View = function(config)
-{
-    View.superclass.constructor.apply(this, arguments);
-};
+LOC_OPEN_TAG = '[LOC_OPEN]',
+LOC_CLOSE_TAG = '[LOC_CLOSE]';
 
 /**
  * Y.ys.View extends Y.View and add it all the magic of yoshioka. With this
@@ -39,7 +38,7 @@ View = function(config)
  * @extend Y.View
  * @constructor
  */
-Y.namespace(NS).View = Y.extend(View, Y.View, {
+Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
     
     /**
      * Current view in place
@@ -261,9 +260,29 @@ Y.namespace(NS).View = Y.extend(View, Y.View, {
         
         params || (params = {});
         
+        /**
+         * Workaround to avoid a compilation bug with imbricated brackets inside a
+         * locale brackets (`{@file~locale{"loc_param":"{tpl_param}"}@}`)
+        **/
+        tpl = tpl.replace(
+            '{@',
+            LOC_OPEN_TAG
+        ).replace(
+            '@}',
+            LOC_CLOSE_TAG
+        );
+        
         tpl = Y.substitute(
             tpl,
             params
+        );
+        
+        tpl = tpl.replace(
+            LOC_OPEN_TAG,
+            '{@'
+        ).replace(
+            LOC_CLOSE_TAG,
+            '@}'
         );
         
         locales = tpl.match(

@@ -82,6 +82,46 @@ suite.add(
             );
         },
         
+        testRender_templateWithLocales: function ()
+        {
+            Y.ys.I18nManager._locales = {
+                en_US: {
+                    "foo.bar": 'Hello World!'
+                }
+            };
+            Y.ys.I18nManager.set('locale', 'en_US');
+            
+            this.data.set('template', '<p>{@foo~bar@}</p>');
+            
+            this._node = this.data.render();
+            Y.one(document.body).append(this._node);
+            Y.Assert.areEqual(
+                'Hello World!',
+                this.data.get('container').all('p').item(0).get('innerText')
+            );
+        },
+        
+        testRender_templateWithLocalesAndParams: function ()
+        {
+            Y.ys.I18nManager._locales = {
+                en_US: {
+                    "foo.bar": 'Cake is a @@locale_param@@'
+                }
+            };
+            Y.ys.I18nManager.set('locale', 'en_US');
+            
+            this.data.set('template', '<p>{@foo~bar{"locale_param":"{tpl_param}"}@}</p>');
+            this.data.set('compile_params.tpl_param', 'lie');
+            
+            this._node = this.data.render();
+            Y.one(document.body).append(this._node);
+            
+            Y.Assert.areEqual(
+                'Cake is a lie',
+                this.data.get('container').all('p').item(0).get('innerText')
+            );
+        },
+        
         testExtractSubTemplate: function()
         {
             var extracts;
