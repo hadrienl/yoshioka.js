@@ -260,31 +260,6 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         
         params || (params = {});
         
-        /**
-         * Workaround to avoid a compilation bug with imbricated brackets inside a
-         * locale brackets (`{@file~locale{"loc_param":"{tpl_param}"}@}`)
-        **/
-        tpl = tpl.replace(
-            '{@',
-            LOC_OPEN_TAG
-        ).replace(
-            '@}',
-            LOC_CLOSE_TAG
-        );
-        
-        tpl = Y.substitute(
-            tpl,
-            params
-        );
-        
-        tpl = tpl.replace(
-            LOC_OPEN_TAG,
-            '{@'
-        ).replace(
-            LOC_CLOSE_TAG,
-            '@}'
-        );
-        
         locales = tpl.match(
             /\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
         );
@@ -326,6 +301,11 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         {
             throw new Error("No template given.");
         }
+        
+        tpl = Y.substitute(
+            tpl,
+            params
+        );
         
         node = Y.Node.create(
             tpl
