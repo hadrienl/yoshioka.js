@@ -20,7 +20,7 @@ suite.add(
         {
             this.data.destroy();
         },
-
+        
         testRender_withTemplate : function ()
         {
             this.data.set('template', '<p>Test</p>');
@@ -105,7 +105,8 @@ suite.add(
         {
             Y.ys.I18nManager._locales = {
                 en_US: {
-                    "foo.bar": 'Cake is a @@locale_param@@'
+                    "foo.bar": 'Cake is a @@locale_param@@',
+                    "bar.foo": 'hello @@var@@'
                 }
             };
             Y.ys.I18nManager.set('locale', 'en_US');
@@ -118,6 +119,90 @@ suite.add(
             
             Y.Assert.areEqual(
                 'Cake is a lie',
+                this.data.get('container').all('p').item(0).get('innerText')
+            );
+            
+            Y.one(document.body).set('innerHTML', '');
+            
+            // Static param value
+            
+            this.data.set('template', '<p>{@bar~foo{"var": "world"}@}</p>');
+            
+            this._node = this.data.render();
+            Y.one(document.body).append(this._node);
+            
+            Y.Assert.areEqual(
+                'hello world',
+                this.data.get('container').all('p').item(0).get('innerText')
+            );
+        },
+        
+        testRender_templateWithLocalesAndParams_specific: function()
+        {
+            Y.ys.I18nManager._locales = {
+                en_US: {
+                    "foo.title": 'the title',
+                    "foo.title2": 'the other title',
+                    "foo.text": "my text with @@variable@@"
+                }
+            };
+            Y.ys.I18nManager.set('locale', 'en_US');
+            
+            this.data.set('template',
+                '<h2>'+
+                '	{@foo~title@}'+
+                '</h2>'+
+                '<div class="premium">'+
+                '	<div class="disclaimer">'+
+                '		<h3 class="title">{@foo~title2@}</h3>'+
+                '		<div class="bugwashere">{@foo~text{"variable": "my variable"}@}</div>'+
+                '	</div>'+
+                '	<form>'+
+                '	    <ul class="controls settings-list unstyled"></ul>'+
+                '	</form>'+
+                '</div>'
+            );
+            
+            this._node = this.data.render();
+            Y.one(document.body).append(this._node);
+            
+            Y.Assert.areEqual(
+                'my text with my variable',
+                this.data.get('container').one('.bugwashere').get('innerText')
+            );
+        },
+        
+        testRender_templateWithParamsInLocaleKey: function()
+        {
+            Y.ys.I18nManager._locales = {
+                en_US: {
+                    "foo.bar.var1": 'variable one',
+                    "foo.bar.var2": 'variable two'
+                }
+            };
+            Y.ys.I18nManager.set('locale', 'en_US');
+            
+            this.data.set('template', '<p>{@foo~bar.{variable}@}</p>');
+            this.data.set('compile_params.variable', 'var1');
+            
+            this._node = this.data.render();
+            Y.one(document.body).append(this._node);
+            
+            Y.Assert.areEqual(
+                'variable one',
+                this.data.get('container').all('p').item(0).get('innerText')
+            );
+            
+            Y.one(document.body).set('innerHTML', '');
+            
+            // Change param value
+            this.data.set('compile_params.variable', 'var2');
+            
+            this._node = this.data.render();
+            Y.one(document.body).append(this._node);
+            
+            Y.Assert.areEqual(
+                'variable two',
                 this.data.get('container').all('p').item(0).get('innerText')
             );
         },
@@ -184,7 +269,7 @@ suite.add(
         {
             this.data.destroy();
         },
-    
+        
         testGetCurrentView : function ()
         {
             var TestView = function(config)

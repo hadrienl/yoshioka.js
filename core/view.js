@@ -13,8 +13,10 @@ CLASS_YS_LOADING_VIEW = 'ys-loading-view',
 
 EVT_SYNCUI = 'sync',
 
-LOC_OPEN_TAG = '[LOC_OPEN]',
-LOC_CLOSE_TAG = '[LOC_CLOSE]';
+LOC_OPEN_TAG = '<<<LOC_OPEN>>>',
+LOC_CLOSE_TAG = '<<<LOC_CLOSE>>>',
+LOC_OPEN_PARAM = '<<<LOC_OPEN_PARAM>>>',
+LOC_CLOSE_PARAM = '<<<LOC_CLOSE_PARAM>>>';
 
 /**
  * Y.ys.View extends Y.View and add it all the magic of yoshioka. With this
@@ -260,8 +262,21 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         
         params || (params = {});
         
+        /**
+         * Clean locales brackets to avoid Y.substitute remove them
+        **/
+        tpl = tpl.replace(
+            /\{\@(.*?)\@\}/g,
+            LOC_OPEN_TAG+'$1'+LOC_CLOSE_TAG
+        );
+        
+        tpl = Y.substitute(
+            tpl,
+            params
+        );
+        
         locales = tpl.match(
-            /\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/gi
+            new RegExp(LOC_OPEN_TAG+'([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?'+LOC_CLOSE_TAG, 'gi')
         );
         
         if (locales)
@@ -270,7 +285,9 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
                 locales,
                 function(l)
                 {
-                    var l = l.match(/\{@([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?@\}/),
+                    var l = l.match(
+                            new RegExp(LOC_OPEN_TAG+'([a-zA-Z0-9\-\_\~\.]+)(\{.+?\})?'+LOC_CLOSE_TAG)
+                        ),
                         toreplace = l[0],
                         key = l[1],
                         params = (params = l[2]) ? params.replace(/'/,"\\\'") : 'null';
@@ -288,7 +305,7 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
                             );
                         }
                     }
-
+                    
                     tpl = tpl.replace(
                         toreplace,
                         __(key, params, true)
@@ -301,11 +318,6 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         {
             throw new Error("No template given.");
         }
-        
-        tpl = Y.substitute(
-            tpl,
-            params
-        );
         
         node = Y.Node.create(
             tpl
