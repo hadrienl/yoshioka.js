@@ -35,10 +35,12 @@ Builder.prototype._appconfig = null;
 Builder.prototype._ignore = ['config/config.js', 'config/app_config.js', 'config/dev_config.js', 'config/tests_config.js', 'config/tconfig.js', 'yoshioka.js/core/core_config.js'];
 Builder.prototype.init = function(config)
 {
-    var buildname = config && config.buildname || new Date().getTime(),
-        buildpath = config && config.buildpath || BUILD_DIR+buildname+'/',
-        files;
+    config = config || {};
     
+    var buildname = config.buildname || new Date().getTime(),
+        buildpath = config.buildpath || BUILD_DIR+buildname+'/',
+        files;
+
     this.debug = config.debug;
     
     this._configtype = config && config.type
