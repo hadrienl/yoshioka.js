@@ -177,6 +177,8 @@ Server.prototype = {
                 dev: true
             });
         
+        url = url.replace(/\?.*$/, '');
+        
         if (url.match(/^\/$/))
         {
             url+='index.html';
