@@ -81,8 +81,8 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         /**
          * Init collections
          */
-        this._currentview = {};
-        this._loading = {};
+        this._currentview = [];
+        this._loading = [];
         this._events = [];
     },
     
@@ -230,6 +230,7 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
     destructor: function()
     {
         this.unbindUI();
+        this.get('container').remove(true);
         
         View.superclass.destroy.apply(this);
     },
@@ -361,12 +362,17 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
      *);</pre>
      * @public
      */
-    setView: function(name, place, params, callback) // TODO : (name|Class, node, params, callback)
+    setView: function(name, place, params, callback)
     {
         var container = this.get('container'),
-            el;
-        
-        if (this._loading[place])
+            place = this._getPlace(place);
+
+        if (!place)
+        {
+            throw new Error('place is not a valid element or selector into container node');
+        }
+
+        if (this._isLoading(place))
         {
             /**
              * A view is currently loading for this place, delay the new
@@ -399,7 +405,7 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
              * On exception, set loading flag as false to tell the load is
              * finished.
              */
-            this._loading[place] = false;
+            this._setLoading(place, false);
             
             el = container.one('.'+place);
             el && el.removeClass(CLASS_YS_LOADING_VIEW);
@@ -416,10 +422,6 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
     {
         var container = this.get('container'),
             /**
-             * Get the node corresponding to the place given
-             */
-            node = container.one('.'+place),
-            /**
              * Construct the object classname from the name param
              * will get 'NameView' for 'name' param, so the view must be
              * a 'NameView' Object in a 'name' module
@@ -434,7 +436,9 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
              */
             self = this,
             
-            el;
+            el,
+
+            currentView = this.getCurrentView(place);
 
         params || (params = {});
 
@@ -442,13 +446,13 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
          * Check if new view is the same as the current
          * to avoid re instanciate same class and reload the page
          */
-        if (this._currentview[place] &&
-            this._currentview[place].constructor.NAME === classname)
+        if (currentView &&
+            currentView.constructor.NAME === classname)
         {
             /**
              * Don't instanciate new view, just give new params to it
              */
-            this._currentview[place].setAttrs(params);
+            currentView.setAttrs(params);
             
             el = container.one('.'+place);
             el && el.removeClass(CLASS_YS_LOADING_VIEW);
@@ -463,7 +467,7 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
             /**
              * Set loading flag for this place
              */
-            this._loading[place] = true;
+            this._setLoading(place, true);
 
             /**
              * Load new view
@@ -482,7 +486,6 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
                     this,
                     classname,
                     params,
-                    node,
                     place,
                     callback
                 )
@@ -497,15 +500,13 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
      * @method _setViewCallback
      * @param {string} classname The view javascript classname
      * @param {object} param The config object to construct the view
-     * @param {Y.Node} node The node where to append the view
-     * @param {string} place The className of the place where to append the
-     * view
+     * @param {Y.Node} place The node where to append the view
      * @param {function} callback Callback to execute
      * @protected
      * throws {Error} If the view class does not exist. You _MUST_ declare
      * a Y.yourapp.NameView class extending Y.ys.View
      */
-    _setViewCallback: function(classname, params, node, place, callback)
+    _setViewCallback: function(classname, params, place, callback)
     {
         var viewclass =
             Y[Y.config.ys_app][classname],
@@ -531,62 +532,34 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         /**
          * Destroy previously instancied view
          */
-        this._removeCurrentView(place, view);
+        this._removeCurrentView(place);
+        this._setCurrentView(view, place);
 
         /**
          * Append view to the given node in main view
          */
         if (callback)
         {
-            callback(view, node);
+            callback(view, place);
         }
         else
         {
-            node.append(
+            place.append(
                 view.render()
             );
         }
 
-        this._loading[place] = false;
+        this._setLoading(place, false);
         
         view.after(
             'render',
             function(e, place)
             {
-                var el;
-                el = this.get('container').one('.'+place);
-                el && el.removeClass(CLASS_YS_LOADING_VIEW);
+                place.removeClass(CLASS_YS_LOADING_VIEW);
             },
             this,
             place
         );
-    },
-    /**
-     * Remove current view. Can be overrided to do something before
-     * destroying the view
-     * @method _removeCurrentView
-     * @param {string} place The className of the place where to append the
-     * view
-     * @param {Y.ys.View} The new view which take the place of the previous
-     * @protected
-     */
-    _removeCurrentView: function(place, view)
-    {
-        if (this._currentview[place])
-        {
-            this._currentview[place].remove();
-        }
-        this._currentview[place] = view;
-    },
-    /**
-     * Remove the view. Can be overrided to do something before destroy the
-     * view
-     * @method remove
-     * @public
-     */
-    remove: function()
-    {
-        this.destroy();
     },
     
     /**
@@ -657,7 +630,7 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
                     
                     if (clean)
                     {
-                        zone.remove();
+                        zone.destroy();
                     }
                 }
                 else
@@ -678,6 +651,18 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         
         return response;
     },
+
+    /**
+     * Get a container's child node from a place as a node or a selector
+     * @param {string/Node} place Place to get
+     * @return Node|null
+     */
+    _getPlace: function(place)
+    {
+        return Y.Lang.isString(place) ?
+            this.get('container').one(place) : place;
+    },
+
     /**
      * Get current view instance in given place
      * @method getCurrentView
@@ -687,7 +672,123 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
      */
     getCurrentView: function(place)
     {
-        return this._currentview[place] || null;
+        var view,
+            place = this._getPlace(place);
+
+        Y.some(
+            this._currentview,
+            function(v)
+            {
+                if (v.place === place)
+                {
+                    view = v.view;
+                    return true;
+                }
+            }
+        );
+        return view || null;
+    },
+
+    /**
+     * Set the current view for a place
+     */
+    _setCurrentView: function(view, place)
+    {
+        var found = false;
+
+        Y.some(
+            this._currentview,
+            function(v)
+            {
+                if (v.place === place)
+                {
+                    v.view = view;
+                    return found = true;
+                }
+            }
+        );
+
+        if (!found)
+        {
+            this._currentview.push({
+                place: place,
+                view: view
+            });
+        }
+
+        return view;
+    },
+
+    /**
+     * Remove current view. Can be overrided to do something before
+     * destroying the view
+     * @method _removeCurrentView
+     * @param {string} place The className of the place where to append the
+     * view
+     * @param {Y.ys.View} The new view which take the place of the previous
+     * @protected
+     */
+    _removeCurrentView: function(place, view)
+    {
+        var currentview = this.getCurrentView(place);
+        currentview && currentview.destroy();
+    },
+
+    /**
+     * Check if a view is currently loading in this place
+     */
+    _isLoading: function(place)
+    {
+        var loading = false;
+
+        Y.some(
+            this._loading,
+            function(l)
+            {
+                if (l.place === place)
+                {
+                    loading = l.loading;
+                    return true;
+                }
+            }
+        );
+
+        return loading;
+    },
+
+    /**
+     * Set a place as loading
+     */
+    _setLoading: function(place, loading)
+    {
+        var found = false;
+
+        if (Y.Lang.isUndefined(loading))
+        {
+            loading = false;
+        }
+
+        Y.some(
+            this._loading,
+            function(l)
+            {
+                if (l.place === place)
+                {
+                    l.loading = loading;
+                    return found = true;
+                }
+            }
+        );
+
+        if (!found)
+        {
+            this._loading.push({
+                place: place,
+                loading: loading
+            });
+        }
+
+        return found;
     },
     
     /**
