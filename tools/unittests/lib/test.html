@@ -82,13 +82,16 @@
                 
                 Y.Test.Runner.on(
                     'complete',
-                    function(results)
+                    function(e)
                     {
                         window.parent && window.parent.postMessage(
                             Y.JSON.stringify({
                                 'message': 'complete',
                                 'from': window.location.href,
-                                'data': results
+                                'data': {
+                                    type: e.type,
+                                    results: e.results
+                                }
                             }),
                             '*'
                         );
@@ -96,8 +99,8 @@
                 );
                 
                 Y.Test.Runner.on(
-                    ['fail', 'pass'],
-                    function(results)
+                    'testcasebegin',
+                    function(e)
                     {
                         window.parent && window.parent.postMessage(
                             Y.JSON.stringify({

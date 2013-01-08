@@ -293,14 +293,14 @@ suite.add(
             
             this.data.setView(
                 'test',
-                'main'
+                '.main'
             );
             
             this.wait(function()
             {
                 Y.Assert.areEqual(
                     "Hello World",
-                    this.data.getCurrentView('main')
+                    this.data.getCurrentView('.main')
                         .get('container').one('div').get('innerHTML')
                 );
                 

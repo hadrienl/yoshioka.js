@@ -207,7 +207,10 @@ Y.namespace(NS).UnittestsView = Y.extend(UnittestsView, Y.ys.View, {
 '</div>'
         },
         modules: {
-            valueFn: Array,
+            valueFn: function()
+            {
+                return [];
+            },
             validator: function(v)
             {
                 return Y.Lang.isArray(v);
@@ -290,7 +293,6 @@ Y.namespace(NS).UnittestsSuiteSubview = Y.extend(
                     console && console.error(e);
                     return;
                 }
-                
                 if (!data.from ||
                     data.from !==
                         window.location.protocol+'//'+

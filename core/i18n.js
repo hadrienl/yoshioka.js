@@ -85,7 +85,7 @@ Y.extend(I18n, Y.Base, {
          */
         if (config.params)
         {
-            Y.Object.each(
+            Y.each(
                 config.params,
                 function(v, k)
                 {
@@ -453,8 +453,8 @@ Y.extend(I18nManager, Y.Base, {
             {
                 var keys = this.get('keys'),
                     locale = this.get('locale');
-
-                Y.Object.each(
+                    
+                Y.each(
                     keys,
                     function(I18n)
                     {
@@ -464,7 +464,8 @@ Y.extend(I18nManager, Y.Base, {
                         }
                     }
                 );
-            }
+            },
+            this
         );
     },
 
@@ -496,8 +497,7 @@ Y.extend(I18nManager, Y.Base, {
      */
     localize: function(key, params, tostring)
     {
-        var keys = this.get('keys'),
-            el = this.createKey(key, params);
+        var el = this.createKey(key, params);
 
         params || (params = {});
 
@@ -718,7 +718,10 @@ Y.extend(I18nManager, Y.Base, {
          * @protected
          */
         keys: {
-            valueFn: Object
+            valueFn: function()
+            {
+                return {};
+            }
         }
     }
 });
