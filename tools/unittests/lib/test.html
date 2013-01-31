@@ -33,6 +33,8 @@
         //<![CDATA[
             YUI().use("json", "yoshioka", "test", {$modules}, function(Y) {
                 
+                console = parent && parent.console || console;
+
                 var sendStats = function()
                 {
                     var data = [],
