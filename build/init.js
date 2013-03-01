@@ -25,7 +25,8 @@ YUI().use(
     html.addClass('ys_loaded');
     
     if (!c.get('html5') &&
-        window.location.pathname !== '/')
+        window.location.pathname !== '/' &&
+        !window.location.pathname.match(/^\/[^\/]+\.html/))
     {
         window.location.href = '/#'+c.getPath();
     }
