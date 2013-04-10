@@ -813,6 +813,26 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
             this
         );
         return events;
+    },
+
+    /**
+     * Show the view container element
+     * @method show
+     * @public
+     */
+    show: function()
+    {
+        this.get('container').show();
+    },
+
+    /**
+     * Hide the view container element
+     * @method hide
+     * @public
+     */
+    hide: function()
+    {
+        this.get('container').hide();
     }
 },
 {
