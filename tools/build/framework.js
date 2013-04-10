@@ -1,6 +1,6 @@
 var fs = require('fs'),
     corepath = __dirname+'/../../core',
-    files = ['i18n.js', 'view.js', 'core.js'],
+    files = ['i18n.js', 'view.js', 'core.js', 'utils.js'],
     content = '';
 
 content += 'YUI.add("yoshioka", function(Y) {';

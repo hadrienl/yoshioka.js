@@ -1557,6 +1557,26 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
             this
         );
         return events;
+    },
+
+    /**
+     * Show the view container element
+     * @method show
+     * @public
+     */
+    show: function()
+    {
+        this.get('container').show();
+    },
+
+    /**
+     * Hide the view container element
+     * @method hide
+     * @public
+     */
+    hide: function()
+    {
+        this.get('container').hide();
     }
 },
 {
@@ -1590,7 +1610,7 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
 })();(function() {/**
  * The framework core that made the dream become true
  * @module ys/core
- * @requires router, model, ys/routes, substitute, ys/i18n
+ * @requires router, model, ys/routes, substitute, ys/i18n, ys/utils
  */
 
 var
@@ -1912,4 +1932,67 @@ Y.namespace(NS).Router = new (Y.namespace(NS).Core)();
 Y.namespace(NS).Coord = Y.namespace(NS).Router.loadRoutes(Y[NS].routes);
 
 Y.namespace(NS).use = Y.namespace(NS).Router.use;
+})();(function() {/**
+ * Utils mixins
+ * @module ys/utils
+ * @requires base
+ */
+var
+
+NS = 'ys';
+
+/**
+ * Utils to help use some redondant processes. To use as a mixin :
+ * <pre>MyClass = Y.Base.create('MyClass', MyParentClass, [Y.ys.utils], {
+ *    // prototype
+ * }, {
+ *    ATTRS: {}
+ });</pre>
+ * @class utils
+ * @namespace Y.ys
+ * @extends Y.Base
+ * @constructor
+ */
+Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
+
+    /**
+     * Destructor util
+     * @method _destruct
+     * @param {Array} data Array of data to destroy
+     * @protected
+     */
+    _destruct: function(data)
+    {
+        if (!Y.Lang.isArray(data))
+        {
+            data = [data];
+        }
+
+        Y.each(
+            data,
+            function(d)
+            {
+                try
+                {
+                    if (d)
+                    {
+                        if (d.destroy)
+                        {
+                            d.destroy();
+                        }
+
+                        delete d;
+                    }
+                }
+                catch (e)
+                {
+                    console.error(e);
+                }
+            }
+        );
+
+        this.constructor.superclass.destructor.apply(
+            this, arguments);
+    }
+});
 })();});

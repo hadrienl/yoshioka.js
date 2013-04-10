@@ -1,7 +1,7 @@
 /**
  * The framework core that made the dream become true
  * @module ys/core
- * @requires router, model, ys/routes, substitute, ys/i18n
+ * @requires router, model, ys/routes, substitute, ys/i18n, ys/utils
  */
 
 var
