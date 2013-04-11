@@ -626,7 +626,9 @@ Y.extend(I18nManager, Y.Base, {
             {
                 var clocale = locale_cache.retrieve(CACHE_LOCALE);
                 
-                return clocale && clocale.response;
+                return clocale ?
+                    clocale.response :
+                    (navigator.language || navigator.userLanguage || DEFAULT_LOCALE);
             },
             /**
              * Function to set the locale after verifying its validity. Set the
