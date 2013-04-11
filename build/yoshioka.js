@@ -638,7 +638,6 @@ Y.extend(I18nManager, Y.Base, {
              */
             setter: function(locale)
             {
-                console.warn('set locale', locale);
                 var found = false,
                     dft = navigator.language || navigator.userLanguage || DEFAULT_LOCALE;
 
