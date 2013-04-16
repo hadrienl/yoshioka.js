@@ -1958,6 +1958,16 @@ NS = 'ys';
 Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
 
     /**
+     * Get the parent class
+     * @method _parent
+     * @protected
+     */
+    _parent: function ()
+    {
+        return this.constructor.superclass;
+    },
+
+    /**
      * Destructor util
      * @method _destruct
      * @param {Array} data Array of data to destroy
@@ -1993,7 +2003,7 @@ Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
             }
         );
 
-        this.constructor.superclass.destructor.apply(
+        this._parent().destructor.apply(
             this, arguments);
     }
 });
