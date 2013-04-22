@@ -501,11 +501,6 @@ FileParser.prototype = {
                     }.bind(this)
                 );
                 
-                if (!isValid)
-                {
-                    return this._callback404();
-                }
-                
                 this.init({
                     url: DEFAULT_INDEX
                 });
