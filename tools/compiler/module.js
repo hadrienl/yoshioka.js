@@ -108,7 +108,8 @@ ModuleCompiler.prototype = {
                 .replace(/,$/, '')
                 .replace(/\s/g, '')
                 .replace(/\*/g, '')
-                .split(/,/);
+                .split(/,/),
+            classnameprefix = module.replace(/\W/g, '-')+'-$1';
         
         if (this._debug)
         {
@@ -122,6 +123,14 @@ ModuleCompiler.prototype = {
 this._filecontent+"\n"+
 "}, '1.234', {requires: "+JSON.stringify(requires)+"})";
         }
+
+        /**
+         * Replace classnames
+         */
+        this._filecontent = this._filecontent.replace(
+            /\{\$classname\:['"](.+)['"]\}/g,
+            '\''+classnameprefix+'\''
+        );
 
         return this._filecontent;
     },

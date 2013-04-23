@@ -59,7 +59,7 @@ TemplateCompiler.prototype =
     },
     _parse: function(callback)
     {
-        var tplinc = this._filecontent.match(/\{\$(.*?)\}/gi);
+        var tplinc = this._filecontent.match(/\{\$(.*?\.tpl)\}/gi);
         
         if (tplinc)
         {
