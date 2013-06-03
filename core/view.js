@@ -521,6 +521,7 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
         }
         catch (e)
         {
+            console.error(e);
             throw new Error(
                 "This view does not exist. You must declare a "+
                 "`Y."+Y.config.ys_app+"."+classname+"` class in a "+
