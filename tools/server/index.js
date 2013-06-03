@@ -10,8 +10,6 @@ var
 
 APP_PATH = __dirname.replace(/yoshioka.\js.*$/, ''),
 
-http = require('http'),
-
 util = require('util'),
 fs = require('fs'),
 
@@ -151,12 +149,38 @@ Server.prototype = {
         
         this._port = this._config.app.port || 1636;
         
-        this._http = http.createServer(
-            function(req, res)
+        if (this._config.app.yoshioka &&
+            this._config.app.yoshioka.https)
+        {
+            if (!this._config.app.yoshioka.https.key)
             {
-                this._control(req, res);
-            }.bind(this)
-        );
+                throw new Exception('Your https connexion need a public key file set as `yoshioka.https.key` into dev_config.js file');
+            }
+            if (!this._config.app.yoshioka.https.cert)
+            {
+                throw new Exception('Your https connexion need a certificate file set as `yoshioka.https.cert` into dev_config.js file');
+            }
+
+            this._http = require('https').createServer(
+                {
+                    key: fs.readFileSync(this._config.app.yoshioka.https.key),
+                    cert: fs.readFileSync(this._config.app.yoshioka.https.cert)
+                },
+                function(req, res)
+                {
+                    this._control(req, res);
+                }.bind(this)
+            );
+        }
+        else
+        {
+            this._http = require('http').createServer(
+                function(req, res)
+                {
+                    this._control(req, res);
+                }.bind(this)
+            );
+        }
         
         this._http.listen(this._port);
     },
