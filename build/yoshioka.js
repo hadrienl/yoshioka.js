@@ -2003,8 +2003,7 @@ Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
                 }
             }
         );
-
-        this._parent().destructor.apply(
+        this._parent().destroy.apply(
             this, arguments);
     }
 });
