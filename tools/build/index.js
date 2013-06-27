@@ -56,9 +56,16 @@ Builder.prototype.init = function(config)
         tests: (this._configtype === 'tests')
     });
     
-    this.dirs = ['views', 'config'].concat(
-        this._appconfig && this._appconfig.plugins
+    this.dirs = ['config'];
+    this._appconfig &&
+    this._appconfig.yoshioka &&
+    this._appconfig.yoshioka.bundles.forEach(
+        function(b)
+        {
+            this.dirs.push(b.path);
+        }.bind(this)
     );
+
     this._filecount = 0;
     
     this._coreconfig = JSON.parse(
@@ -212,7 +219,8 @@ Builder.prototype._makeConfig = function()
 Builder.prototype._parseJSFile = function(path)
 {
     var ignore = false,
-        c;
+        c,
+        basepath = this._getDestinationPath(path);
     
     this._ignore.forEach(
         function(file)
@@ -230,8 +238,7 @@ Builder.prototype._parseJSFile = function(path)
         this._checkFileCount();
         return;
     }
-    
-    this._mkdir(path, APP_PATH+this._buildpath+'/');
+    this._mkdir(path, basepath+'/');
     
     if (path.match(/routes.js$/))
     {
@@ -239,7 +246,7 @@ Builder.prototype._parseJSFile = function(path)
         c.parse(function(path, content)
         {
             fs.writeFile(
-                APP_PATH+this._buildpath+path,
+                basepath+path,
                 content,
                 'utf-8',
                 function(path, err, data)
@@ -268,7 +275,7 @@ Builder.prototype._parseJSFile = function(path)
             c.parse(function(path, content)
             {
                 fs.writeFile(
-                    APP_PATH+this._buildpath+path,
+                    basepath+path,
                     content,
                     'utf-8',
                     function(path, err, data)
@@ -285,15 +292,16 @@ Builder.prototype._parseJSFile = function(path)
 Builder.prototype._parseCSSFile = function(path)
 {
     var c = new compiler.CSSCompiler({
-        file: path
-    });
+            file: path
+        }),
+        basepath = this._getDestinationPath(path);
     
-    this._mkdir(path, APP_PATH+this._buildpath+'/');
+    this._mkdir(path, basepath+'/');
     
     c.parse(function(path, content)
     {
         fs.writeFile(
-            APP_PATH+this._buildpath+path,
+            basepath+path,
             content,
             function(path, err, data)
             {
@@ -311,7 +319,8 @@ Builder.prototype._parseCSSFile = function(path)
 };
 Builder.prototype._parseStaticFile = function(path)
 {
-    var content;
+    var content,
+        basepath = this._getDestinationPath(path);
     
     if (path.match(/test\.js$/) ||
         path.match(/tpl\.html/))
@@ -321,7 +330,7 @@ Builder.prototype._parseStaticFile = function(path)
         return;
     }
     
-    this._mkdir(path, APP_PATH+this._buildpath+'/');
+    this._mkdir(path, basepath+'/');
     
     /**
      * Simple copy file in build folder
@@ -331,7 +340,7 @@ Builder.prototype._parseStaticFile = function(path)
     );
     
     fs.writeFileSync(
-        APP_PATH+this._buildpath+path,
+        basepath+path,
         content
     );
     
@@ -341,10 +350,12 @@ Builder.prototype._parseStaticFile = function(path)
 Builder.prototype._parseHTMLFile = function(path, writepath)
 {
     var c = new compiler.HTMLCompiler({
-        file: path,
-        basepath: (this._appconfig.basepath || '')+'/'+this._buildname,
-        type: 'app'
-    });
+            file: path,
+            basepath: (this._appconfig.basepath || '')+'/'+this._buildname,
+            type: 'app'
+        }),
+        basepath = this._getDestinationPath(path);
+
     c.parse(function(path, content)
     {
         /**
@@ -356,7 +367,7 @@ Builder.prototype._parseHTMLFile = function(path, writepath)
         }
         
         fs.writeFile(
-            APP_PATH+this._buildpath+path,
+            basepath+path,
             content
         );
         this._filecount--;
@@ -367,7 +378,8 @@ Builder.prototype.insertCopyright = function(path)
 {
     var copyright = "/*\n{name} {version}\n{text}\n*/\n",
         data,
-        filecontent = fs.readFileSync(APP_PATH+this._buildpath+path).toString();
+        filecontent = fs.readFileSync(APP_PATH+this._buildpath+path).toString(),
+        basepath = this._getDestinationPath(path);
     
     if (path.match(/yoshioka\.js/))
     {
@@ -387,7 +399,7 @@ Builder.prototype.insertCopyright = function(path)
             + filecontent;
     }
     fs.writeFileSync(
-        APP_PATH+this._buildpath+path,
+        basepath+path,
         filecontent
     );
 };
@@ -433,6 +445,46 @@ Builder.prototype._checkFileCount = function()
         });
     }
 };
+
+Builder.prototype._getDestinationPath = function(path)
+{
+    var basepath = APP_PATH+this._buildpath;
+
+    /**
+     * If no bundle setting, just create the askde basepath
+     */
+    if (!path ||
+        !this._appconfig ||
+        !this._appconfig.yoshioka ||
+        !this._appconfig.yoshioka.bundles)
+    {
+        return basepath;
+    }
+
+    var destination,
+        pathparts = path.split(/\//),
+        destinationparts;
+
+    /**
+     * Search into bundles setting if a `destination` basepath has been set
+     */
+    this._appconfig.yoshioka.bundles.forEach(
+        function(b)
+        {
+            if (!b.destination) return;
+
+            destinationparts = b.path.split(/\//);
+
+            if (pathparts.slice(0, destinationparts.length).join('/') ===
+                b.path)
+            {
+                basepath = APP_PATH+BUILD_DIR+b.destination;
+            }
+        }.bind(this)
+    );
+
+    return basepath;
+}
 
 exports.Builder = Builder;
 
