@@ -103,7 +103,7 @@ HTMLCompiler.prototype =
         for (var i in config)
         {
             this._filecontent = this._filecontent.replace(
-                new RegExp('\\{\\$'+i+'\\}'),
+                new RegExp('\\{\\$'+i+'\\}', 'g'),
                 config[i]
             );
         }
