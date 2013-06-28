@@ -44,10 +44,23 @@ Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
             data = [data];
         }
 
+        this.__destruct(data);
+
+        this._parent().destroy.apply(
+            this, arguments);
+    },
+
+    __destruct: function(o)
+    {
         Y.each(
-            data,
+            o,
             function(d)
             {
+                if (Y.Lang.isArray(d))
+                {
+                    return this.__destruct(d);
+                }
+
                 try
                 {
                     if (d)
@@ -64,9 +77,8 @@ Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
                 {
                     console.error(e);
                 }
-            }
+            },
+            this
         );
-        this._parent().destroy.apply(
-            this, arguments);
     }
 });
