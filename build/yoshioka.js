@@ -1433,7 +1433,8 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
                 }
             }
         );
-        return view || null;
+
+        return (view && !view.get('destroyed')) ? view : null;
     },
 
     /**
