@@ -708,10 +708,6 @@ Y.extend(I18nManager, Y.Base, {
                 
                 return locale;
             },
-            getter: function(v)
-            {
-                return v || DEFAULT_LOCALE;
-            },
             /**
              * Fired when the locale has been changed
              * @event localeChange
