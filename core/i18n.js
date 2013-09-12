@@ -550,7 +550,7 @@ Y.extend(I18nManager, Y.Base, {
                         var locales = window['__ys_locales_'+locale];
 
                         this._locales[locale] = Y.clone(locales);
-                        
+
                         try{
                             delete window['__ys_locales_'+locale];
                         }
@@ -558,7 +558,7 @@ Y.extend(I18nManager, Y.Base, {
                         {
                             window['__ys_locales_'+locale] = null;
                         }
-                        
+
                         Y.each(
                             this._loading[locale],
                             function(fn)
@@ -570,7 +570,8 @@ Y.extend(I18nManager, Y.Base, {
                     },
                     this,
                     locale
-                )
+                ),
+                async: true
             }
         );
     },
