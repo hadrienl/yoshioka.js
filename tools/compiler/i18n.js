@@ -90,7 +90,7 @@ I18nCompiler.prototype =
             }
         );
         
-        this._filecontent = '__ys_locales_'+this._locale+' = '+JSON.stringify(lines)+';';
+        this._filecontent = JSON.stringify(lines);
         
         if (callback)
         {
