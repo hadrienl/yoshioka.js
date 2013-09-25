@@ -1,7 +1,7 @@
 /**
  * Internationalisation tools
  * @module ys/i18n
- * @requires base, cache, io
+ * @requires base, cache, get
  */
 
 var
@@ -541,23 +541,24 @@ Y.extend(I18nManager, Y.Base, {
         
         this._loading[locale] = [callback];
         
-        Y.io(
+        Y.Get.script(
             (Y.config.localepath || '/locales/') +locale+'.js',
             {
-                on: {
-                    success: function(id, data, locale)
+                onSuccess: Y.bind(
+                    function(locale)
                     {
-                        try
-                        {
-                            data = Y.JSON.parse(data.responseText);
-                        }
-                        catch (e)
-                        {
-                            return;
-                        }
+                        var locales = window['__ys_locales_'+locale];
 
-                        this._locales[locale] = Y.clone(data);
-
+                        this._locales[locale] = Y.clone(locales);
+                        
+                        try{
+                            delete window['__ys_locales_'+locale];
+                        }
+                        catch(e)
+                        {
+                            window['__ys_locales_'+locale] = null;
+                        }
+                        
                         Y.each(
                             this._loading[locale],
                             function(fn)
@@ -566,10 +567,10 @@ Y.extend(I18nManager, Y.Base, {
                             }
                         );
                         this._loading[locale] = [];
-                    }
-                },
-                context: this,
-                arguments: locale
+                    },
+                    this,
+                    locale
+                )
             }
         );
     },

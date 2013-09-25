@@ -6,7 +6,7 @@
         },
         "yoshioka": {
             "path": "yoshioka.js/build/yoshioka.js",
-            "requires": ["base", "cache", "view", "node", "get", "router", "model", "ys/routes", "substitute", "io"]
+            "requires": ["base", "cache", "view", "node", "get", "router", "model", "ys/routes", "substitute", "get"]
         },
         "ys/core": {
             "path": "yoshioka.js/build/yoshioka.js",
@@ -14,7 +14,7 @@
         },
         "ys/i18n": {
             "path": "yoshioka.js/build/yoshioka.js",
-            "requires": ["base", "cache", "io"]
+            "requires": ["base", "cache", "get"]
         },
         "ys/view": {
             "path": "yoshioka.js/build/yoshioka.js",
