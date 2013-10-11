@@ -541,43 +541,36 @@ Y.extend(I18nManager, Y.Base, {
         
         this._loading[locale] = [callback];
         
-        Y.later(
-            1000,
-            this,
-            function ()
+        Y.Get.script(
+            (Y.config.localepath || '/locales/') +locale+'.js',
             {
-                Y.Get.script(
-                    (Y.config.localepath || '/locales/') +locale+'.js',
+                onSuccess: Y.bind(
+                    function(locale)
                     {
-                        onSuccess: Y.bind(
-                            function(locale)
-                            {
-                                var locales = window['__ys_locales_'+locale];
+                        var locales = window['__ys_locales_'+locale];
 
-                                this._locales[locale] = Y.clone(locales);
-                                
-                                try{
-                                    delete window['__ys_locales_'+locale];
-                                }
-                                catch(e)
-                                {
-                                    window['__ys_locales_'+locale] = null;
-                                }
-                                
-                                Y.each(
-                                    this._loading[locale],
-                                    function(fn)
-                                    {
-                                        fn();
-                                    }
-                                );
-                                this._loading[locale] = [];
-                            },
-                            this,
-                            locale
-                        )
-                    }
-                );
+                        this._locales[locale] = Y.clone(locales);
+                        
+                        try{
+                            delete window['__ys_locales_'+locale];
+                        }
+                        catch(e)
+                        {
+                            window['__ys_locales_'+locale] = null;
+                        }
+                        
+                        Y.each(
+                            this._loading[locale],
+                            function(fn)
+                            {
+                                fn();
+                            }
+                        );
+                        this._loading[locale] = [];
+                    },
+                    this,
+                    locale
+                )
             }
         );
     },
