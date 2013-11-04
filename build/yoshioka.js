@@ -1620,13 +1620,9 @@ Y.namespace(NS).View = View = Y.Base.create('View', Y.View, [], {
 var
 
 NS = 'ys',
+Core,
 
-EVT_PATH_CHANGE = 'pathchange',
-
-Core = function()
-{
-    Core.superclass.constructor.apply(this, arguments);
-};
+EVT_PATH_CHANGE = 'pathchange';
     
 /**
  * Core object. It extends Y.Router and manage routes
@@ -1636,8 +1632,10 @@ Core = function()
  * @extends Y.Router
  * @constructor
  */
-Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
-    
+Y.namespace(NS).Core =
+Core =
+Y.Base.create('Core', Y.Router, [],
+{
     initializer: function()
     {
         Core.superclass.initializer.apply(this, arguments);
@@ -1658,8 +1656,9 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
                 defaultFn: Y.bind(
                     function(e)
                     {
-                        this.save(
-                            e.path
+                        this.constructor.superclass.save.apply(
+                            this,
+                            [e.path]
                         );
                     },
                     this
@@ -1851,7 +1850,7 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
                 
                 path = this.removeRoot(link.get('href'));
                 
-                this.fire(EVT_PATH_CHANGE, {path: path});
+                this.save(path);
             },
             this,
             link
@@ -1881,6 +1880,11 @@ Y.namespace(NS).Core = Y.extend(Core, Y.Router, {
                 callback
             ));
         }
+    },
+
+    save: function(path)
+    {
+        this.fire(EVT_PATH_CHANGE, {path: path});
     }
 },
 {
