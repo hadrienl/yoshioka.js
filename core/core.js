@@ -269,9 +269,21 @@ Y.Base.create('Core', Y.Router, [],
         }
     },
 
-    save: function(path)
+    save: function(path, config)
     {
-        this.fire(EVT_PATH_CHANGE, {path: path});
+        config = config || {};
+
+        if (config.silent)
+        {
+            this.constructor.superclass.save.apply(
+                this,
+                [path]
+            );
+        }
+        else
+        {
+            this.fire(EVT_PATH_CHANGE, {path: path});
+        }
     }
 },
 {
