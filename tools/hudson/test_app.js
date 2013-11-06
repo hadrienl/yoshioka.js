@@ -101,7 +101,10 @@ server = new Server();
  * Launch browser on unit tests page
  */
 server.browser = exec(
-    browser+' localhost:'+port+url,
+      browser + ' '
+    + (config.hudson_mainhost ||
+      'localhost')
+    + ':' + port + url,
     function(err)
     {
         if (err)
