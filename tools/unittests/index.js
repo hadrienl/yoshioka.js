@@ -128,7 +128,10 @@ UnitTests.prototype = {
         
         this._modules = [];
         
-        viewpaths.concat(pluginpaths).forEach(
+        viewpaths.concat(pluginpaths);
+        viewpaths.sort();
+
+        viewpaths.forEach(
             function(v)
             {
                 var excluded = false;
