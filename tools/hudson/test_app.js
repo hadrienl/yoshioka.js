@@ -13,6 +13,7 @@ config = getconfig.getConfig({
 }),
 
 browser = 'chromium-browser',
+options = ' --incognito ',
 port = (config.port || 1636),
 
 url = '/__unittests/auto',
@@ -49,6 +50,7 @@ if (args['browser'])
     else if (args['browser'] === 'iceweasel')
     {
         browser = 'iceweasel';
+        options = '';
     }
 };
 
@@ -102,6 +104,7 @@ server = new Server();
  */
 server.browser = exec(
       browser + ' '
+    + options
     + (config.hudson_mainhost ||
       'localhost')
     + ':' + port + url,
