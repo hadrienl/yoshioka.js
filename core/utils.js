@@ -21,6 +21,8 @@ NS = 'ys';
  */
 Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
 
+    _events: null,
+
     /**
      * Get the parent class
      * @method _parent
@@ -45,6 +47,8 @@ Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
         }
 
         this.__destruct(data);
+
+        this.unbind();
 
         this._parent().destroy.apply(
             this, arguments);
@@ -80,5 +84,44 @@ Y.namespace(NS).utils = Y.Base.create('YSUtils', Y.Base, [], {
             },
             this
         );
+    },
+
+    /*
+     * Store an event to not forget to clean it in the destroy process
+     * @method storeEvent
+     * @param {Y.Event} e Event to store
+     * @return Y.Event
+     * @public
+     */
+    storeEvent: function(events)
+    {
+        this._events = this._events || [];
+
+        if (!Y.Lang.isArray(events))
+        {
+            events = [events];
+        }
+        Y.Array.each(
+            events,
+            function(e)
+            {
+                this._events.push(e);
+            },
+            this
+        );
+        return events;
+    },
+    unbind: function()
+    {
+        Y.each(
+            this._events,
+            function(e)
+            {
+                e.detach();
+            }
+        );
+        this._events = [];
+        
+        this._isBinded = false;
     }
 });
