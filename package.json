@@ -1,0 +1,36 @@
+{
+  "name": "yoshioka.js",
+  "version": "0.8.0",
+  "description": "Javascript MVVM framework for client-side webapp based on YUI 3",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "gra"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hadrienl/yoshioka.js"
+  },
+  "keywords": [
+    "mvvm",
+    "mvc",
+    "javascript",
+    "js",
+    "framework",
+    "yui",
+    "yui3",
+    "spi",
+    "spa",
+    "single-page",
+    "application"
+  ],
+  "author": "Hadrien Lanneau",
+  "license": "BSD",
+  "readmeFilename": "README",
+  "devDependencies": {
+    "http-proxy": "~0.10.3",
+    "less": "~1.2.2"
+  }
+}
